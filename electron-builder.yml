@@ -1,0 +1,31 @@
+appId: 'de.niceas.nicehurt'
+productName: 'NiceHurt Launcher'
+artifactName: '${productName}-setup-${version}.${ext}'
+
+copyright: 'Copyright © 2025 Niclas/Niceas'
+
+asar: true
+compression: 'maximum'
+
+files:
+  - 
+
+extraResources:
+  - 'libraries'
+
+# Windows Configuration
+win: 
+  target: 
+    - target: 'nsis'
+      arch: 'x64'
+
+# Windows Installer Configuration
+nsis:
+  oneClick: false
+  perMachine: false
+  allowElevation: true
+  allowToChangeInstallationDirectory: true
+
+directories:
+  buildResources: 'build'
+  output: 'dist'

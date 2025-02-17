@@ -1,0 +1,33 @@
+# Node.js dependencies
+node_modules/
+
+# Electron build output
+dist/
+build/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# IDE specific files
+.vscode/
+.idea/
+
+# Environment variables
+.env
+
+# Temporary files
+tmp/
+temp/
+
+# Bootstrap generated files
+sirhurt*
+*.dll
+autoexe/

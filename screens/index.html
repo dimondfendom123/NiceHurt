@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GNHub - Injector</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1e1e1e;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+        .button {
+            background-color: #007bff;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            margin: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+        #statusMessage {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+        #status {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: red;
+        }
+    </style>
+</head>
+<body>
+    <h1>GNHub - Injector</h1>
+    <div>Status: <div id="status"></div></div>
+
+    <div id="monaco" style="width:400px; height: 300px; margin: 20px auto;">
+        <iframe id="monacoIframe" src="Monaco/index.html" width="100%" height="100%" style="border: none;"></iframe>
+    </div>
+
+
+    <button id="btnInject" class="button">Inject</button>
+    <button id="btnExecute" class="button">Execute Script</button>
+    <button id="btnOpenLogs" class="button">Open Logs</button>
+    <button id="btnOpenAutoexec" class="button">Open Autoexec</button>
+    <button id="btnKillRoblox" class="button">Kill Roblox</button>
+    <button id="btnCleanRoblox" class="button">Clean Roblox</button>
+    <div id="statusMessage">Status: Waiting...</div>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        window.electron.updateStatus((data) => {
+          const message = data.message;
+          const statusElement = document.getElementById("status");
+          if (statusElement) {
+            if (message === "success") {
+              statusElement.style.backgroundColor = "green";
+            } else if (message === "error") {
+              statusElement.style.backgroundColor = "red";
+            } else if (message === "waiting") {
+              statusElement.style.backgroundColor = "yellow";
+            } else {
+              statusElement.style.backgroundColor = "red";
+            }
+          }
+        });
+      });
+    </script>
+</body>
+</html>
