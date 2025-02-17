@@ -24,9 +24,12 @@ function createWindows() {
   splashWindow.loadFile("screens/splash.html");
 
   mainWindow = new BrowserWindow({
-    width: 800,
+    width: 750,
     height: 600,
     show: false,
+    frame: false,
+    transparent: true,
+    resizable: false,
     webPreferences: {
       preload: path.join(__dirname, "screens/preloads/renderer.js"),
       nodeIntegration: true,
@@ -126,6 +129,8 @@ function downloadFileWithProgress(url, dest, onProgress, callback) {
       console.error("Download Error:", err.message);
     });
 }
+
+//Todo: Fixing when roblox close the dot color
 
 ipcMain.handle("dll-method", async (event, method, arg = "") => {
   try {

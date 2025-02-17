@@ -33,11 +33,11 @@ class InjectorController {
         setTimeout(() => {
           this.execution(
             `repeat task.wait() until game:IsLoaded()
-                        game:GetService("StarterGui"):SetCore("SendNotification", {
-                            Title = "NiceHurt",
-                            Text = "Injected successful, powered by Sirhurt",
-                            Icon = "https://sirhurt.net/assets/img/sirhurtlogo.png"
-                        })`
+            game:GetService("StarterGui"):SetCore("SendNotification", {
+                Title = "NiceHurt",
+                Text = "Injected successful, powered by Sirhurt",
+                Icon = "https://sirhurt.net/assets/img/sirhurtlogo.png"
+            })`
           );
         }, 10000);
       }
@@ -50,7 +50,7 @@ class InjectorController {
 
   static injection() {
     return new Promise((resolve, reject) => {
-      const workerPath = path.join(__dirname, "injectionWorker.js");
+      const workerPath = path.join(__dirname, "InjectionWorker.js");
       const worker = new Worker(workerPath);
 
       worker.on("message", (result) => {
@@ -100,7 +100,7 @@ class InjectorController {
 
   static async openAutoexecFolder() {
     try {
-      const autoexecPath = path.join(process.env.APPDATA, "GNHub", "Autoexec");
+      const autoexecPath = path.join(process.env.APPDATA, "NiceHurt", "Autoexec");
       exec(`explorer.exe "${autoexecPath}"`);
       return 1;
     } catch {

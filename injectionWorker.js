@@ -9,6 +9,8 @@ function logError(message) {
   fs.appendFileSync(logPath, logMessage);
 }
 
+//Todo: Fixing the error handling
+
 (async () => {
   try {
     const sirhurtExePath = path.join(__dirname, "sirhurt.exe");
@@ -22,7 +24,7 @@ function logError(message) {
       stdio: ["ignore", "pipe", "pipe"],
       detached: true,
       windowsHide: true,
-      shell: true,
+      shell: false,
     });
 
     let outputData = "";
@@ -54,7 +56,6 @@ function logError(message) {
         parentPort.postMessage(1);
       }
     });
-
     process.on("error", (error) => {
       logError(`Injection process error: ${error.message}`);
       parentPort.postMessage(-1);
