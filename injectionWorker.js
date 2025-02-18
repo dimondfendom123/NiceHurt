@@ -4,27 +4,28 @@ const path = require("path");
 const fs = require("fs");
 
 function logError(message) {
-  const logPath = path.join(process.env.APPDATA, "GNHub", "error.log");
+  const logPath = path.join(process.env.APPDATA, "NiceHurt", "error.log");
   const logMessage = `[${new Date().toISOString()}] ${message}\n`;
   fs.appendFileSync(logPath, logMessage);
 }
 
-//Todo: Fixing the error handling
-
 (async () => {
   try {
     const sirhurtExePath = path.join(__dirname, "sirhurt.exe");
-    console.log("start:", sirhurtExePath);
+    console.log("Starting process with:", sirhurtExePath);
 
     if (!fs.existsSync(sirhurtExePath)) {
-      throw new Error("sirhurt.exe not found");
+      const errorMsg = "sirhurt.exe not found";
+      logError(errorMsg);
+      parentPort.postMessage(-1);
+      throw new Error(errorMsg);
     }
 
     const process = spawn(sirhurtExePath, [], {
       stdio: ["ignore", "pipe", "pipe"],
       detached: true,
       windowsHide: true,
-      shell: false,
+      shell: true,
     });
 
     let outputData = "";
@@ -40,28 +41,35 @@ function logError(message) {
       console.error("ERROR:", data.toString());
     });
 
-    process.on("exit", (code) => {
-      console.log("process error:", code);
+    process.on("exit", async (code) => {
+      console.log("Process exit code:", code);
+
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
       if (
         errorData.includes("Error Code 5") ||
         outputData.includes("Error Code 5")
       ) {
-        logError("Injection failed: Error Code 5 detected.");
+        const errorMsg = "Injection failed: Error Code 5 detected.";
+        logError(errorMsg);
         parentPort.postMessage(-5);
       } else if (errorData.includes("error") || outputData.includes("error")) {
-        logError(`Injection failed: Process exited with code ${code}`);
+        const errorMsg = `Injection failed: Process exited with code ${code}`;
+        logError(errorMsg);
         parentPort.postMessage(-1);
       } else {
         parentPort.postMessage(1);
       }
     });
+
     process.on("error", (error) => {
-      logError(`Injection process error: ${error.message}`);
+      const errorMsg = `Injection process error: ${error.message}`;
+      logError(errorMsg);
       parentPort.postMessage(-1);
     });
   } catch (error) {
-    logError(`Injection failed: ${error.message}`);
+    const errorMsg = `Injection failed: ${error.message}`;
+    logError(errorMsg);
     parentPort.postMessage(-1);
   }
 })();

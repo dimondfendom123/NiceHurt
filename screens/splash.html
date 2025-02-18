@@ -4,47 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NiceHurt Bootstrap</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: Arial, sans-serif;
-        }
-        body {
-            background-color: #121212;
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            flex-direction: column;
-        }
-        .logo {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 20px;
-        }
-        .progress-container {
-            width: 80%;
-            background: #333;
-            border-radius: 10px;
-            overflow: hidden;
-            height: 10px;
-            margin-top: 10px;
-        }
-        .progress-bar {
-            height: 100%;
-            width: 0%;
-            background: #00aaff;
-            transition: width 0.3s ease-in-out;
-        }
-        .status {
-            margin-top: 15px;
-            font-size: 14px;
-            opacity: 0.8;
-        }
-    </style>
+    <link rel="stylesheet" href="style/splash.css">
 </head>
 <body>
     <div class="logo">NiceHurt Bootstrap</div>
@@ -53,7 +13,6 @@
     </div>
     <div class="status" id="status-text">Initializing...</div>
 
-    
     <script>
     window.electron.updateStatus((data) => {
         document.getElementById('progress-bar').style.width = data.progress + "%";

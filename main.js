@@ -2,11 +2,15 @@ const { app, BrowserWindow, ipcMain } = require("electron");
 const path = require("path");
 const fs = require("fs");
 const https = require("https");
+const { exec } = require("child_process");
 const { InjectorController } = require("./InjectorController");
+
+require("./console/Controller");
 
 let mainWindow;
 let splashWindow;
 let Status;
+let isInjection = false;
 
 function createWindows() {
   splashWindow = new BrowserWindow({
@@ -16,6 +20,7 @@ function createWindows() {
     alwaysOnTop: true,
     transparent: true,
     resizable: false,
+    icon: path.join(__dirname, "screens/assets/NiceHurt-Logo.png"),
     webPreferences: {
       preload: path.join(__dirname, "screens/preloads/bootstrap.js"),
       contextIsolation: true,
@@ -26,6 +31,7 @@ function createWindows() {
   mainWindow = new BrowserWindow({
     width: 750,
     height: 600,
+    icon: path.join(__dirname, "screens/assets/NiceHurt-Logo.png"),
     show: false,
     frame: false,
     transparent: true,
@@ -140,11 +146,12 @@ ipcMain.handle("dll-method", async (event, method, arg = "") => {
 
     switch (method.toLowerCase()) {
       case "injection":
-        if (mainWindow && mainWindow.webContents) {
-          mainWindow.webContents.send("update-status", {
-            message: "waiting",
-          });
-        }
+        if (isInjection) return "Injection already started";
+          if (mainWindow && mainWindow.webContents) {
+            mainWindow.webContents.send("update-status", {
+              message: "waiting",
+            });
+          }
         Status = await InjectorController.startup();
 
         console.log("Injection status:", Status);
@@ -154,6 +161,7 @@ ipcMain.handle("dll-method", async (event, method, arg = "") => {
             mainWindow.webContents.send("update-status", {
               message: "success",
             });
+            isInjection = true;
           }
         } else if (Status === -1) {
           if (mainWindow && mainWindow.webContents) {
@@ -191,6 +199,36 @@ ipcMain.handle("dll-method", async (event, method, arg = "") => {
   }
 });
 
+async function isRobloxPlayerRunning() {
+  return new Promise((resolve, reject) => {
+    exec("tasklist", (error, stdout, stderr) => {
+      if (error) {
+        return reject(error);
+      }
+      if (stdout.toLowerCase().includes("robloxplayerbeta.exe")) {
+        resolve(true);
+      } else {
+        resolve(false);
+      }
+    });
+  });
+}
+
+async function monitorRobloxPlayer() {
+  try {
+    const running = await isRobloxPlayerRunning();
+    if (!running && isInjection) {
+      if (mainWindow && mainWindow.webContents) {
+        mainWindow.webContents.send("update-status", { message: "red" });
+        isInjection = false;
+      }
+    }
+  } catch (err) {
+    console.error("Error checking Roblox player:", err);
+  }
+}
+
+setInterval(monitorRobloxPlayer, 5000);
 
 function deleteFiles(dir) {
   ["SirHurt.new", "SirHurt V5.exe", "sirhurt.dll"].forEach((file) => {
@@ -200,6 +238,22 @@ function deleteFiles(dir) {
     }
   });
 }
+
+ipcMain.on("window-minimize", () => {
+  mainWindow.minimize();
+});
+
+ipcMain.on("window-maximize", () => {
+  if (mainWindow.isMaximized()) {
+    mainWindow.unmaximize();
+  } else {
+    mainWindow.maximize();
+  }
+});
+
+ipcMain.on("window-close", () => {
+  mainWindow.close();
+});
 
 app.whenReady().then(() => {
   createWindows();

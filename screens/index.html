@@ -3,205 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NiceHurt - Injector</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #1f1f1f;
-            color: #f4f4f4;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        header {
-            position: absolute;
-            top: 0;
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: #2b2b2b;
-            padding: 15px 20px;
-            box-shadow: 0 4px 5px rgba(26, 26, 26, 0.5);
-        }
-
-        header img {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-        }
-
-        header h1 {
-            font-size: 22px;
-            color: #fff;
-        }
-
-        .status {
-            display: flex;
-            align-items: center;
-            font-size: 16px;
-            color: #b0b0b0;
-        }
-
-        #status {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background-color: red;
-            margin-left: 5px;
-        }
-
-        .container {
-            display: flex;
-            flex-direction: row;
-            justify-content: space-between;
-            align-items: center;
-            width: 90%;
-            height: 90%;
-            background: #2e2e2e;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-        }
-
-        .script-console-container {
-            display: flex;
-            flex-direction: column;
-            width: 60%;
-            height: 100%;
-        }
-
-        .script-executor {
-            height: 60%;
-            margin-bottom: 10px;
-        }
-
-        .console-output {
-            height: 40%;
-        }
-
-        .file-manager {
-            width: 35%;
-            height: 100%;
-            background: #3a3a3a;
-            border-radius: 10px;
-            padding: 15px;
-            overflow-y: auto;
-        }
-
-        .buttons {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 15px;
-        }
-
-        button {
-            padding: 10px;
-            font-size: 14px;
-            cursor: pointer;
-            background: #444;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            width: 32%;
-            transition: background-color 0.3s;
-        }
-
-        button:hover {
-            background-color: #555;
-        }
-
-        textarea {
-            width: 100%;
-            height: 100%;
-            background-color: #121212;
-            color: #f4f4f4;
-            font-family: 'Courier New', monospace;
-            border: none;
-            padding: 10px;
-            border-radius: 5px;
-            resize: none;
-        }
-
-        .file-manager ul {
-            list-style-type: none;
-            padding: 0;
-            background-color: #2b2b2b;
-            border-radius: 5px;
-            margin-bottom: 10px;
-        }
-        
-        .file {
-            padding: 10px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .file:hover {
-            background-color: #3a3a3a;
-        }
-
-        .right-buttons {
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .right-buttons button {
-            padding: 10px;
-            font-size: 14px;
-            cursor: pointer;
-            background: #444;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            max-width: 50px;
-            max-height: 50px;
-            transition: background-color 0.3s;
-        }
-
-        .right-buttons button:hover {
-            background-color: #555;
-        }
-
-        .right-buttons button img {
-            width: 100%;
-            height: 100%;
-        }
-
-        .window-buttons button {
-            padding: 5px 10px;
-            font-size: 14px;
-            cursor: pointer;
-            background: #444;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            margin-left: 5px;
-            transition: background-color 0.3s;
-        }
-
-        .window-buttons button:hover {
-            background-color: #555;
-        }
-    </style>
+    <title>NiceHurt</title>
+    <link rel="stylesheet" href="style/index.css">
+    <script src="https://cdn.socket.io/4.1.3/socket.io.min.js"></script>
 </head>
 <body>
 
 <header>
-    <img src="https://sirhurt.net/assets/img/sirhurtlogo.png" alt="NiceHurt Logo">
-    <h1>NiceHurt - Injector</h1>
+    <img src="assets/NiceHurt-Logo.png" alt="NiceHurt Logo">
+    <h1>NiceHurt</h1>
     <div class="status">Status: <div id="status"></div></div>
     <div class="window-buttons">
+        <button id="btnSettings"><img src="assets/Settings.png" alt="•"></button>
         <button id="btnMinimize">-</button>
         <button id="btnClose">X</button>
     </div>
@@ -210,7 +23,7 @@
 <div class="container">
     <div class="script-console-container">
         <div class="script-executor">
-            <iframe id="monacoIframe" src="Monaco/index.html" width="100%" height="60%" style="border: none;"></iframe>
+            <iframe id="monacoIframe" src="Monaco/index.html" width="100%" height="80%" style="border: none;"></iframe>
             <div class="buttons">
                 <button id="btnExecute">Execute</button>
                 <button id="btnClear">Clear</button>
@@ -253,7 +66,13 @@
             }
         });
     });
-</script>
 
+    const socket = io('http://localhost:9292');
+
+    socket.on('console-update', (content) => {
+        const consoleTextArea = document.getElementById("console");
+        consoleTextArea.value += "\n" + content;
+    });
+</script>
 </body>
 </html>

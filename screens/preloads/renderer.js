@@ -16,11 +16,14 @@ function getEditorContentFromIframe() {
   }
 }
 
-window.addEventListener("DOMContentLoaded", () => {
-  document.getElementById("btnStartup")?.addEventListener("click", () => {
-    callDll("startup");
-  });
+function setEditorContentFromIframe(text) {
+  const iframe = document.getElementById("monacoIframe");
+  if (iframe) {
+    iframe.contentWindow.postMessage({ action: "setText", text: text }, "*");
+  }
+}
 
+window.addEventListener("DOMContentLoaded", () => {
   document.getElementById("btnInject")?.addEventListener("click", () => {
     callDll("injection");
   });
@@ -29,20 +32,16 @@ window.addEventListener("DOMContentLoaded", () => {
     getEditorContentFromIframe();
   });
 
-  document.getElementById("btnKillRoblox")?.addEventListener("click", () => {
-    callDll("killrobloxplayerbeta");
+  document.getElementById("btnClear")?.addEventListener("click", () => {
+    setEditorContentFromIframe("");
   });
 
-  document.getElementById("btnOpenLogs")?.addEventListener("click", () => {
-    callDll("open-logs");
+  document.getElementById("btnMinimize").addEventListener("click", () => {
+    ipcRenderer.send("window-minimize");
   });
 
-  document.getElementById("btnOpenAutoexec")?.addEventListener("click", () => {
-    callDll("autoexec");
-  });
-
-  document.getElementById("btnCleanRoblox")?.addEventListener("click", () => {
-    callDll("cleanrobloxplayerbeta");
+  document.getElementById("btnClose").addEventListener("click", () => {
+    ipcRenderer.send("window-close");
   });
 });
 

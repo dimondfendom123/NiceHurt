@@ -1,0 +1,224 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Roboto", sans-serif;
+  background-color: #1f1f1f;
+  color: #f4f4f4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  overflow: hidden;
+}
+
+header {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 20px;
+  border-bottom: 3px solid #666666;
+  user-select: none;
+  -webkit-app-region: drag;
+}
+
+header img {
+  width: 45px;
+  height: 45px;
+}
+
+header h1 {
+  font-size: 22px;
+  color: #d3d3d3;
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  margin-right: 390px;
+  color: #b0b0b0;
+}
+
+#status {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: red;
+  margin-left: 5px;
+}
+
+.container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 95%;
+  height: 85%;
+  border-radius: 4px;
+  margin-top: 50px;
+}
+
+.script-console-container {
+  display: flex;
+  flex-direction: column;
+  width: 65%;
+  height: 100%;
+}
+
+.script-executor {
+  height: 70%;
+}
+
+iframe {
+  border-radius: 3px;
+}
+
+.console-output {
+  height: 30%;
+  margin-bottom: 40px;
+}
+
+.console-output h2 {
+  font-size: 18px;
+  margin-bottom: 10px;
+  border-bottom: 3px solid #8b8b8b;
+  padding-bottom: 5px;
+}
+
+textarea {
+  width: 100%;
+  height: 100%;
+  background-color: #121212;
+  color: #f4f4f4;
+  font-family: "Courier New", monospace;
+  border: none;
+  padding: 10px;
+  border-radius: 2px;
+  resize: none;
+  scrollbar-width: thin;
+  scrollbar-color: #2b2b2b #121212;
+}
+
+.buttons {
+  border-top: 3px solid #8b8b8b;
+  border-bottom: 2px solid #2c2c2c;
+  padding-bottom: 10px;
+  padding-top: 5px;
+  display: flex;
+  margin-bottom: 50px;
+  max-height: 55px;
+  max-width: 100%;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.buttons button {
+  padding: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  background: #292929;
+  border: 1px solid #7e7e7e75;
+  color: #fff;
+  border-radius: 5px;
+  max-height: 50px;
+  height: 100%;
+  width: 100%;
+  transition: background-color 0.3s;
+}
+
+.buttons button:hover {
+  background-color: #555;
+}
+
+.right-buttons {
+  display: flex;
+  margin-left: 80px;
+  justify-content: space-between;
+  max-width: 37px;
+}
+
+.right-buttons button {
+  padding: 4px;
+}
+
+.right-buttons button img {
+  width: 100%;
+  height: 100%;
+}
+
+.file-manager {
+  width: 34%;
+  height: 100%;
+  background: #2e2e2e;
+  border-radius: 3px;
+  padding: 5px;
+  overflow-y: auto;
+}
+
+.file-manager ul {
+  list-style-type: none;
+  justify-content: space-between;
+  border-radius: 5px;
+}
+
+.file {
+  padding: 8px;
+  background-color: #3131318a;
+  font-size: 16px;
+  color: #fff;
+  border-radius: 3px;
+  border: solid 1px#7e7e7e75;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin: 5px;
+  -webkit-transition:;
+  -moz-transition:;
+  -ms-transition:;
+  -o-transition:;
+}
+
+.file:hover {
+  background-color: #3a3a3a;
+}
+
+.window-buttons {
+  padding: 5px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 5px;
+  -webkit-app-region: no-drag;
+}
+
+.window-buttons button {
+  padding: 5px 10px;
+  font-size: 14px;
+  cursor: pointer;
+  background: #33333300;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.window-buttons button:hover {
+  background-color: #555;
+}
+
+.window-buttons button img {
+  max-width: 10px;
+  max-height: 10px;
+}
+
+#btnClose:hover {
+  background-color: #ff0000;
+}

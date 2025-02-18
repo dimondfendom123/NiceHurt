@@ -13,7 +13,11 @@
   "author": "",
   "license": "ISC",
   "description": "",
-  "dependencies": {},
+  "dependencies": {
+    "axios": "^1.7.9",
+    "express": "^4.21.2",
+    "socket.io": "^4.8.1"
+  },
   "devDependencies": {
     "electron": "^34.2.0",
     "electron-rebuild": "^3.2.9"
@@ -30,7 +34,8 @@
       "injectorWorker.js",
       "screens",
       "node_modules/",
-      "package.json"
+      "package.json",
+      "console/"
     ],
     "win": {
       "target": [
