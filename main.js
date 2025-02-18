@@ -168,7 +168,7 @@ function downloadFileWithProgress(url, dest, onProgress, callback) {
     });
 }
 
-const scriptDir = path.join(process.env.APPDATA, "Nicehurt", "script");
+const scriptDir = path.join(process.env.APPDATA, "Nicehurt", "scripts");
 
 if (!fs.existsSync(scriptDir)) {
   fs.mkdirSync(scriptDir, { recursive: true });
