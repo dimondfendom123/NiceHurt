@@ -8,8 +8,6 @@ const { InjectorController } = require("./InjectorController");
 
 require("./console/Controller");
 
-autoUpdater.autoUpdater = true;
-
 let mainWindow;
 let splashWindow;
 let Status;
@@ -48,17 +46,31 @@ function createWindows() {
   });
   mainWindow.loadFile("screens/index.html");
 
+  autoUpdater.checkForUpdatesAndNotify();
+  autoUpdater.on("checking-for-update", () => {
+    updateSplash(20, "Checking for updates...");
+  });
+  autoUpdater.on("update-available", () => {
+    updateSplash(40, "Update available. Downloading...");
+  });
+  autoUpdater.on("update-not-available", () => {
+    updateSplash(100, "No updates available.");
+    setTimeout(() => {
+      splashWindow.close();
+      mainWindow.show();
+    }, 2000);
+  });
+  autoUpdater.on("error", (err) => {
+    updateSplash(100, "Update failed! Check your connection.");
+    console.error("Error:", err.message);
+    setTimeout(() => splashWindow.close(), 3000);
+  });
+  autoUpdater.on("update-downloaded", () => {
+    updateSplash(80, "Update downloaded. Installing...");
+    autoUpdater.quitAndInstall();
+  });
   startBootstrapProcess();
 }
-
-autoUpdater.on("update-available", () => {
-  console.log("Update available");
-  autoUpdater.quitAndInstall();
-});
-
-autoUpdater.on("update-downloaded", () => {
-  console.log("Update downloaded");
-});
 
 function startBootstrapProcess() {
   const sirHurtPath = process.cwd();
