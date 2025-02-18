@@ -1,5 +1,5 @@
 # NiceHurt
-NiceHurt is a project designed to enhance the Roblox gaming experience by providing a custom script executor and console output viewer. This project leverages Electron for the desktop application, Node.js for backend services, and Lua for Roblox script execution. Powered by SirHurt. Note: This is only a UI for SirHurt.
+NiceHurt is a Custom UI for SirHurt, Build in Electron and Node.js. It allows you to execute custom Lua scripts within Roblox, view real-time console output, and manage scripts from a built-in file manager.
 
 ## Features
 

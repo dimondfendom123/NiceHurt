@@ -14,8 +14,6 @@ let Status;
 let isInjection = false;
 
 function createWindows() {
-  autoUpdater.CheckForUpdates();
-
   splashWindow = new BrowserWindow({
     width: 400,
     height: 300,
@@ -47,12 +45,15 @@ function createWindows() {
   mainWindow.loadFile("screens/index.html");
 
   autoUpdater.checkForUpdatesAndNotify();
+
   autoUpdater.on("checking-for-update", () => {
     updateSplash(20, "Checking for updates...");
   });
+
   autoUpdater.on("update-available", () => {
     updateSplash(40, "Update available. Downloading...");
   });
+
   autoUpdater.on("update-not-available", () => {
     updateSplash(100, "No updates available.");
     setTimeout(() => {
@@ -60,15 +61,18 @@ function createWindows() {
       mainWindow.show();
     }, 2000);
   });
+
   autoUpdater.on("error", (err) => {
     updateSplash(100, "Update failed! Check your connection.");
     console.error("Error:", err.message);
     setTimeout(() => splashWindow.close(), 3000);
   });
+
   autoUpdater.on("update-downloaded", () => {
     updateSplash(80, "Update downloaded. Installing...");
     autoUpdater.quitAndInstall();
   });
+
   startBootstrapProcess();
 }
 
