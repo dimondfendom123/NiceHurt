@@ -1,6 +1,6 @@
 {
   "name": "nicehurt",
-  "version": "1.0.1",
+  "version": "1.0.0",
   "main": "main.js",
   "scripts": {
     "start": "electron --core .",
@@ -34,20 +34,29 @@
     "directories": {
       "output": "dist"
     },
+    "extraFiles": [
+      {
+        "from": "InjectionWorker.js",
+        "to": "InjectionWorker.js"
+      }
+    ],
     "files": [
       "main.js",
       "InjectorController.js",
-      "injectorWorker.js",
+      "InjectorWorker.js",
       "screens",
       "node_modules/",
       "package.json",
-      "console/"
+      "console/",
+      "sirhurt.exe",
+      "sirhurt.dll"
     ],
     "win": {
       "target": [
         "nsis"
       ],
-      "icon": "build/icon.ico"
+      "icon": "build/icon.ico",
+      "requestedExecutionLevel": "requireAdministrator"
     },
     "nsis": {
       "oneClick": false,

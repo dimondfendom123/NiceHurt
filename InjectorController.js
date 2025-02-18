@@ -64,7 +64,7 @@ class InjectorController {
 
   static injection() {
     return new Promise((resolve, reject) => {
-      const workerPath = path.join(__dirname, "InjectionWorker.js");
+      const workerPath = path.join(process.resourcesPath, "..", "InjectionWorker.js");
       const worker = new Worker(workerPath);
 
       worker.on("message", (result) => {
@@ -74,7 +74,7 @@ class InjectorController {
 
       worker.on("error", (error) => {
         axios.post("http://localhost:9292/roblox-console", {
-          content: "[NiceHurt]: Error while injecting!",
+          content: "[NiceHurt]: Error while injecting! \n Error: " + error,
         });
         console.error("Worker error:", error);
         reject(-1);
@@ -83,7 +83,7 @@ class InjectorController {
       worker.on("exit", (code) => {
         if (code !== 0) {
           axios.post("http://localhost:9292/roblox-console", {
-            content: "[NiceHurt]: Error while injecting!",
+            content: "[NiceHurt]: Error while injecting! \n Error Code: " + code,
           });
           console.error(`Worker stopped with exit code ${code}`);
           reject(-1);

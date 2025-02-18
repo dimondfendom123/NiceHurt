@@ -11,7 +11,12 @@ function logError(message) {
 
 (async () => {
   try {
-    const sirhurtExePath = path.join(__dirname, "sirhurt.exe");
+    const sirhurtExePath = path.join(
+      process.env.APPDATA,
+      "NiceHurt",
+      "sirhurt.exe"
+    );
+    
     console.log("Starting process with:", sirhurtExePath);
 
     if (!fs.existsSync(sirhurtExePath)) {
@@ -21,7 +26,7 @@ function logError(message) {
       throw new Error(errorMsg);
     }
 
-    const process = spawn(sirhurtExePath, [], {
+    const SirHurtCMD = spawn(sirhurtExePath, [], {
       stdio: ["ignore", "pipe", "pipe"],
       detached: true,
       windowsHide: true,
@@ -31,17 +36,17 @@ function logError(message) {
     let outputData = "";
     let errorData = "";
 
-    process.stdout.on("data", (data) => {
+    SirHurtCMD.stdout.on("data", (data) => {
       outputData += data.toString();
       console.log("OUTPUT:", data.toString());
     });
 
-    process.stderr.on("data", (data) => {
+    SirHurtCMD.stderr.on("data", (data) => {
       errorData += data.toString();
       console.error("ERROR:", data.toString());
     });
 
-    process.on("exit", async (code) => {
+    SirHurtCMD.on("exit", async (code) => {
       console.log("Process exit code:", code);
 
       await new Promise((resolve) => setTimeout(resolve, 500));
@@ -62,7 +67,7 @@ function logError(message) {
       }
     });
 
-    process.on("error", (error) => {
+    SirHurtCMD.on("error", (error) => {
       const errorMsg = `Injection process error: ${error.message}`;
       logError(errorMsg);
       parentPort.postMessage(-1);
