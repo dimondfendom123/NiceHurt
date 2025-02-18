@@ -56,4 +56,4 @@ Contributions are welcome! Please fork the repository and submit a pull request.
 - **Settings**: Adding a settings page for customizing the application.
 - **File-Manager**: ~~Add The Logic for the file manager.~~
 - **Buttons**: ~~Add the logic for Open and Save buttons.~~
-- **Auto-Updater**: Add an auto-updater for the application.
+- **Auto-Updater**: ~~Add an auto-updater for the application.~~

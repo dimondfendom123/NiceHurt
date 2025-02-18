@@ -1,13 +1,14 @@
-const { app, BrowserWindow, ipcMain } = require("electron");
+const { app, BrowserWindow, ipcMain, dialog } = require("electron");
 const path = require("path");
 const fs = require("fs");
 const https = require("https");
-const { exec } = require("child_process");
-//const { autoUpdater } = require("electron-updater");
+const { exec, spawn } = require("child_process");
 const { InjectorController } = require("./InjectorController");
 const axios = require("axios");
 
 require("./console/Controller");
+
+const API_URL = `https://api.github.com/repos/nici002018/NiceHurt/releases/latest`;
 
 let mainWindow;
 let splashWindow;
@@ -19,7 +20,7 @@ function createWindows() {
     width: 400,
     height: 300,
     frame: false,
-    alwaysOnTop: true,
+    alwaysOnTop: false,
     transparent: true,
     resizable: false,
     icon: path.join(__dirname, "screens/assets/NiceHurt-Logo.png"),
@@ -45,40 +46,66 @@ function createWindows() {
   });
   mainWindow.loadFile("screens/index.html");
 
-  /*  Removed because it makes errors and the injection doesn't work
-  autoUpdater.checkForUpdatesAndNotify();
-
-  autoUpdater.on("checking-for-update", () => {
-    updateSplash(20, "Checking for updates...");
-  });
-
-  autoUpdater.on("update-available", () => {
-    updateSplash(40, "Update available. Downloading...");
-  });
-
-  autoUpdater.on("update-not-available", () => {
-    updateSplash(100, "No updates available.");
-    setTimeout(() => {
-      splashWindow.close();
-      mainWindow.show();
-    }, 2000);
-  });
-
-  autoUpdater.on("error", (err) => {
-    updateSplash(100, "Update failed! Check your connection.");
-    console.error("Error:", err.message);
-    setTimeout(() => splashWindow.close(), 3000);
-  });
-
-  autoUpdater.on("update-downloaded", () => {
-    updateSplash(80, "Update downloaded. Installing...");
-    autoUpdater.quitAndInstall();
-  });
-*/
   startBootstrapProcess();
 }
 
-function startBootstrapProcess() {
+async function downloadAndInstall(url) {
+  try {
+    const fetch = (await import("node-fetch")).default;
+    updateSplash(20, "Downloading update...");
+    const response = await fetch(url);
+    if (!response.ok) throw new Error("Download error");
+
+    const filePath = path.join(app.getPath("temp"), path.basename(url));
+    const fileStream = fs.createWriteStream(filePath);
+
+    response.body.pipe(fileStream);
+
+    fileStream.on("finish", () => {
+      fileStream.close(() => {
+        updateSplash(80, "Installing update...");
+
+        const installer = spawn(filePath, [], {
+          detached: true,
+          stdio: "ignore",
+        });
+
+        installer.unref();
+        app.quit();
+      });
+    });
+  } catch (err) {
+    console.error("Download error:", err);
+    updateSplash(100, "Update download failed.");
+  }
+}
+
+
+async function startBootstrapProcess() {
+  try {
+    const fetch = (await import("node-fetch")).default;
+    const response = await fetch(API_URL);
+    if (response.ok) {
+      const release = await response.json();
+      const latestVersion = release.tag_name.replace(/^v/, "");
+      const currentVersion = app.getVersion();
+
+      if (latestVersion > currentVersion) {
+        const asset = release.assets.find(
+          (a) => a.name.endsWith(".exe") || a.name.endsWith(".dmg")
+        );
+        if (asset) {
+          await downloadAndInstall(asset.browser_download_url);
+          return;
+        }
+      }
+    } else {
+      console.error("Error checking for update:", response.statusText);
+    }
+  } catch (err) {
+    console.error("Auto-update error during bootstrap:", err);
+  }
+
   const sirHurtPath = path.join(process.env.APPDATA, "NiceHurt");
   updateSplash(0, "Cleaning up old files...");
 
