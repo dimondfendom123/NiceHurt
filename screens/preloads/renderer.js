@@ -1,5 +1,7 @@
 const { contextBridge, ipcRenderer } = require("electron");
 
+let isSaveOperation = false;
+
 async function callDll(method, arg = "") {
   try {
     const response = await ipcRenderer.invoke("dll-method", method, arg);
@@ -36,6 +38,15 @@ window.addEventListener("DOMContentLoaded", () => {
     setEditorContentFromIframe("");
   });
 
+  document.getElementById("btnOpen")?.addEventListener("click", async () => {
+    const fileContent = await ipcRenderer.invoke("dll-method", "open-lua");
+    setEditorContentFromIframe(fileContent);
+  });
+  document.getElementById("btnSave")?.addEventListener("click", () => {
+    isSaveOperation = true;
+    getEditorContentFromIframe();
+  });
+
   document.getElementById("btnMinimize").addEventListener("click", () => {
     ipcRenderer.send("window-minimize");
   });
@@ -48,9 +59,12 @@ window.addEventListener("DOMContentLoaded", () => {
 window.addEventListener("message", (event) => {
   if (event.data.action === "editorContent") {
     const editorContent = event.data.content;
-    console.log("Editor Content: ", editorContent);
-
-    callDll("execution", editorContent);
+    if (isSaveOperation) {
+      callDll("save-lua", editorContent);
+      isSaveOperation = false;
+    } else {
+      callDll("execution", editorContent);
+    }
   }
 });
 

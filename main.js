@@ -175,12 +175,12 @@ ipcMain.handle("dll-method", async (event, method, arg = "") => {
 
     switch (method.toLowerCase()) {
       case "injection":
-        if (isInjection) return "Injection already started";
-          if (mainWindow && mainWindow.webContents) {
-            mainWindow.webContents.send("update-status", {
-              message: "waiting",
-            });
-          }
+        if (isInjection) return "Injection already Injected";
+        if (mainWindow && mainWindow.webContents) {
+          mainWindow.webContents.send("update-status", {
+            message: "waiting",
+          });
+        }
         Status = await InjectorController.startup();
 
         console.log("Injection status:", Status);
@@ -219,6 +219,40 @@ ipcMain.handle("dll-method", async (event, method, arg = "") => {
         return InjectorController.killRobloxPlayerBeta();
       case "cleanrobloxplayerbeta":
         return InjectorController.cleanRobloxPlayerBeta();
+      case "save-lua": {
+        const { dialog } = require("electron");
+        const { canceled, filePath: savePath } = await dialog.showSaveDialog(
+          mainWindow,
+          {
+            title: "Save Lua Script",
+            defaultPath: "script.lua",
+            filters: [{ name: "Lua Files", extensions: ["lua"] }],
+          }
+        );
+        if (canceled) {
+          return "Save canceled";
+        }
+        fs.writeFileSync(savePath, arg);
+        return "File saved";
+      }
+      case "open-lua": {
+        const { dialog } = require("electron");
+        const { canceled, filePaths } = await dialog.showOpenDialog(
+          mainWindow,
+          {
+            title: "Open Script",
+            filters: [
+              { name: "Script Files", extensions: ["txt", "lua", "luau"] },
+            ],
+            properties: ["openFile"],
+          }
+        );
+        if (canceled || filePaths.length === 0) {
+          return "";
+        }
+        const fileContent = fs.readFileSync(filePaths[0], "utf8");
+        return fileContent;
+      }
       default:
         return `Invalid method: ${method}`;
     }
@@ -283,6 +317,9 @@ ipcMain.on("window-maximize", () => {
 ipcMain.on("window-close", () => {
   mainWindow.close();
 });
+
+// Whitelist NiceHurt folder for Windows Defender
+// This is required to prevent the DLL and EXE from being removed
 
 const whitelistCommand = `powershell -Command "Add-MpPreference -ExclusionPath '${path.join(process.env.APPDATA, "NiceHurt")}'"`;
 

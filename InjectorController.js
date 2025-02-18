@@ -74,7 +74,7 @@ class InjectorController {
 
       worker.on("error", (error) => {
         axios.post("http://localhost:9292/roblox-console", {
-          content: "[NiceHurt]: Error while injecting! \n Error: " + error,
+          content: "[NiceHurt]: Error while injecting! \n" + error,
         });
         console.error("Worker error:", error);
         reject(-1);
@@ -175,7 +175,7 @@ class InjectorController {
 
 class KsfService {
   static ksfMappings = {
-    "Test1()": 'print("GNHUB TEST")',
+    "Test1()": 'print("NICEHURT TEST")',
   };
 
   static ksfConverter(ksf) {
