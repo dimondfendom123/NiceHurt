@@ -3,9 +3,12 @@ const path = require("path");
 const fs = require("fs");
 const https = require("https");
 const { exec } = require("child_process");
+const { autoUpdater } = require("electron-updater");
 const { InjectorController } = require("./InjectorController");
 
 require("./console/Controller");
+
+autoUpdater.autoUpdater = true;
 
 let mainWindow;
 let splashWindow;
@@ -13,6 +16,8 @@ let Status;
 let isInjection = false;
 
 function createWindows() {
+  autoUpdater.CheckForUpdates();
+
   splashWindow = new BrowserWindow({
     width: 400,
     height: 300,
@@ -45,6 +50,15 @@ function createWindows() {
 
   startBootstrapProcess();
 }
+
+autoUpdater.on("update-available", () => {
+  console.log("Update available");
+  autoUpdater.quitAndInstall();
+});
+
+autoUpdater.on("update-downloaded", () => {
+  console.log("Update downloaded");
+});
 
 function startBootstrapProcess() {
   const sirHurtPath = process.cwd();
