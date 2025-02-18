@@ -5,6 +5,7 @@ const https = require("https");
 const { exec } = require("child_process");
 //const { autoUpdater } = require("electron-updater");
 const { InjectorController } = require("./InjectorController");
+const axios = require("axios");
 
 require("./console/Controller");
 
@@ -44,7 +45,7 @@ function createWindows() {
   });
   mainWindow.loadFile("screens/index.html");
 
-/*  Removed because it makes errors and the injection doesn't work
+  /*  Removed because it makes errors and the injection doesn't work
   autoUpdater.checkForUpdatesAndNotify();
 
   autoUpdater.on("checking-for-update", () => {
@@ -167,6 +168,70 @@ function downloadFileWithProgress(url, dest, onProgress, callback) {
     });
 }
 
+const scriptDir = path.join(process.env.APPDATA, "Nicehurt", "script");
+
+if (!fs.existsSync(scriptDir)) {
+  fs.mkdirSync(scriptDir, { recursive: true });
+}
+
+fs.watch(scriptDir, (eventType, filename) => {
+  if (filename) {
+    const ext = path.extname(filename).toLowerCase();
+    if ([".txt", ".lua", ".luau"].includes(ext)) {
+      mainWindow.webContents.send("update-scripts");
+    }
+  }
+});
+
+ipcMain.handle("list-scripts", async () => {
+  try {
+    const files = fs.readdirSync(scriptDir);
+    return files.filter((file) => {
+      const ext = require("path").extname(file).toLowerCase();
+      return [".txt", ".lua", ".luau"].includes(ext);
+    });
+  } catch (error) {
+    console.error("Error reading script folder:", error);
+    return [];
+  }
+});
+
+ipcMain.handle("load-script", async (event, fileName) => {
+  try {
+    const filePath = require("path").join(scriptDir, fileName);
+    if (fs.existsSync(filePath)) {
+      axios.post("http://localhost:9292/roblox-console", {
+        content: `[NiceHurt]: ${fileName} loaded`,
+      });
+      return fs.readFileSync(filePath, "utf8");
+    }
+    return "";
+  } catch (error) {
+    console.error("Error loading script:", error);
+    return "";
+  }
+});
+
+ipcMain.handle("delete-script", async (event, fileName) => {
+  const filePath = path.join(scriptDir, fileName);
+  try {
+    fs.unlinkSync(filePath);
+    axios.post("http://localhost:9292/roblox-console", {
+      content: `[NiceHurt]: ${fileName} deleted!`,
+    });
+    return "File deleted successfully";
+  } catch (error) {
+    console.error("Error deleting script:", error);
+    return "Error deleting file: " + error.message;
+  }
+});
+
+ipcMain.handle("open-scripts-folder", async () => {
+  const { shell } = require("electron");
+  await shell.openPath(scriptDir);
+  return "Opened scripts folder";
+});
+
 ipcMain.handle("dll-method", async (event, method, arg = "") => {
   try {
     if (!method) {
@@ -233,6 +298,9 @@ ipcMain.handle("dll-method", async (event, method, arg = "") => {
           return "Save canceled";
         }
         fs.writeFileSync(savePath, arg);
+        axios.post("http://localhost:9292/roblox-console", {
+          content: `[NiceHurt]: ${savePath} saved!`,
+        });
         return "File saved";
       }
       case "open-lua": {
@@ -251,6 +319,9 @@ ipcMain.handle("dll-method", async (event, method, arg = "") => {
           return "";
         }
         const fileContent = fs.readFileSync(filePaths[0], "utf8");
+        axios.post("http://localhost:9292/roblox-console", {
+          content: `[NiceHurt]: ${filePaths[0]} opened!`,
+        });
         return fileContent;
       }
       default:
@@ -284,6 +355,9 @@ async function monitorRobloxPlayer() {
       if (mainWindow && mainWindow.webContents) {
         mainWindow.webContents.send("update-status", { message: "red" });
         isInjection = false;
+        axios.post("http://localhost:9292/roblox-console", {
+          content: "[NiceHurt]: Roblox player closed!",
+        });
       }
     }
   } catch (err) {
@@ -321,7 +395,10 @@ ipcMain.on("window-close", () => {
 // Whitelist NiceHurt folder for Windows Defender
 // This is required to prevent the DLL and EXE from being removed
 
-const whitelistCommand = `powershell -Command "Add-MpPreference -ExclusionPath '${path.join(process.env.APPDATA, "NiceHurt")}'"`;
+const whitelistCommand = `powershell -Command "Add-MpPreference -ExclusionPath '${path.join(
+  process.env.APPDATA,
+  "NiceHurt"
+)}'"`;
 
 exec(whitelistCommand, (error, stdout, stderr) => {
   if (error) {

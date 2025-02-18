@@ -88,9 +88,9 @@ iframe {
 
 .console-output h2 {
   font-size: 18px;
-  margin-bottom: 10px;
+  margin-bottom: 7px;
   border-bottom: 3px solid #8b8b8b;
-  padding-bottom: 5px;
+  padding-bottom: 8px;
 }
 
 textarea {
@@ -155,18 +155,44 @@ textarea {
 }
 
 .file-manager {
+  display: flex;
+  flex-direction: column;
   width: 34%;
   height: 100%;
-  background: #2e2e2e;
+  background: #2e2e2e88;
   border-radius: 3px;
   padding: 5px;
   overflow-y: auto;
 }
 
-.file-manager ul {
-  list-style-type: none;
-  justify-content: space-between;
+#fileList {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #1b1b1b88;
+  border-radius: 3px;
+  padding: 5px;
+  margin-bottom: 5px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #1b1b1b #12121200;
+}
+
+#btnOpenFolder {
+  margin-top: auto;
+  padding: 5px 10px;
+  font-size: 14px;
+  cursor: pointer;
+  background: #33333300;
+  color: #fff;
+  border: 1px solid #7e7e7e75;
   border-radius: 5px;
+  width: 100%;
+  transition: background-color 0.3s;
+}
+
+#btnOpenFolder:hover {
+  background-color: #555;
 }
 
 .file {
@@ -179,14 +205,25 @@ textarea {
   cursor: pointer;
   transition: background-color 0.3s;
   margin: 5px;
-  -webkit-transition:;
-  -moz-transition:;
-  -ms-transition:;
-  -o-transition:;
 }
 
 .file:hover {
   background-color: #3a3a3a;
+}
+
+.file img {
+  background-color: #31313100;
+}
+
+.file button {
+  padding: 5px;
+  font-size: 14px;
+  cursor: pointer;
+  background: #33333300;
+  color: #fff;
+  border: 1px solid #7e7e7e75;
+  border-radius: 5px;
+  transition: background-color 0.3s;
 }
 
 .window-buttons {

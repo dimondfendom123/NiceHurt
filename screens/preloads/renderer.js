@@ -78,4 +78,9 @@ function updateStatusMessage(message) {
 contextBridge.exposeInMainWorld("electron", {
   updateStatus: (callback) =>
     ipcRenderer.on("update-status", (event, data) => callback(data)),
+  getScriptList: () => ipcRenderer.invoke("list-scripts"),
+  loadScript: (fileName) => ipcRenderer.invoke("load-script", fileName),
+  deleteScript: (fileName) => ipcRenderer.invoke("delete-script", fileName),
+  openScriptsFolder: () => ipcRenderer.invoke("open-scripts-folder"),
+  onScriptsUpdated: (callback) => ipcRenderer.on("update-scripts", callback),
 });
