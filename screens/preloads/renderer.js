@@ -83,4 +83,6 @@ contextBridge.exposeInMainWorld("electron", {
   deleteScript: (fileName) => ipcRenderer.invoke("delete-script", fileName),
   openScriptsFolder: () => ipcRenderer.invoke("open-scripts-folder"),
   onScriptsUpdated: (callback) => ipcRenderer.on("update-scripts", callback),
+  getSettings: () => ipcRenderer.invoke("load-settings"),
+  saveSettings: (settings) => ipcRenderer.invoke("save-settings", settings),
 });

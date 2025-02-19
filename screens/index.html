@@ -62,8 +62,35 @@
       </div>
     </div>
 
+    <div class="settings-container">
+      <div class="settings">
+        <h2>Settings</h2>
+        <button id="btnCloseSettings">X</button>
+
+        <div class="settings-sections">
+          <div class="theme-settings">
+            <h3 class="settings-headers">Theme</h3>
+            Work in Progress!
+          </div>
+
+          <div class="misc-settings">
+            <h3 class="settings-headers">Miscellaneous</h3>
+            <label for="alwaysOnTop" class="settings-toggle">
+              Always On Top
+              <input type="checkbox" id="alwaysOnTop" />
+            </label>
+
+            <label for="autoInject" class="settings-toggle">
+              Auto Inject
+              <input type="checkbox" id="autoInject" />
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <script>
-      document.addEventListener("DOMContentLoaded", () => {
+      document.addEventListener("DOMContentLoaded", async () => {
         window.electron.updateStatus((data) => {
           const message = data.message;
           const statusElement = document.getElementById("status");
@@ -77,67 +104,112 @@
             statusElement.style.backgroundColor = "red";
           }
         });
-      });
 
-      document.getElementById("btnOpenFolder").addEventListener("click", () => {
-        window.electron.openScriptsFolder();
-      });
-
-      async function updateFileList() {
-        const files = await window.electron.getScriptList();
-        const fileListElement = document.getElementById("fileList");
-        fileListElement.innerHTML = "";
-        files.forEach((file) => {
-          const fileDiv = document.createElement("div");
-          fileDiv.classList.add("file");
-          fileDiv.style.display = "flex";
-          fileDiv.style.alignItems = "center";
-          fileDiv.style.justifyContent = "space-between";
-          fileDiv.style.padding = "4px";
-
-          const fileNameSpan = document.createElement("span");
-          fileNameSpan.textContent = file;
-          fileNameSpan.style.cursor = "pointer";
-          fileNameSpan.addEventListener("click", async () => {
-            const content = await window.electron.loadScript(file);
-            const iframe = document.getElementById("monacoIframe");
-            if (iframe && iframe.contentWindow) {
-              iframe.contentWindow.postMessage(
-                { action: "setText", text: content },
-                "*"
-              );
-            }
-          });
-          fileDiv.appendChild(fileNameSpan);
-
-          const deleteButton = document.createElement("button");
-          deleteButton.classList.add("delete-button");
-          deleteButton.innerHTML = `<img src="assets/Delete.png" alt="Delete" width="16" height="16" />`;
-          deleteButton.style.cursor = "pointer";
-          deleteButton.addEventListener("click", async (event) => {
-            event.stopPropagation();
-            const confirmed = confirm(`Do you really want to delete ${file}?`);
-            if (confirmed) {
-              const result = await window.electron.deleteScript(file);
-              console.log(result);
-              updateFileList();
-            }
-          });
-          fileDiv.appendChild(deleteButton);
-
-          fileListElement.appendChild(fileDiv);
+        const btnSettings = document.getElementById("btnSettings");
+        const settingsContainer = document.querySelector(".settings-container");
+        btnSettings.addEventListener("click", () => {
+          settingsContainer.style.display = "flex";
         });
-      }
-      updateFileList();
 
-      window.electron.onScriptsUpdated(() => {
+        const btnCloseSettings = document.getElementById("btnCloseSettings");
+        if (btnCloseSettings) {
+          btnCloseSettings.addEventListener("click", () => {
+            settingsContainer.style.display = "none";
+          });
+        }
+
+        settingsContainer.addEventListener("click", (event) => {
+          if (event.target === settingsContainer) {
+            settingsContainer.style.display = "none";
+          }
+        });
+
+        // Einstellungen laden und anwenden
+        async function loadAndApplySettings() {
+          const settings = await window.electron.getSettings();
+          document.getElementById("alwaysOnTop").checked = settings.alwaysOnTop;
+          document.getElementById("autoInject").checked = settings.autoInject;
+        }
+        loadAndApplySettings();
+
+        // Einstellungen speichern, wenn sich was ändert
+        function saveSettings() {
+          const alwaysOnTop = document.getElementById("alwaysOnTop").checked;
+          const autoInject = document.getElementById("autoInject").checked;
+          window.electron.saveSettings({ alwaysOnTop, autoInject });
+        }
+        document
+          .getElementById("alwaysOnTop")
+          .addEventListener("change", saveSettings);
+        document
+          .getElementById("autoInject")
+          .addEventListener("change", saveSettings);
+
+        // ...existing code for file manager and socket...
+        document
+          .getElementById("btnOpenFolder")
+          .addEventListener("click", () => {
+            window.electron.openScriptsFolder();
+          });
+
+        async function updateFileList() {
+          const files = await window.electron.getScriptList();
+          const fileListElement = document.getElementById("fileList");
+          fileListElement.innerHTML = "";
+          files.forEach((file) => {
+            const fileDiv = document.createElement("div");
+            fileDiv.classList.add("file");
+            fileDiv.style.display = "flex";
+            fileDiv.style.alignItems = "center";
+            fileDiv.style.justifyContent = "space-between";
+            fileDiv.style.padding = "4px";
+
+            const fileNameSpan = document.createElement("span");
+            fileNameSpan.textContent = file;
+            fileNameSpan.style.cursor = "pointer";
+            fileNameSpan.addEventListener("click", async () => {
+              const content = await window.electron.loadScript(file);
+              const iframe = document.getElementById("monacoIframe");
+              if (iframe && iframe.contentWindow) {
+                iframe.contentWindow.postMessage(
+                  { action: "setText", text: content },
+                  "*"
+                );
+              }
+            });
+            fileDiv.appendChild(fileNameSpan);
+
+            const deleteButton = document.createElement("button");
+            deleteButton.classList.add("delete-button");
+            deleteButton.innerHTML = `<img src="assets/Delete.png" alt="Delete" width="16" height="16" />`;
+            deleteButton.style.cursor = "pointer";
+            deleteButton.addEventListener("click", async (event) => {
+              event.stopPropagation();
+              const confirmed = confirm(
+                `Do you really want to delete ${file}?`
+              );
+              if (confirmed) {
+                const result = await window.electron.deleteScript(file);
+                console.log(result);
+                updateFileList();
+              }
+            });
+            fileDiv.appendChild(deleteButton);
+
+            fileListElement.appendChild(fileDiv);
+          });
+        }
         updateFileList();
-      });
-      const socket = io("http://localhost:9292");
 
-      socket.on("console-update", (content) => {
-        const consoleTextArea = document.getElementById("console");
-        consoleTextArea.value += "\n" + content;
+        window.electron.onScriptsUpdated(() => {
+          updateFileList();
+        });
+        const socket = io("http://localhost:9292");
+
+        socket.on("console-update", (content) => {
+          const consoleTextArea = document.getElementById("console");
+          consoleTextArea.value += "\n" + content;
+        });
       });
     </script>
   </body>

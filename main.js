@@ -10,11 +10,27 @@ require("./console/Controller");
 
 const API_URL = `https://api.github.com/repos/nici002018/NiceHurt/releases/latest`;
 
+const SETTINGS_PATH = path.join(app.getPath("userData"), "settings.json");
 let mainWindow;
 let splashWindow;
 let Status;
 let isInjection = false;
+let autoIsInjection = false;
+let autoInject = false;
 
+function loadSettings() {
+  if (!fs.existsSync(SETTINGS_PATH)) {
+    saveSettings({ alwaysOnTop: false, autoInject: false });
+  }
+  return JSON.parse(fs.readFileSync(SETTINGS_PATH, "utf-8"));
+}
+
+function saveSettings(settings) {
+  fs.writeFileSync(SETTINGS_PATH, JSON.stringify(settings, null, 2));
+}
+
+const settings = loadSettings();
+autoInject = settings.autoInject;
 function createWindows() {
   splashWindow = new BrowserWindow({
     width: 400,
@@ -45,6 +61,9 @@ function createWindows() {
     },
   });
   mainWindow.loadFile("screens/index.html");
+
+  mainWindow.setAlwaysOnTop(settings.alwaysOnTop);
+  splashWindow.setAlwaysOnTop(settings.alwaysOnTop);
 
   startBootstrapProcess();
 }
@@ -79,7 +98,6 @@ async function downloadAndInstall(url) {
     updateSplash(100, "Update download failed.");
   }
 }
-
 
 async function startBootstrapProcess() {
   try {
@@ -259,6 +277,18 @@ ipcMain.handle("open-scripts-folder", async () => {
   return "Opened scripts folder";
 });
 
+ipcMain.handle("load-settings", async () => {
+  return loadSettings();
+});
+
+ipcMain.handle("save-settings", async (event, newSettings) => {
+  saveSettings(newSettings);
+  mainWindow.setAlwaysOnTop(newSettings.alwaysOnTop);
+  autoInject = newSettings.autoInject;
+  return true;
+});
+
+
 ipcMain.handle("dll-method", async (event, method, arg = "") => {
   try {
     if (!method) {
@@ -267,7 +297,12 @@ ipcMain.handle("dll-method", async (event, method, arg = "") => {
 
     switch (method.toLowerCase()) {
       case "injection":
-        if (isInjection) return "Injection already Injected";
+        if (isInjection) {
+          axios.post("http://localhost:9292/roblox-console", {
+            content: `[NiceHurt]: Is already injected!`,
+          });
+          return "Injection already started";
+        }
         if (mainWindow && mainWindow.webContents) {
           mainWindow.webContents.send("update-status", {
             message: "waiting",
@@ -301,6 +336,9 @@ ipcMain.handle("dll-method", async (event, method, arg = "") => {
         return "Autoexec executed";
       case "execution":
         console.log("Executing script:", arg);
+        axios.post("http://localhost:9292/roblox-console", {
+          content: `[NiceHurt]: Executing script!`,
+        });
         InjectorController.execution(arg);
         return "script executed";
       case "open-logs":
@@ -378,13 +416,48 @@ async function isRobloxPlayerRunning() {
 async function monitorRobloxPlayer() {
   try {
     const running = await isRobloxPlayerRunning();
-    if (!running && isInjection) {
-      if (mainWindow && mainWindow.webContents) {
+    if (!running) {
+      if (mainWindow && mainWindow.webContents && isInjection) {
         mainWindow.webContents.send("update-status", { message: "red" });
         isInjection = false;
         axios.post("http://localhost:9292/roblox-console", {
           content: "[NiceHurt]: Roblox player closed!",
         });
+      }
+    } else if (autoInject && !isInjection && !autoIsInjection) {
+      if (isInjection) {
+        axios.post("http://localhost:9292/roblox-console", {
+          content: `[NiceHurt]: Is already injected!`,
+        });
+        return "Injection already started";
+      }
+      autoIsInjection = true;
+      if (mainWindow && mainWindow.webContents) {
+        mainWindow.webContents.send("update-status", {
+          message: "waiting",
+        });
+      }
+      Status = await InjectorController.startup();
+
+      console.log("Injection status:", Status);
+
+      if (Status === 1) {
+        if (mainWindow && mainWindow.webContents) {
+          mainWindow.webContents.send("update-status", {
+            message: "success",
+          });
+          isInjection = true;
+        }
+      } else if (Status === -1) {
+        if (mainWindow && mainWindow.webContents) {
+          mainWindow.webContents.send("update-status", { message: "error" });
+        }
+      } else if (Status === -5) {
+        if (mainWindow && mainWindow.webContents) {
+          mainWindow.webContents.send("update-status", {
+            message: "error-code-5",
+          });
+        }
       }
     }
   } catch (err) {

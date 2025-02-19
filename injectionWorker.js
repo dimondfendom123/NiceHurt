@@ -9,6 +9,8 @@ function logError(message) {
   fs.appendFileSync(logPath, logMessage);
 }
 
+//Todo: Fix the Error Getting form the Sirhurt.exe Console
+
 (async () => {
   try {
     const sirhurtExePath = path.join(
@@ -16,7 +18,7 @@ function logError(message) {
       "NiceHurt",
       "sirhurt.exe"
     );
-    
+
     console.log("Starting process with:", sirhurtExePath);
 
     if (!fs.existsSync(sirhurtExePath)) {
@@ -44,6 +46,7 @@ function logError(message) {
     SirHurtCMD.stderr.on("data", (data) => {
       errorData += data.toString();
       console.error("ERROR:", data.toString());
+      parentPort.postMessage(-1);
     });
 
     SirHurtCMD.on("exit", async (code) => {
