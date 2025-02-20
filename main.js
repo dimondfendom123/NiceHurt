@@ -1,16 +1,16 @@
-const { app, BrowserWindow, ipcMain, dialog } = require("electron");
+const { app, BrowserWindow, ipcMain } = require("electron");
 const path = require("path");
 const fs = require("fs");
 const https = require("https");
 const { exec, spawn } = require("child_process");
-const { InjectorController } = require("./InjectorController");
+const { InjectorController } = require("./src/injector/InjectorController");
+const { Settings } = require("./src/SettingsController");
 const axios = require("axios");
 
-require("./console/Controller");
+require("./src/console/Controller");
 
 const API_URL = `https://api.github.com/repos/nici002018/NiceHurt/releases/latest`;
 
-const SETTINGS_PATH = path.join(app.getPath("userData"), "settings.json");
 let mainWindow;
 let splashWindow;
 let Status;
@@ -18,18 +18,7 @@ let isInjection = false;
 let autoIsInjection = false;
 let autoInject = false;
 
-function loadSettings() {
-  if (!fs.existsSync(SETTINGS_PATH)) {
-    saveSettings({ alwaysOnTop: false, autoInject: false });
-  }
-  return JSON.parse(fs.readFileSync(SETTINGS_PATH, "utf-8"));
-}
-
-function saveSettings(settings) {
-  fs.writeFileSync(SETTINGS_PATH, JSON.stringify(settings, null, 2));
-}
-
-const settings = loadSettings();
+const settings = Settings.loadSettings();
 autoInject = settings.autoInject;
 function createWindows() {
   splashWindow = new BrowserWindow({
@@ -39,28 +28,28 @@ function createWindows() {
     alwaysOnTop: false,
     transparent: true,
     resizable: false,
-    icon: path.join(__dirname, "screens/assets/NiceHurt-Logo.png"),
+    icon: path.join(__dirname, "src/screens/assets/NiceHurt-Logo.png"),
     webPreferences: {
-      preload: path.join(__dirname, "screens/preloads/bootstrap.js"),
+      preload: path.join(__dirname, "src/screens/preloads/bootstrap.js"),
       contextIsolation: true,
     },
   });
-  splashWindow.loadFile("screens/splash.html");
+  splashWindow.loadFile("src/screens/splash.html");
 
   mainWindow = new BrowserWindow({
     width: 750,
     height: 600,
-    icon: path.join(__dirname, "screens/assets/NiceHurt-Logo.png"),
+    icon: path.join(__dirname, "src/screens/assets/NiceHurt-Logo.png"),
     show: false,
     frame: false,
     transparent: true,
     resizable: false,
     webPreferences: {
-      preload: path.join(__dirname, "screens/preloads/renderer.js"),
+      preload: path.join(__dirname, "src/screens/preloads/renderer.js"),
       nodeIntegration: true,
     },
   });
-  mainWindow.loadFile("screens/index.html");
+  mainWindow.loadFile("src/screens/index.html");
 
   mainWindow.setAlwaysOnTop(settings.alwaysOnTop);
   splashWindow.setAlwaysOnTop(settings.alwaysOnTop);
@@ -278,7 +267,7 @@ ipcMain.handle("open-scripts-folder", async () => {
 });
 
 ipcMain.handle("load-settings", async () => {
-  return loadSettings();
+  return Settings.loadSettings();
 });
 
 ipcMain.handle("save-settings", async (event, newSettings) => {
@@ -287,7 +276,6 @@ ipcMain.handle("save-settings", async (event, newSettings) => {
   autoInject = newSettings.autoInject;
   return true;
 });
-
 
 ipcMain.handle("dll-method", async (event, method, arg = "") => {
   try {

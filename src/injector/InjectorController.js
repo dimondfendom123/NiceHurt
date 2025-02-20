@@ -53,7 +53,7 @@ class InjectorController {
   }
 
   static async loopExecution() {
-    const luaFilePath = path.join(__dirname, "console", "Roblox-Console.lua");
+    const luaFilePath = path.join(__dirname, "src/console/Roblox-Console.lua");
     setInterval(async () => {
       try {
         const luaContent = await fs.promises.readFile(luaFilePath, "utf-8");

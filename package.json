@@ -4,7 +4,6 @@
   "main": "main.js",
   "scripts": {
     "start": "electron --core .",
-    "start:standard": "electron --standard .",
     "dist": "electron-builder build",
     "dist:win": "npm run dist -- -w",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -36,20 +35,15 @@
     },
     "extraFiles": [
       {
-        "from": "InjectionWorker.js",
+        "from": "src/injector/InjectionWorker.js",
         "to": "InjectionWorker.js"
       }
     ],
     "files": [
       "main.js",
-      "InjectorController.js",
-      "InjectorWorker.js",
-      "screens",
+      "src/",
       "node_modules/",
-      "package.json",
-      "console/",
-      "sirhurt.exe",
-      "sirhurt.dll"
+      "package.json"
     ],
     "win": {
       "target": [

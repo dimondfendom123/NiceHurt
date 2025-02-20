@@ -25,6 +25,8 @@ local function sendNotification(message)
     request(params)
 end
 
+sendNotification("[NiceHurt]: Console logger started")
+
 while true do
     local logHistory = game:GetService("LogService"):GetLogHistory()
     for i = lastProcessedIndex + 1, #logHistory do
