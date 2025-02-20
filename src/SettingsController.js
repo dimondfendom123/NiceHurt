@@ -7,7 +7,11 @@ class Settings {
   static loadSettings() {
     try {
       if (!fs.existsSync(SETTINGS_PATH)) {
-        const defaultSettings = { alwaysOnTop: false, autoInject: false };
+        const defaultSettings = {
+          alwaysOnTop: false,
+          autoInject: false,
+          screenShareProtect: false,
+        };
         this.saveSettings(defaultSettings);
         return defaultSettings;
       }

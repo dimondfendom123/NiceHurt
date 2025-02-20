@@ -52,7 +52,9 @@ function createWindows() {
   mainWindow.loadFile("src/screens/index.html");
 
   mainWindow.setAlwaysOnTop(settings.alwaysOnTop);
+  mainWindow.setContentProtection(settings.screenShareProtect);
   splashWindow.setAlwaysOnTop(settings.alwaysOnTop);
+  splashWindow.setContentProtection(settings.screenShareProtect);
 
   startBootstrapProcess();
 }
@@ -146,14 +148,14 @@ async function startBootstrapProcess() {
               (progress) =>
                 updateSplash(
                   60 + progress * 0.3,
-                  `Downloading EXE: ${progress}%`
+                  `Downloading SirHurt exe and dll: ${progress}%`
                 ),
               () => {
                 fs.renameSync(
                   path.join(sirHurtPath, "SirHurt.new"),
                   path.join(sirHurtPath, "sirhurt.dll")
                 );
-                updateSplash(100, "Completed. Starting SirHurt...");
+                updateSplash(100, "Completed. Starting NiceHurt...");
 
                 setTimeout(() => {
                   splashWindow.close();
@@ -271,8 +273,11 @@ ipcMain.handle("load-settings", async () => {
 });
 
 ipcMain.handle("save-settings", async (event, newSettings) => {
-  saveSettings(newSettings);
-  mainWindow.setAlwaysOnTop(newSettings.alwaysOnTop);
+  Settings.saveSettings(newSettings);
+  if (mainWindow) {
+    mainWindow.setAlwaysOnTop(newSettings.alwaysOnTop);
+    mainWindow.setContentProtection(newSettings.screenShareProtect);
+  }
   autoInject = newSettings.autoInject;
   return true;
 });

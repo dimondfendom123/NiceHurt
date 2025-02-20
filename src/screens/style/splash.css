@@ -31,7 +31,7 @@ body {
 .progress-bar {
   height: 100%;
   width: 0%;
-  background: #00aaff;
+  background: #9a00d6;
   transition: width 0.3s ease-in-out;
 }
 .status {

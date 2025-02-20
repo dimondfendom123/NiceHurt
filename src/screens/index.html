@@ -84,6 +84,11 @@
               Auto Inject
               <input type="checkbox" id="autoInject" />
             </label>
+
+            <label for="screenShareProtect" class="settings-toggle">
+              Screen Share Protect
+              <input type="checkbox" id="screenShareProtect" />
+            </label>
           </div>
         </div>
       </div>
@@ -124,19 +129,19 @@
           }
         });
 
-        // Einstellungen laden und anwenden
         async function loadAndApplySettings() {
           const settings = await window.electron.getSettings();
           document.getElementById("alwaysOnTop").checked = settings.alwaysOnTop;
           document.getElementById("autoInject").checked = settings.autoInject;
+          document.getElementById("screenShareProtect").checked = settings.screenShareProtect;
         }
         loadAndApplySettings();
 
-        // Einstellungen speichern, wenn sich was ändert
         function saveSettings() {
           const alwaysOnTop = document.getElementById("alwaysOnTop").checked;
           const autoInject = document.getElementById("autoInject").checked;
-          window.electron.saveSettings({ alwaysOnTop, autoInject });
+          const screenShareProtect = document.getElementById("screenShareProtect").checked;
+          window.electron.saveSettings({ alwaysOnTop, autoInject, screenShareProtect });
         }
         document
           .getElementById("alwaysOnTop")
@@ -144,8 +149,10 @@
         document
           .getElementById("autoInject")
           .addEventListener("change", saveSettings);
+        document
+          .getElementById("screenShareProtect")
+          .addEventListener("change", saveSettings);
 
-        // ...existing code for file manager and socket...
         document
           .getElementById("btnOpenFolder")
           .addEventListener("click", () => {
