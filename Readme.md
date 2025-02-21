@@ -51,10 +51,10 @@ This project is licensed under the MIT License. See the [LICENSE](./LICENSE) fil
 
 Contributions are welcome! Please fork the repository and submit a pull request.
 
-## To-Do
+## To-Do (2.0)
 - **Injector**: Fixing the error reading for the injector.
-- **Settings**: ~~Adding a settings page for customizing the application.~~
-- **File-Manager**: ~~Add The Logic for the file manager.~~
-- **Buttons**: ~~Add the logic for Open and Save buttons.~~
-- **Auto-Updater**: ~~Add an auto-updater for the application.~~
 - **Settings-Theme**: Add a theme system for the application.
+- **Better UI**: Change the UI to a more modern look and better user experience.
+- **Better Console**: Add a better console for the application. (Coloring and etc.)
+- **Better File-Manager**: Add a better file manager for the application. (Folder support and etc.)
+- **Recode**: Recode the application to a better and more optimized version.

@@ -74,8 +74,64 @@ header h1 {
   height: 100%;
 }
 
+.tab-container {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  background-color: #1e1e1e;
+  border-bottom: 2px solid #555;
+  max-width: 100%;
+  max-height: 30px;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.tab-container::-webkit-scrollbar {
+  width: 0px;
+  height: 4px;
+}
+
+.tab-container::-webkit-scrollbar-track {
+  background: #2b2b2b;
+}
+
+.tab-container::-webkit-scrollbar-thumb {
+  background-color: #2b2b2b;
+  border-radius: 10px;
+  border: 3px solid #121212;
+}
+
+.tab {
+  padding: 5px 10px;
+  cursor: pointer;
+  color: #f4f4f4;
+  max-height: 20px;
+  white-space: nowrap;
+}
+
+.tab:hover {
+  background-color: #444;
+}
+
+.tab.active {
+  background-color: #555;
+  font-weight: bold;
+}
+
+.add-tab {
+  margin-left: auto;
+  padding: 5px 10px;
+  align-items: center;
+  cursor: pointer;
+  color: #f4f4f4;
+  max-height: 20px;
+  background-color: #1e1e1e;
+  border-left: 2px solid #555;
+}
+
 .script-executor {
   height: 70%;
+  margin-top: 5px;
 }
 
 iframe {
@@ -421,7 +477,8 @@ textarea {
 }
 
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
   }
   50% {

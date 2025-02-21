@@ -27,11 +27,15 @@
     <div class="container">
       <div class="script-console-container">
         <div class="script-executor">
+          <div class="tab-container">
+            <div class="tab active" data-tab="0">Tab #0</div>
+            <div class="add-tab">+</div>
+          </div>
           <iframe
             id="monacoIframe"
             src="Monaco/index.html"
             width="100%"
-            height="80%"
+            height="72%"
             style="border: none"
           ></iframe>
           <div class="buttons">
@@ -133,15 +137,21 @@
           const settings = await window.electron.getSettings();
           document.getElementById("alwaysOnTop").checked = settings.alwaysOnTop;
           document.getElementById("autoInject").checked = settings.autoInject;
-          document.getElementById("screenShareProtect").checked = settings.screenShareProtect;
+          document.getElementById("screenShareProtect").checked =
+            settings.screenShareProtect;
         }
         loadAndApplySettings();
 
         function saveSettings() {
           const alwaysOnTop = document.getElementById("alwaysOnTop").checked;
           const autoInject = document.getElementById("autoInject").checked;
-          const screenShareProtect = document.getElementById("screenShareProtect").checked;
-          window.electron.saveSettings({ alwaysOnTop, autoInject, screenShareProtect });
+          const screenShareProtect =
+            document.getElementById("screenShareProtect").checked;
+          window.electron.saveSettings({
+            alwaysOnTop,
+            autoInject,
+            screenShareProtect,
+          });
         }
         document
           .getElementById("alwaysOnTop")
@@ -217,6 +227,188 @@
           const consoleTextArea = document.getElementById("console");
           consoleTextArea.value += "\n" + content;
         });
+      });
+
+      let tabs = [{ title: "Tab #0", content: "" }];
+      let activeTab = 0;
+      let targetTabIndex = null;
+
+      async function loadSavedTabs() {
+        const savedTabs = await window.electron.getTabs();
+        if (savedTabs && savedTabs.length > 0) {
+          tabs = savedTabs;
+          activeTab = 0;
+          renderTabs();
+          const iframe = document.getElementById("monacoIframe");
+          if (iframe && iframe.contentWindow) {
+            iframe.contentWindow.postMessage(
+              { action: "setText", text: tabs[activeTab].content || "" },
+              "*"
+            );
+          }
+        }
+      }
+      loadSavedTabs();
+
+      const contextMenu = document.createElement("div");
+      contextMenu.style.position = "fixed";
+      contextMenu.style.background = "#2e2e2e";
+      contextMenu.style.border = "1px solid #555";
+      contextMenu.style.padding = "5px 0";
+      contextMenu.style.display = "none";
+      contextMenu.style.zIndex = "1000";
+      document.body.appendChild(contextMenu);
+
+      document.addEventListener("click", () => {
+        contextMenu.style.display = "none";
+      });
+
+      function createTabElement(index) {
+        const tab = document.createElement("div");
+        tab.classList.add("tab");
+        tab.dataset.tab = index;
+        tab.style.display = "flex";
+        tab.style.alignItems = "center";
+        tab.style.justifyContent = "space-between";
+        tab.style.padding = "0 5px";
+
+        const titleSpan = document.createElement("span");
+        titleSpan.textContent = tabs[index].title;
+        titleSpan.style.flexGrow = "1";
+        tab.appendChild(titleSpan);
+
+        tab.addEventListener("contextmenu", (event) => {
+          event.preventDefault();
+          showContextMenu(event.clientX, event.clientY, index);
+        });
+
+        tab.addEventListener("click", () => {
+          const tabIndex = parseInt(tab.dataset.tab, 10);
+          if (tabIndex !== activeTab) {
+            switchTab(tabIndex);
+          }
+        });
+
+        return tab;
+      }
+
+      function showContextMenu(x, y, index) {
+        contextMenu.innerHTML = "";
+
+        const closeOption = document.createElement("div");
+        closeOption.textContent = "Close Tab";
+        closeOption.style.padding = "5px 15px";
+        closeOption.style.cursor = "pointer";
+        closeOption.addEventListener("click", (event) => {
+          event.stopPropagation();
+          closeTab(index);
+          contextMenu.style.display = "none";
+        });
+        contextMenu.appendChild(closeOption);
+
+        if (tabs.length === 1) {
+          closeOption.style.opacity = "0.5";
+          closeOption.style.pointerEvents = "none";
+        }
+
+        contextMenu.style.top = `${y}px`;
+        contextMenu.style.left = `${x}px`;
+        contextMenu.style.display = "block";
+      }
+
+      function renderTabs() {
+        const tabContainer = document.querySelector(".tab-container");
+        tabContainer.innerHTML = "";
+
+        tabs.forEach((_, index) => {
+          const tabEl = createTabElement(index);
+          if (index === activeTab) {
+            tabEl.classList.add("active");
+          }
+          tabContainer.appendChild(tabEl);
+        });
+
+        const addTab = document.createElement("div");
+        addTab.classList.add("add-tab");
+        addTab.textContent = "+";
+        addTab.addEventListener("click", () => {
+          window.isTabSwitching = true;
+          targetTabIndex = tabs.length;
+          requestEditorContent();
+          tabs.push({ title: "Tab #" + tabs.length, content: "" });
+        });
+        tabContainer.appendChild(addTab);
+      }
+
+      function updateTabUI() {
+        renderTabs();
+      }
+
+      function requestEditorContent() {
+        const iframe = document.getElementById("monacoIframe");
+        if (iframe) {
+          iframe.contentWindow.postMessage({ action: "getEditorContent" }, "*");
+        }
+      }
+
+      function switchTab(newIndex) {
+        if (newIndex === activeTab) return;
+        window.isTabSwitching = true;
+        targetTabIndex = newIndex;
+        requestEditorContent();
+      }
+
+      function closeTab(index) {
+        if (tabs.length === 1) return;
+
+        tabs.splice(index, 1);
+
+        if (activeTab === index) {
+          activeTab = index === 0 ? 0 : index - 1;
+        } else if (activeTab > index) {
+          activeTab--;
+        }
+        updateTabUI();
+
+        const iframe = document.getElementById("monacoIframe");
+        if (iframe) {
+          iframe.contentWindow.postMessage(
+            { action: "setText", text: tabs[activeTab].content || "" },
+            "*"
+          );
+        }
+      }
+
+      window.addEventListener("message", (event) => {
+        if (event.data.action === "editorContent") {
+          const editorContent = event.data.content;
+          if (window.isTabSwitching) {
+            tabs[activeTab].content = editorContent;
+            activeTab = targetTabIndex;
+            const newContent = tabs[activeTab].content || "";
+            const iframe = document.getElementById("monacoIframe");
+            if (iframe) {
+              iframe.contentWindow.postMessage(
+                { action: "setText", text: newContent },
+                "*"
+              );
+            }
+            window.isTabSwitching = false;
+            targetTabIndex = null;
+            updateTabUI();
+          } else if (window.isSaveOperation) {
+            callDll("save-lua", editorContent);
+            window.isSaveOperation = false;
+          }
+        }
+      });
+
+      window.addEventListener("beforeunload", () => {
+        window.electron.saveTabs(tabs);
+      });
+
+      window.addEventListener("DOMContentLoaded", () => {
+        renderTabs();
       });
     </script>
   </body>

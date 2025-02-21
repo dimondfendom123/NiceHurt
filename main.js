@@ -204,7 +204,27 @@ function downloadFileWithProgress(url, dest, onProgress, callback) {
     });
 }
 
-const scriptDir = path.join(process.env.APPDATA, "Nicehurt", "scripts");
+const tabsDir = path.join(process.env.APPDATA, "NiceHurt", "tabs");
+
+ipcMain.handle("load-tabs", async () => {
+  const tabsFile = path.join(tabsDir, "tabs.json");
+  if (fs.existsSync(tabsFile)) {
+    const data = fs.readFileSync(tabsFile, "utf8");
+    return JSON.parse(data);
+  }
+  return [];
+});
+
+ipcMain.handle("save-tabs", async (event, tabs) => {
+  if (!fs.existsSync(tabsDir)) {
+    fs.mkdirSync(tabsDir, { recursive: true });
+  }
+  const tabsFile = path.join(tabsDir, "tabs.json");
+  fs.writeFileSync(tabsFile, JSON.stringify(tabs), "utf8");
+  return true;
+});
+
+const scriptDir = path.join(process.env.APPDATA, "NiceHurt", "scripts");
 
 if (!fs.existsSync(scriptDir)) {
   fs.mkdirSync(scriptDir, { recursive: true });

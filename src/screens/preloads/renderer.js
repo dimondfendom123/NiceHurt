@@ -1,6 +1,7 @@
 const { contextBridge, ipcRenderer } = require("electron");
 
 let isSaveOperation = false;
+let isExecution = false;
 
 async function callDll(method, arg = "") {
   try {
@@ -31,6 +32,7 @@ window.addEventListener("DOMContentLoaded", () => {
   });
 
   document.getElementById("btnExecute")?.addEventListener("click", () => {
+    isExecution = true;
     getEditorContentFromIframe();
   });
 
@@ -62,8 +64,9 @@ window.addEventListener("message", (event) => {
     if (isSaveOperation) {
       callDll("save-lua", editorContent);
       isSaveOperation = false;
-    } else {
+    } else if (isExecution) {
       callDll("execution", editorContent);
+      isExecution = false;
     }
   }
 });
@@ -85,4 +88,6 @@ contextBridge.exposeInMainWorld("electron", {
   onScriptsUpdated: (callback) => ipcRenderer.on("update-scripts", callback),
   getSettings: () => ipcRenderer.invoke("load-settings"),
   saveSettings: (settings) => ipcRenderer.invoke("save-settings", settings),
+  getTabs: () => ipcRenderer.invoke("load-tabs"),
+  saveTabs: (tabs) => ipcRenderer.invoke("save-tabs", tabs),
 });
