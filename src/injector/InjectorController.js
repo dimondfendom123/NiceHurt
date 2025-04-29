@@ -65,33 +65,24 @@ class InjectorController {
   }
 
   static injection() {
-    return new Promise((resolve, reject) => {
-      const workerPath = path.join(process.resourcesPath, "..", "InjectionWorker.js");
-      const worker = new Worker(workerPath);
+    const exeDir = path.join(process.env.APPDATA, "NiceHurt");
+    const exePath = path.join(exeDir, "sirhurt.exe");
 
-      worker.on("message", (result) => {
-        console.log("Worker message:", result);
-        return resolve(1);
-      });
+    const cmd = `powershell -Command "Start-Process -FilePath \\"${exePath}\\" -Verb runAs -WorkingDirectory \\"${exeDir}\\""`;
 
-      worker.on("error", (error) => {
+    exec(cmd, (error) => {
+      if (error) {
         axios.post("http://localhost:9292/roblox-console", {
           content: "[NiceHurt]: Error while injecting! \n" + error,
         });
-        console.error("Worker error:", error);
-        reject(-1);
-      });
-
-      worker.on("exit", (code) => {
-        if (code !== 0) {
-          axios.post("http://localhost:9292/roblox-console", {
-            content: "[NiceHurt]: Error while injecting! \n Error Code: " + code,
-          });
-          console.error(`Worker stopped with exit code ${code}`);
-          reject(-1);
-        }
-      });
+        return -1;
+      }
+      console.log("sirhurt.exe erfolgreich gestartet.");
     });
+    axios.post("http://localhost:9292/roblox-console", {
+      content: "[NiceHurt]: Injecting Roblox Client!",
+    });
+    return 1;
   }
 
   static async execution(text) {

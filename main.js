@@ -6,10 +6,16 @@ const { exec, spawn } = require("child_process");
 const { InjectorController } = require("./src/injector/InjectorController");
 const { Settings } = require("./src/SettingsController");
 const axios = require("axios");
+const unzipper = require("unzipper");
 
 require("./src/console/Controller");
 
-const API_URL = `https://api.github.com/repos/nici002018/NiceHurt/releases/latest`;
+const sirhurtZipURL =
+  "https://sirhurt.net/asshurt/update/v5/ProtectFile.php?customversion=LIVE&file=sirhurt.zip";
+const versionURL =
+  "https://sirhurt.net/asshurt/update/v5/fetch_version.php?customversion=LIVE";
+
+const sirHurtPath = path.join(process.env.APPDATA, "NiceHurt");
 
 let mainWindow;
 let splashWindow;
@@ -90,6 +96,57 @@ async function downloadAndInstall(url) {
   }
 }
 
+function reverseString(s) {
+  return s.split("").reverse().join("");
+}
+
+function hexToBuffer(hex) {
+  const bytes = new Uint8Array(hex.length / 2);
+  for (let i = 0; i < hex.length; i += 2) {
+    bytes[i / 2] = parseInt(hex.substr(i, 2), 16);
+  }
+  return Buffer.from(bytes);
+}
+
+async function downloadAndUnpackZip() {
+  const res = await fetch(sirhurtZipURL);
+  const text = await res.text();
+
+  const reversedHex = reverseString(text.trim());
+  const zipBuffer = hexToBuffer(reversedHex);
+
+  const zipPath = path.join(sirHurtPath, "sirhurt.zip");
+  fs.writeFileSync(zipPath, zipBuffer);
+
+  await fs.promises.mkdir(sirHurtPath, { recursive: true });
+  await fs
+    .createReadStream(zipPath)
+    .pipe(unzipper.Extract({ path: sirHurtPath }))
+    .promise();
+}
+
+async function downloadDLL() {
+  const res = await fetch(versionURL);
+  const dllURL = (await res.text()).trim();
+
+  if (!dllURL.startsWith("http")) {
+    throw new Error("Invalid DLL URL received!");
+  }
+
+  const dllPath = path.join(sirHurtPath, "sirhurt.dll");
+  const file = fs.createWriteStream(dllPath);
+
+  return new Promise((resolve, reject) => {
+    https
+      .get(dllURL, (response) => {
+        response.pipe(file);
+        file.on("finish", () => {
+          file.close(resolve);
+        });
+      })
+      .on("error", reject);
+  });
+}
 async function startBootstrapProcess() {
   try {
     const fetch = (await import("node-fetch")).default;
@@ -115,14 +172,31 @@ async function startBootstrapProcess() {
     console.error("Auto-update error during bootstrap:", err);
   }
 
-  const sirHurtPath = path.join(process.env.APPDATA, "NiceHurt");
   updateSplash(0, "Cleaning up old files...");
 
   deleteFiles(sirHurtPath);
-  updateSplash(5, "Cleanup complete.");
+  updateSplash(100, "Cleanup complete.");
 
+  updateSplash(0, "Downloading files...");
+
+  await downloadAndUnpackZip();
+
+  updateSplash(20, "Unpacking files...");
+
+  await downloadDLL();
+
+  updateSplash(60, "DLL downloaded.");
+
+  updateSplash(80, "Starting NiceHurt...");
+
+  setTimeout(() => {
+    splashWindow.close();
+    mainWindow.show();
+  }, 2000);
+
+  /*
   https
-    .get("https://sirhurt.net/asshurt/update/v5/fetch_version.php", (res) => {
+    .get("", (res) => {
       let data = "";
       res.on("data", (chunk) => (data += chunk));
       res.on("end", () => {
@@ -166,12 +240,12 @@ async function startBootstrapProcess() {
           }
         );
       });
-    })
-    .on("error", (err) => {
+    }).on("error", (err) => {
       updateSplash(100, "Update failed! Check your connection.");
       console.error("Update Error:", err.message);
       setTimeout(() => splashWindow.close(), 3000);
     });
+  */
 }
 
 function updateSplash(progress, message) {
@@ -481,12 +555,14 @@ async function monitorRobloxPlayer() {
 setInterval(monitorRobloxPlayer, 5000);
 
 function deleteFiles(dir) {
-  ["SirHurt.new", "SirHurt V5.exe", "sirhurt.dll"].forEach((file) => {
-    const filePath = path.join(dir, file);
-    if (fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath);
+  ["SirHurt.new", "SirHurt V5.exe", "sirhurt.dll", "sirhurt.exe"].forEach(
+    (file) => {
+      const filePath = path.join(dir, file);
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
     }
-  });
+  );
 }
 
 ipcMain.on("window-minimize", () => {

@@ -1,6 +1,6 @@
 {
   "name": "nicehurt",
-  "version": "1.0.5",
+  "version": "2.0.0-alpha.1",
   "main": "main.js",
   "scripts": {
     "start": "electron --core .",
@@ -21,7 +21,9 @@
     "axios": "^1.7.9",
     "express": "^4.21.2",
     "node-fetch": "^3.3.2",
-    "socket.io": "^4.8.1"
+    "node-stream-zip": "^1.15.0",
+    "socket.io": "^4.8.1",
+    "unzipper": "^0.12.3"
   },
   "devDependencies": {
     "electron": "^34.2.0",
@@ -33,12 +35,6 @@
     "directories": {
       "output": "dist"
     },
-    "extraFiles": [
-      {
-        "from": "src/injector/InjectionWorker.js",
-        "to": "InjectionWorker.js"
-      }
-    ],
     "files": [
       "main.js",
       "src/",
