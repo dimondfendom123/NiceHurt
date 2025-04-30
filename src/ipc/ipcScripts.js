@@ -1,6 +1,5 @@
 const fs = require("fs");
 const path = require("path");
-const axios = require("axios");
 const { shell } = require("electron");
 
 module.exports = (ipcMain, mainWindow, sendToConsole) => {

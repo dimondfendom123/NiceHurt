@@ -1,5 +1,4 @@
 const fs = require("fs");
-const { Worker } = require("worker_threads");
 const path = require("path");
 const { exec } = require("child_process");
 const axios = require("axios");

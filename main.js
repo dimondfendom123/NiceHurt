@@ -2,13 +2,12 @@ const { app, BrowserWindow, ipcMain } = require("electron");
 const path = require("path");
 const fs = require("fs");
 const https = require("https");
-const { exec, spawn } = require("child_process");
+const { exec } = require("child_process");
 const { InjectorController } = require("./src/injector/InjectorController");
 const { Settings } = require("./src/SettingsController");
 const Updater = require("./src/Auto-Updater");
 const axios = require("axios");
 const unzipper = require("unzipper");
-const { time } = require("console");
 
 require("./src/console/Controller");
 
@@ -21,9 +20,6 @@ const sirHurtPath = path.join(process.env.APPDATA, "NiceHurt");
 
 let mainWindow;
 let splashWindow;
-let isInjection = false;
-let autoIsInjection = false;
-let autoInject = false;
 
 let Status;
 const settings = Settings.loadSettings();
@@ -225,7 +221,7 @@ async function monitorRobloxPlayer() {
         mainWindow?.webContents?.send("update-status", { message: "success" });
         state.isInjection = true;
       } else if (Status === -1) {
-        mainWindow?.webContents?.send("update-status", { message: "error" });
+        mainWindow?.webContents?.send("update-status", { message: "red" });
       } else if (Status === -5) {
         mainWindow?.webContents?.send("update-status", {
           message: "error-code-5",
