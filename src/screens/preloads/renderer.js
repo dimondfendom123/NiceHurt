@@ -88,6 +88,4 @@ contextBridge.exposeInMainWorld("electron", {
   onScriptsUpdated: (callback) => ipcRenderer.on("update-scripts", callback),
   getSettings: () => ipcRenderer.invoke("load-settings"),
   saveSettings: (settings) => ipcRenderer.invoke("save-settings", settings),
-  getTabs: () => ipcRenderer.invoke("load-tabs"),
-  saveTabs: (tabs) => ipcRenderer.invoke("save-tabs", tabs),
 });

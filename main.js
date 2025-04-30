@@ -193,59 +193,6 @@ async function startBootstrapProcess() {
     splashWindow.close();
     mainWindow.show();
   }, 2000);
-
-  /*
-  https
-    .get("", (res) => {
-      let data = "";
-      res.on("data", (chunk) => (data += chunk));
-      res.on("end", () => {
-        if (data.includes("Failed")) {
-          updateSplash(100, "No update available.");
-          setTimeout(() => {
-            splashWindow.close();
-            mainWindow.show();
-          }, 2000);
-          return;
-        }
-
-        updateSplash(20, "Downloading update...");
-        downloadFileWithProgress(
-          data,
-          path.join(sirHurtPath, "SirHurt.new"),
-          (progress) =>
-            updateSplash(20 + progress * 0.4, `Downloading: ${progress}%`),
-          () => {
-            downloadFileWithProgress(
-              "https://sirhurt.net/asshurt/update/v5/sirhurt.exe",
-              path.join(sirHurtPath, "sirhurt.exe"),
-              (progress) =>
-                updateSplash(
-                  60 + progress * 0.3,
-                  `Downloading SirHurt exe and dll: ${progress}%`
-                ),
-              () => {
-                fs.renameSync(
-                  path.join(sirHurtPath, "SirHurt.new"),
-                  path.join(sirHurtPath, "sirhurt.dll")
-                );
-                updateSplash(100, "Completed. Starting NiceHurt...");
-
-                setTimeout(() => {
-                  splashWindow.close();
-                  mainWindow.show();
-                }, 2000);
-              }
-            );
-          }
-        );
-      });
-    }).on("error", (err) => {
-      updateSplash(100, "Update failed! Check your connection.");
-      console.error("Update Error:", err.message);
-      setTimeout(() => splashWindow.close(), 3000);
-    });
-  */
 }
 
 function updateSplash(progress, message) {
@@ -253,50 +200,6 @@ function updateSplash(progress, message) {
     splashWindow.webContents.send("update-status", { progress, message });
   }
 }
-
-function downloadFileWithProgress(url, dest, onProgress, callback) {
-  const file = fs.createWriteStream(dest);
-  https
-    .get(url, (response) => {
-      const totalSize = parseInt(response.headers["content-length"], 10);
-      let downloadedSize = 0;
-
-      response.on("data", (chunk) => {
-        downloadedSize += chunk.length;
-        onProgress(Math.floor((downloadedSize / totalSize) * 100));
-      });
-
-      response.pipe(file);
-      file.on("finish", () => {
-        file.close(callback);
-      });
-    })
-    .on("error", (err) => {
-      fs.unlink(dest, () => {});
-      updateSplash(100, `Download error: ${err.message}`);
-      console.error("Download Error:", err.message);
-    });
-}
-
-const tabsDir = path.join(process.env.APPDATA, "NiceHurt", "tabs");
-
-ipcMain.handle("load-tabs", async () => {
-  const tabsFile = path.join(tabsDir, "tabs.json");
-  if (fs.existsSync(tabsFile)) {
-    const data = fs.readFileSync(tabsFile, "utf8");
-    return JSON.parse(data);
-  }
-  return [];
-});
-
-ipcMain.handle("save-tabs", async (event, tabs) => {
-  if (!fs.existsSync(tabsDir)) {
-    fs.mkdirSync(tabsDir, { recursive: true });
-  }
-  const tabsFile = path.join(tabsDir, "tabs.json");
-  fs.writeFileSync(tabsFile, JSON.stringify(tabs), "utf8");
-  return true;
-});
 
 const scriptDir = path.join(process.env.APPDATA, "NiceHurt", "scripts");
 

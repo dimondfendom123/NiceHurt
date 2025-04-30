@@ -4,8 +4,6 @@ const path = require("path");
 const { exec } = require("child_process");
 const axios = require("axios");
 
-// InjectorController Based on https://github.com/gapunitec/KneeSurgery
-
 class InjectorController {
   static async autoexec() {
     try {
@@ -17,7 +15,11 @@ class InjectorController {
       const files = await fs.promises.readdir(autoexecPath);
 
       for (const file of files) {
-        if (file.endsWith(".lua")) {
+        if (
+          file.endsWith(".lua") ||
+          file.endsWith(".txt") ||
+          file.endsWith(".luau")
+        ) {
           const content = await fs.promises.readFile(
             path.join(autoexecPath, file),
             "utf-8"
@@ -61,7 +63,7 @@ class InjectorController {
       } catch (error) {
         console.error("Error to retry execute the script:", error);
       }
-    }, 5000);
+    }, 10000);
   }
 
   static injection() {
@@ -77,7 +79,6 @@ class InjectorController {
         });
         return -1;
       }
-      console.log("sirhurt.exe erfolgreich gestartet.");
     });
     axios.post("http://localhost:9292/roblox-console", {
       content: "[NiceHurt]: Injecting Roblox Client!",
@@ -166,16 +167,4 @@ class InjectorController {
   }
 }
 
-class KsfService {
-  static ksfMappings = {
-    "Test1()": 'print("NICEHURT TEST")',
-  };
-
-  static ksfConverter(ksf) {
-    return ksf.replace(/ksf\.(Test1\(\))/g, (match, key) => {
-      return this.ksfMappings[key] || match;
-    });
-  }
-}
-
-module.exports = { InjectorController, KsfService };
+module.exports = { InjectorController };

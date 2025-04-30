@@ -1,4 +1,5 @@
 # NiceHurt
+
 NiceHurt is a Custom UI for SirHurt, Build in Electron and Node.js. It allows you to execute custom Lua scripts within Roblox, view real-time console output, and manage scripts from a built-in file manager.
 
 ## Features
@@ -12,20 +13,22 @@ NiceHurt is a Custom UI for SirHurt, Build in Electron and Node.js. It allows yo
 ## Installation
 
 1. **Clone the repository**:
-      ```bash
-      git clone https://github.com/nici002018/NiceHurt.git
-      cd NiceHurt
-      ```
+
+   ```bash
+   git clone https://github.com/nici002018/NiceHurt.git
+   cd NiceHurt
+   ```
 
 2. **Install dependencies**:
-      ```bash
-      npm install
-      ```
+
+   ```bash
+   npm install
+   ```
 
 3. **Run the application**:
-      ```bash
-      npm start
-      ```
+   ```bash
+   npm start
+   ```
 
 ## Usage
 
@@ -38,7 +41,6 @@ NiceHurt is a Custom UI for SirHurt, Build in Electron and Node.js. It allows yo
 
 - **main.js**: Entry point for the Electron application.
 - **InjectorController.js**: Handles script injection and execution.
-- **InjectionWorker.js**: Worker thread for managing the injection process.
 - **console/Controller.js**: Backend server for handling console output.
 - **screens/**: Contains HTML, CSS, and JavaScript files for the UI.
 - **console/Roblox-Console.lua**: Lua script for capturing Roblox console output.
@@ -52,6 +54,9 @@ This project is licensed under the MIT License. See the [LICENSE](./LICENSE) fil
 Contributions are welcome! Please fork the repository and submit a pull request.
 
 ## To-Do (2.0)
+
+- **Autoexecute**: Add an auto-execute feature for scripts.
+- **Auto-Check**: Check for the game is loaded before executing the scripts.
 - **Injector**: Fixing the error reading for the injector.
 - **Settings-Theme**: Add a theme system for the application.
 - **Better UI**: Change the UI to a more modern look and better user experience.
