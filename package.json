@@ -1,7 +1,7 @@
 {
   "name": "nicehurt",
-  "version": "2.0.0-alpha.2",
-  "main": "main.js",
+  "version": "2.0.0-alpha.3",
+  "main": "Main.js",
   "scripts": {
     "start": "electron --core .",
     "dist": "electron-builder build",
@@ -36,7 +36,7 @@
       "output": "dist"
     },
     "files": [
-      "main.js",
+      "Main.js",
       "src/",
       "node_modules/",
       "package.json"

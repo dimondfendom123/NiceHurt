@@ -5,8 +5,10 @@ const https = require("https");
 const { exec, spawn } = require("child_process");
 const { InjectorController } = require("./src/injector/InjectorController");
 const { Settings } = require("./src/SettingsController");
+const Updater = require("./src/Auto-Updater");
 const axios = require("axios");
 const unzipper = require("unzipper");
+const { time } = require("console");
 
 require("./src/console/Controller");
 
@@ -19,13 +21,24 @@ const sirHurtPath = path.join(process.env.APPDATA, "NiceHurt");
 
 let mainWindow;
 let splashWindow;
-let Status;
 let isInjection = false;
 let autoIsInjection = false;
 let autoInject = false;
 
+let Status;
 const settings = Settings.loadSettings();
-autoInject = settings.autoInject;
+const state = {
+  autoInject: settings.autoInject,
+  isInjection: false,
+  autoIsInjection: false,
+};
+
+function sendToConsole(message) {
+  return axios.post("http://localhost:9292/roblox-console", {
+    content: `[NiceHurt]: ${message}`,
+  });
+}
+
 function createWindows() {
   splashWindow = new BrowserWindow({
     width: 400,
@@ -62,38 +75,11 @@ function createWindows() {
   splashWindow.setAlwaysOnTop(settings.alwaysOnTop);
   splashWindow.setContentProtection(settings.screenShareProtect);
 
+  require("./src/ipc/ipcScripts")(ipcMain, mainWindow, sendToConsole);
+  require("./src/ipc/ipcSettings")(ipcMain, mainWindow, state);
+  require("./src/ipc/ipcExecutor")(ipcMain, mainWindow, sendToConsole, state);
+
   startBootstrapProcess();
-}
-
-async function downloadAndInstall(url) {
-  try {
-    const fetch = (await import("node-fetch")).default;
-    updateSplash(20, "Downloading update...");
-    const response = await fetch(url);
-    if (!response.ok) throw new Error("Download error");
-
-    const filePath = path.join(app.getPath("temp"), path.basename(url));
-    const fileStream = fs.createWriteStream(filePath);
-
-    response.body.pipe(fileStream);
-
-    fileStream.on("finish", () => {
-      fileStream.close(() => {
-        updateSplash(80, "Installing update...");
-
-        const installer = spawn(filePath, [], {
-          detached: true,
-          stdio: "ignore",
-        });
-
-        installer.unref();
-        app.quit();
-      });
-    });
-  } catch (err) {
-    console.error("Download error:", err);
-    updateSplash(100, "Update download failed.");
-  }
 }
 
 function reverseString(s) {
@@ -148,29 +134,9 @@ async function downloadDLL() {
   });
 }
 async function startBootstrapProcess() {
-  try {
-    const fetch = (await import("node-fetch")).default;
-    const response = await fetch(API_URL);
-    if (response.ok) {
-      const release = await response.json();
-      const latestVersion = release.tag_name.replace(/^v/, "");
-      const currentVersion = app.getVersion();
+  updateSplash(0, "Checking for updates...");
 
-      if (latestVersion > currentVersion) {
-        const asset = release.assets.find(
-          (a) => a.name.endsWith(".exe") || a.name.endsWith(".dmg")
-        );
-        if (asset) {
-          await downloadAndInstall(asset.browser_download_url);
-          return;
-        }
-      }
-    } else {
-      console.error("Error checking for update:", response.statusText);
-    }
-  } catch (err) {
-    console.error("Auto-update error during bootstrap:", err);
-  }
+  Updater.checkForUpdates(mainWindow);
 
   updateSplash(0, "Cleaning up old files...");
 
@@ -201,191 +167,20 @@ function updateSplash(progress, message) {
   }
 }
 
-const scriptDir = path.join(process.env.APPDATA, "NiceHurt", "scripts");
+ipcMain.on("window-minimize", () => {
+  mainWindow.minimize();
+});
 
-if (!fs.existsSync(scriptDir)) {
-  fs.mkdirSync(scriptDir, { recursive: true });
-}
-
-fs.watch(scriptDir, (eventType, filename) => {
-  if (filename) {
-    const ext = path.extname(filename).toLowerCase();
-    if ([".txt", ".lua", ".luau"].includes(ext)) {
-      mainWindow.webContents.send("update-scripts");
-    }
+ipcMain.on("window-maximize", () => {
+  if (mainWindow.isMaximized()) {
+    mainWindow.unmaximize();
+  } else {
+    mainWindow.maximize();
   }
 });
 
-ipcMain.handle("list-scripts", async () => {
-  try {
-    const files = fs.readdirSync(scriptDir);
-    return files.filter((file) => {
-      const ext = require("path").extname(file).toLowerCase();
-      return [".txt", ".lua", ".luau"].includes(ext);
-    });
-  } catch (error) {
-    console.error("Error reading script folder:", error);
-    return [];
-  }
-});
-
-ipcMain.handle("load-script", async (event, fileName) => {
-  try {
-    const filePath = require("path").join(scriptDir, fileName);
-    if (fs.existsSync(filePath)) {
-      axios.post("http://localhost:9292/roblox-console", {
-        content: `[NiceHurt]: ${fileName} loaded`,
-      });
-      return fs.readFileSync(filePath, "utf8");
-    }
-    return "";
-  } catch (error) {
-    console.error("Error loading script:", error);
-    return "";
-  }
-});
-
-ipcMain.handle("delete-script", async (event, fileName) => {
-  const filePath = path.join(scriptDir, fileName);
-  try {
-    fs.unlinkSync(filePath);
-    axios.post("http://localhost:9292/roblox-console", {
-      content: `[NiceHurt]: ${fileName} deleted!`,
-    });
-    return "File deleted successfully";
-  } catch (error) {
-    console.error("Error deleting script:", error);
-    return "Error deleting file: " + error.message;
-  }
-});
-
-ipcMain.handle("open-scripts-folder", async () => {
-  const { shell } = require("electron");
-  await shell.openPath(scriptDir);
-  return "Opened scripts folder";
-});
-
-ipcMain.handle("load-settings", async () => {
-  return Settings.loadSettings();
-});
-
-ipcMain.handle("save-settings", async (event, newSettings) => {
-  Settings.saveSettings(newSettings);
-  if (mainWindow) {
-    mainWindow.setAlwaysOnTop(newSettings.alwaysOnTop);
-    mainWindow.setContentProtection(newSettings.screenShareProtect);
-  }
-  autoInject = newSettings.autoInject;
-  return true;
-});
-
-ipcMain.handle("dll-method", async (event, method, arg = "") => {
-  try {
-    if (!method) {
-      return "Method is required";
-    }
-
-    switch (method.toLowerCase()) {
-      case "injection":
-        if (isInjection) {
-          axios.post("http://localhost:9292/roblox-console", {
-            content: `[NiceHurt]: Is already injected!`,
-          });
-          return "Injection already started";
-        }
-        if (mainWindow && mainWindow.webContents) {
-          mainWindow.webContents.send("update-status", {
-            message: "waiting",
-          });
-        }
-        Status = await InjectorController.startup();
-
-        console.log("Injection status:", Status);
-
-        if (Status === 1) {
-          if (mainWindow && mainWindow.webContents) {
-            mainWindow.webContents.send("update-status", {
-              message: "success",
-            });
-            isInjection = true;
-          }
-        } else if (Status === -1) {
-          if (mainWindow && mainWindow.webContents) {
-            mainWindow.webContents.send("update-status", { message: "error" });
-          }
-        } else if (Status === -5) {
-          if (mainWindow && mainWindow.webContents) {
-            mainWindow.webContents.send("update-status", {
-              message: "error-code-5",
-            });
-          }
-        }
-        return "Injection started";
-      case "autoexec":
-        InjectorController.autoexec();
-        return "Autoexec executed";
-      case "execution":
-        console.log("Executing script:", arg);
-        axios.post("http://localhost:9292/roblox-console", {
-          content: `[NiceHurt]: Executing script!`,
-        });
-        InjectorController.execution(arg);
-        return "script executed";
-      case "open-logs":
-        return InjectorController.openLogsFolder();
-      case "openautoexecfolder":
-        return InjectorController.openAutoexecFolder();
-      case "killrobloxplayerbeta":
-        return InjectorController.killRobloxPlayerBeta();
-      case "cleanrobloxplayerbeta":
-        return InjectorController.cleanRobloxPlayerBeta();
-      case "save-lua": {
-        const { dialog } = require("electron");
-        const { canceled, filePath: savePath } = await dialog.showSaveDialog(
-          mainWindow,
-          {
-            title: "Save Lua Script",
-            defaultPath: "script.lua",
-            filters: [{ name: "Lua Files", extensions: ["lua"] }],
-          }
-        );
-        if (canceled) {
-          return "Save canceled";
-        }
-        fs.writeFileSync(savePath, arg);
-        axios.post("http://localhost:9292/roblox-console", {
-          content: `[NiceHurt]: ${savePath} saved!`,
-        });
-        return "File saved";
-      }
-      case "open-lua": {
-        const { dialog } = require("electron");
-        const { canceled, filePaths } = await dialog.showOpenDialog(
-          mainWindow,
-          {
-            title: "Open Script",
-            filters: [
-              { name: "Script Files", extensions: ["txt", "lua", "luau"] },
-            ],
-            properties: ["openFile"],
-          }
-        );
-        if (canceled || filePaths.length === 0) {
-          return "";
-        }
-        const fileContent = fs.readFileSync(filePaths[0], "utf8");
-        axios.post("http://localhost:9292/roblox-console", {
-          content: `[NiceHurt]: ${filePaths[0]} opened!`,
-        });
-        return fileContent;
-      }
-      default:
-        return `Invalid method: ${method}`;
-    }
-  } catch (error) {
-    console.error("Error executing DLL method:", error.message);
-    return `Error executing DLL method: ${error.message}`;
-  }
+ipcMain.on("window-close", () => {
+  mainWindow.close();
 });
 
 async function isRobloxPlayerRunning() {
@@ -406,49 +201,38 @@ async function isRobloxPlayerRunning() {
 async function monitorRobloxPlayer() {
   try {
     const running = await isRobloxPlayerRunning();
+
     if (!running) {
-      if (mainWindow && mainWindow.webContents && isInjection) {
+      if (mainWindow?.webContents && state.isInjection) {
         mainWindow.webContents.send("update-status", { message: "red" });
-        isInjection = false;
-        axios.post("http://localhost:9292/roblox-console", {
+        state.isInjection = false;
+        await axios.post("http://localhost:9292/roblox-console", {
           content: "[NiceHurt]: Roblox player closed!",
         });
       }
-    } else if (autoInject && !isInjection && !autoIsInjection) {
-      if (isInjection) {
-        axios.post("http://localhost:9292/roblox-console", {
-          content: `[NiceHurt]: Is already injected!`,
-        });
-        return "Injection already started";
-      }
-      autoIsInjection = true;
-      if (mainWindow && mainWindow.webContents) {
-        mainWindow.webContents.send("update-status", {
-          message: "waiting",
-        });
-      }
-      Status = await InjectorController.startup();
+    } else if (
+      state.autoInject &&
+      !state.isInjection &&
+      !state.autoIsInjection
+    ) {
+      state.autoIsInjection = true;
+      mainWindow?.webContents?.send("update-status", { message: "waiting" });
 
+      Status = await InjectorController.startup();
       console.log("Injection status:", Status);
 
       if (Status === 1) {
-        if (mainWindow && mainWindow.webContents) {
-          mainWindow.webContents.send("update-status", {
-            message: "success",
-          });
-          isInjection = true;
-        }
+        mainWindow?.webContents?.send("update-status", { message: "success" });
+        state.isInjection = true;
       } else if (Status === -1) {
-        if (mainWindow && mainWindow.webContents) {
-          mainWindow.webContents.send("update-status", { message: "error" });
-        }
+        mainWindow?.webContents?.send("update-status", { message: "error" });
       } else if (Status === -5) {
-        if (mainWindow && mainWindow.webContents) {
-          mainWindow.webContents.send("update-status", {
-            message: "error-code-5",
-          });
-        }
+        mainWindow?.webContents?.send("update-status", {
+          message: "error-code-5",
+        });
       }
+
+      state.autoIsInjection = false;
     }
   } catch (err) {
     console.error("Error checking Roblox player:", err);
@@ -467,22 +251,6 @@ function deleteFiles(dir) {
     }
   );
 }
-
-ipcMain.on("window-minimize", () => {
-  mainWindow.minimize();
-});
-
-ipcMain.on("window-maximize", () => {
-  if (mainWindow.isMaximized()) {
-    mainWindow.unmaximize();
-  } else {
-    mainWindow.maximize();
-  }
-});
-
-ipcMain.on("window-close", () => {
-  mainWindow.close();
-});
 
 // Whitelist NiceHurt folder for Windows Defender
 // This is required to prevent the DLL and EXE from being removed
