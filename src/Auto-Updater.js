@@ -58,7 +58,10 @@ class Updater {
             const percent = total
               ? Math.round((downloaded / total) * 100)
               : null;
-            mainWindow.webContents.send("update-download-progress", percent);
+            mainWindow.webContents.send("update-status", {
+              progress: percent,
+              message: "Downloading update...",
+            });
           });
 
           res.pipe(fileStream);
