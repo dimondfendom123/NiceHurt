@@ -74,12 +74,20 @@ async function createWindows() {
   require("./src/ipc/ipcScripts")(ipcMain, mainWindow, sendToConsole);
   require("./src/ipc/ipcSettings")(ipcMain, mainWindow, state);
   require("./src/ipc/ipcExecutor")(ipcMain, mainWindow, sendToConsole, state);
+  require("./src/ipc/ipcWindow")(ipcMain, mainWindow);
 
   updateSplash(0, "Checking for updates...");
 
   await Updater.checkForUpdates(splashWindow);
 
-  startBootstrapProcess();
+  updateSplash(20, "Checking for SirHurt updates...");
+
+  try {
+    await checkSirHurtVersion();
+  } catch (err) {
+    console.error("SirHurt check failed:", err);
+    updateSplash(0, "Failed to check SirHurt version.");
+  }
 }
 
 function reverseString(s) {
@@ -109,6 +117,8 @@ async function downloadAndUnpackZip() {
     .createReadStream(zipPath)
     .pipe(unzipper.Extract({ path: sirHurtPath }))
     .promise();
+
+  fs.unlinkSync(zipPath);
 }
 
 async function downloadDLL() {
@@ -133,23 +143,69 @@ async function downloadDLL() {
       .on("error", reject);
   });
 }
+
+async function checkSirHurtVersion() {
+  try {
+    const response = await axios.get(
+      "https://sirhurt.net/status/fetch.php?exploit=SirHurt%20V5"
+    );
+    const versionData = response.data[0]["SirHurt V5"];
+
+    const remoteVersion = versionData.exploit_version;
+    const updated = versionData.updated;
+
+    const localVersionPath = path.join(sirHurtPath, "version");
+    let localVersion = "unknown";
+    if (fs.existsSync(localVersionPath)) {
+      localVersion = fs.readFileSync(localVersionPath, "utf-8").trim();
+    }
+
+    const dllPath = path.join(sirHurtPath, "sirhurt.dll");
+    const exePath = path.join(sirHurtPath, "sirhurt.exe");
+
+    const dllExists = fs.existsSync(dllPath);
+    const exeExists = fs.existsSync(exePath);
+
+    const needsUpdate =
+      !dllExists || !exeExists || localVersion !== remoteVersion || !updated;
+
+    if (needsUpdate) {
+      console.log(
+        `[NiceHurt] Update required. Local: ${localVersion}, Remote: ${remoteVersion}`
+      );
+      updateSplash(0, "New version or missing files. Downloading...");
+      await startBootstrapProcess();
+
+      fs.writeFileSync(localVersionPath, remoteVersion);
+    } else {
+      console.log(`[NiceHurt] Version OK. All files present.`);
+      updateSplash(
+        100,
+        "All files present and up to date! Starting NiceHurt..."
+      );
+      setTimeout(() => {
+        splashWindow.close();
+        mainWindow.show();
+      }, 2000);
+    }
+  } catch (err) {
+    console.error("Version check failed:", err);
+    updateSplash(0, "Failed to check version.");
+  }
+}
+
 async function startBootstrapProcess() {
-  updateSplash(0, "Cleaning up old files...");
-
-  deleteFiles(sirHurtPath);
-  updateSplash(100, "Cleanup complete.");
-
   updateSplash(0, "Downloading files...");
 
   await downloadAndUnpackZip();
 
-  updateSplash(20, "Unpacking files...");
+  updateSplash(40, "Unpacking files...");
 
   await downloadDLL();
 
-  updateSplash(60, "DLL downloaded.");
+  updateSplash(75, "DLL downloaded.");
 
-  updateSplash(80, "Starting NiceHurt...");
+  updateSplash(100, "Starting NiceHurt...");
 
   setTimeout(() => {
     splashWindow.close();
@@ -162,22 +218,6 @@ function updateSplash(progress, message) {
     splashWindow.webContents.send("update-status", { progress, message });
   }
 }
-
-ipcMain.on("window-minimize", () => {
-  mainWindow.minimize();
-});
-
-ipcMain.on("window-maximize", () => {
-  if (mainWindow.isMaximized()) {
-    mainWindow.unmaximize();
-  } else {
-    mainWindow.maximize();
-  }
-});
-
-ipcMain.on("window-close", () => {
-  mainWindow.close();
-});
 
 async function isRobloxPlayerRunning() {
   return new Promise((resolve, reject) => {
@@ -236,17 +276,6 @@ async function monitorRobloxPlayer() {
 }
 
 setInterval(monitorRobloxPlayer, 5000);
-
-function deleteFiles(dir) {
-  ["SirHurt.new", "SirHurt V5.exe", "sirhurt.dll", "sirhurt.exe"].forEach(
-    (file) => {
-      const filePath = path.join(dir, file);
-      if (fs.existsSync(filePath)) {
-        fs.unlinkSync(filePath);
-      }
-    }
-  );
-}
 
 // Whitelist NiceHurt folder for Windows Defender
 // This is required to prevent the DLL and EXE from being removed

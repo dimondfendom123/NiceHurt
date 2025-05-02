@@ -1,6 +1,6 @@
 {
   "name": "nicehurt",
-  "version": "2.0.0-alpha.5",
+  "version": "2.0.0-alpha.6",
   "main": "Main.js",
   "scripts": {
     "start": "electron --core .",

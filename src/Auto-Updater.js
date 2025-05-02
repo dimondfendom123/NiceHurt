@@ -50,7 +50,6 @@ class Updater {
       const tmpFile = path.join(app.getPath("temp"), path.basename(url));
       const fileStream = fs.createWriteStream(tmpFile);
 
-      // download with headers and follow redirects
       function request(downloadUrl) {
         const options = {
           headers: {
@@ -84,7 +83,6 @@ class Updater {
             res.pipe(fileStream);
             fileStream.on("finish", () => {
               fileStream.close(() => {
-                // launch the downloaded installer
                 execFile(tmpFile, (err) => {
                   if (err) {
                     reject(err);
