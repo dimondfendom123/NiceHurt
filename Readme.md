@@ -66,3 +66,4 @@ Contributions are welcome! Please fork the repository and submit a pull request.
 - **Check SirHurt Updates/Versions**: ~~Check for updates and versions of SirHurt.~~
 - **Check for Updates**: ~~Check for updates of the application.~~
 - **Ask for Windows Defender Exclusion**: ~~Ask for Windows Defender exclusion for the application.~~
+- **Discord Rich Presence**: Add Discord Rich Presence for the application.
