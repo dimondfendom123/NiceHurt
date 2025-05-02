@@ -55,7 +55,7 @@ Contributions are welcome! Please fork the repository and submit a pull request.
 
 ## To-Do (2.0)
 
-- [ ] Autoexecute: Add an auto-execute feature for scripts.
+- [x] Autoexecute: Add an auto-execute feature for scripts.
 - [x] Auto-Check: Check for the game is loaded before executing the scripts.
 - [ ] Injector: Fixing the error reading for the injector.
 - [ ] Settings-Theme: Add a theme system for the application.

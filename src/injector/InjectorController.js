@@ -2,6 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const { exec } = require("child_process");
 const axios = require("axios");
+const { shell } = require("electron");
 
 class InjectorController {
   static injected = false;
@@ -118,12 +119,13 @@ class InjectorController {
 
   static async openAutoexecFolder() {
     try {
-      const autoexecPath = path.join(
-        process.env.APPDATA,
-        "NiceHurt",
-        "Autoexec"
-      );
-      exec(`explorer.exe "${autoexecPath}"`);
+      const scriptDir = path.join(process.env.APPDATA, "NiceHurt", "Autoexec");
+      if (fs.existsSync(scriptDir)) {
+        shell.openPath(scriptDir);
+      } else {
+        fs.mkdirSync(scriptDir, { recursive: true });
+        shell.openPath(scriptDir);
+      }
       return 1;
     } catch {
       return -1;

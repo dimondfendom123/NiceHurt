@@ -35,7 +35,7 @@ local urlSession = "http://localhost:9292/roblox-session"
 local lastProcessedIndex = 0
 
 local function sendNotification(message)
-    local data = {content = message}
+    local data = {content = "[Roblox Console]: \n" .. message}
     local newdata = HttpService:JSONEncode(data)
     local headers = {["content-type"] = "application/json"}
     local request = http_request or request or HttpPost or syn.request

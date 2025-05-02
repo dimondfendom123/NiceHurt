@@ -7,6 +7,8 @@ const { InjectorController } = require("../injector/InjectorController");
 const { ipcMain } = require("electron");
 
 let disable = false;
+let messageQueue = [];
+let isProcessing = false;
 
 ipcMain.handle("get-console-pause-state", () => disable);
 ipcMain.on("set-console-pause-state", (_, state) => {
@@ -16,19 +18,48 @@ ipcMain.on("set-console-pause-state", (_, state) => {
 
 const app = express();
 const server = http.createServer(app);
-const io = socketIo(server);
+const io = socketIo(server, {
+  pingTimeout: 60000,
+  pingInterval: 25000,
+});
 
 app.use(express.json());
 
+async function processQueue() {
+  if (isProcessing || disable || messageQueue.length === 0) return;
+
+  isProcessing = true;
+  try {
+    const messages = [...messageQueue];
+    messageQueue = [];
+
+    for (const content of messages) {
+      if (content) {
+        io.emit("console-update", content);
+      }
+    }
+  } catch (error) {
+    console.error("Error processing message queue:", error);
+  } finally {
+    isProcessing = false;
+
+    if (messageQueue.length > 0) {
+      setImmediate(processQueue);
+    }
+  }
+}
+
 app.post("/roblox-console", (req, res) => {
   const { content } = req.body;
+
   if (disable) {
-    return;
+    return res.json({ status: "paused" });
   }
 
   if (content) {
-    io.emit("console-update", content);
-    res.json({ status: "success" });
+    messageQueue.push(content);
+    processQueue();
+    res.json({ status: "queued" });
   } else {
     res.status(400).json({ status: "error", message: "No content provided" });
   }
@@ -39,7 +70,6 @@ app.get("/", (req, res) => {
 });
 
 let lastSessionId = null;
-const WAIT_AFTER_EXECUTE = 3000;
 let isExecuting = false;
 
 app.post("/roblox-session", async (req, res) => {
@@ -58,10 +88,13 @@ app.post("/roblox-session", async (req, res) => {
       `[NiceHurt]: Game change detected! placeId=${placeId}, jobId=${jobId}`
     );
 
-    await triggerExecute();
-    await new Promise((r) => setTimeout(r, WAIT_AFTER_EXECUTE));
-
-    isExecuting = false;
+    setTimeout(async () => {
+      try {
+        await InjectorController.autoexec();
+      } catch (error) {
+        console.error("Error in autoexec:", error);
+      }
+    }, 2000);
   }
 
   res.json({ status: "ok" });
@@ -85,6 +118,7 @@ async function triggerExecute() {
     );
   } catch (e) {
     console.error("Error during Execute:", e);
+    throw e;
   }
 }
 
@@ -93,6 +127,10 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     console.log("A client disconnected");
   });
+});
+
+server.on("error", (error) => {
+  console.error("Server error:", error);
 });
 
 server.listen(9292, () => {

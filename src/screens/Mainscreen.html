@@ -525,6 +525,33 @@
         transform: translateY(0) scale(0.98);
       }
 
+      #btnOpenAutoEXE {
+      width: 100%;
+      padding: 8px;
+      border-radius: 5px;
+      border: none;
+      background: var(--bg-lighter);
+      color: var(--primary);
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 0.8rem;
+      margin-top: 8px;
+      border: 1px solid var(--primary);
+    }
+    
+    #btnOpenAutoEXE:hover {
+      background: var(--primary);
+      color: white;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(109, 40, 217, 0.2);
+    }
+    
+    #btnOpenAutoEXE:active {
+      transform: translateY(0) scale(0.98);
+      box-shadow: 0 2px 4px rgba(109, 40, 217, 0.1);
+    }
+
       .settings-container {
         position: fixed;
         top: 0;
@@ -773,7 +800,7 @@
     </div>
       </div>
 
-      <div class="file-manager">
+       <div class="file-manager">
         <div class="file-search">
           <input type="text" id="fileSearch" placeholder="Search files..." />
         </div>
@@ -813,6 +840,7 @@
           </div>
         </div>
         <button id="btnOpenFolder">Open Folder</button>
+        <button id="btnOpenAutoEXE" style="margin-top: 8px;">Open Autoexec Folder</button>
       </div>
     </div>
 
@@ -1210,6 +1238,16 @@
         const fileManager = document.querySelector('.file-manager');
         fileManager.addEventListener('mouseenter', () => {
           fileManager.style.transform = 'translateX(0)';
+        });
+
+        document.getElementById('btnOpenFolder').addEventListener('click', () => {
+          window.electron.openScriptsFolder();
+          showNotification('Opening scripts folder...', 'info');
+        });
+
+        document.getElementById('btnOpenAutoEXE').addEventListener('click', () => {
+          window.electron.openAutoEXEFolder();
+          showNotification('Opening Autoexe folder...', 'info');
         });
       });
     </script>

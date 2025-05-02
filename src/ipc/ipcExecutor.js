@@ -3,8 +3,23 @@ const path = require("path");
 const { dialog } = require("electron");
 const { InjectorController } = require("../injector/InjectorController");
 const { exec } = require("child_process");
+const { ipcMain, shell } = require("electron");
 
 const defaultFolder = path.join(process.env.APPDATA, "NiceHurt", "scripts");
+
+ipcMain.handle("openAutoEXEFolder", () => {
+  InjectorController.openAutoexecFolder();
+});
+
+ipcMain.handle("openScriptsFolder", () => {
+  const scriptDir = path.join(process.env.APPDATA, "NiceHurt", "scripts");
+  if (fs.existsSync(scriptDir)) {
+    shell.openPath(scriptDir);
+  } else {
+    fs.mkdirSync(scriptDir, { recursive: true });
+    shell.openPath(scriptDir);
+  }
+});
 
 module.exports = (ipcMain, mainWindow, sendToConsole, state) => {
   const sendStatus = (message) => {

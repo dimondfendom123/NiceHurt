@@ -103,4 +103,6 @@ contextBridge.exposeInMainWorld("electron", {
   getConsolePauseState: () => ipcRenderer.invoke("get-console-pause-state"),
   setConsolePauseState: (state) =>
     ipcRenderer.send("set-console-pause-state", state),
+  openAutoEXEFolder: () => ipcRenderer.invoke("openAutoEXEFolder"),
+  openScriptsFolder: () => ipcRenderer.invoke("openScriptsFolder"),
 });
