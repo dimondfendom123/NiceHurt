@@ -1,22 +1,12 @@
 const { app, BrowserWindow, ipcMain } = require("electron");
 const path = require("path");
-const fs = require("fs");
-const https = require("https");
 const { exec } = require("child_process");
-const { InjectorController } = require("./src/injector/InjectorController");
+const { startup } = require("./src/injector/InjectorController");
 const { Settings } = require("./src/SettingsController");
 const Updater = require("./src/Auto-Updater");
-const axios = require("axios");
-const unzipper = require("unzipper");
+const { post } = require("axios");
 
 require("./src/console/Controller");
-
-const sirhurtZipURL =
-  "https://sirhurt.net/asshurt/update/v5/ProtectFile.php?customversion=LIVE&file=sirhurt.zip";
-const versionURL =
-  "https://sirhurt.net/asshurt/update/v5/fetch_version.php?customversion=LIVE";
-
-const sirHurtPath = path.join(process.env.APPDATA, "NiceHurt");
 
 let mainWindow;
 let splashWindow;
@@ -30,7 +20,7 @@ const state = {
 };
 
 function sendToConsole(message) {
-  return axios.post("http://localhost:9292/roblox-console", {
+  return post("http://localhost:9292/roblox-console", {
     content: `[NiceHurt]: ${message}`,
   });
 }
@@ -76,147 +66,24 @@ async function createWindows() {
   require("./src/ipc/ipcExecutor")(ipcMain, mainWindow, sendToConsole, state);
   require("./src/ipc/ipcWindow")(ipcMain, mainWindow);
 
-  updateSplash(0, "Checking for updates...");
+  splashWindow.webContents.send("update-status", {
+    progress: 0,
+    message: "Checking for updates...",
+  });
 
   await Updater.checkForUpdates(splashWindow);
 
-  updateSplash(20, "Checking for SirHurt updates...");
-
-  try {
-    await checkSirHurtVersion();
-  } catch (err) {
-    console.error("SirHurt check failed:", err);
-    updateSplash(0, "Failed to check SirHurt version.");
-  }
-}
-
-function reverseString(s) {
-  return s.split("").reverse().join("");
-}
-
-function hexToBuffer(hex) {
-  const bytes = new Uint8Array(hex.length / 2);
-  for (let i = 0; i < hex.length; i += 2) {
-    bytes[i / 2] = parseInt(hex.substr(i, 2), 16);
-  }
-  return Buffer.from(bytes);
-}
-
-async function downloadAndUnpackZip() {
-  const res = await fetch(sirhurtZipURL);
-  const text = await res.text();
-
-  const reversedHex = reverseString(text.trim());
-  const zipBuffer = hexToBuffer(reversedHex);
-
-  const zipPath = path.join(sirHurtPath, "sirhurt.zip");
-  fs.writeFileSync(zipPath, zipBuffer);
-
-  await fs.promises.mkdir(sirHurtPath, { recursive: true });
-  await fs
-    .createReadStream(zipPath)
-    .pipe(unzipper.Extract({ path: sirHurtPath }))
-    .promise();
-
-  fs.unlinkSync(zipPath);
-}
-
-async function downloadDLL() {
-  const res = await fetch(versionURL);
-  const dllURL = (await res.text()).trim();
-
-  if (!dllURL.startsWith("http")) {
-    throw new Error("Invalid DLL URL received!");
-  }
-
-  const dllPath = path.join(sirHurtPath, "sirhurt.dll");
-  const file = fs.createWriteStream(dllPath);
-
-  return new Promise((resolve, reject) => {
-    https
-      .get(dllURL, (response) => {
-        response.pipe(file);
-        file.on("finish", () => {
-          file.close(resolve);
-        });
-      })
-      .on("error", reject);
+  splashWindow.webContents.send("update-status", {
+    progress: 20,
+    message: "Checking for SirHurt updates...",
   });
-}
 
-async function checkSirHurtVersion() {
-  try {
-    const response = await axios.get(
-      "https://sirhurt.net/status/fetch.php?exploit=SirHurt%20V5"
-    );
-    const versionData = response.data[0]["SirHurt V5"];
-
-    const remoteVersion = versionData.exploit_version;
-    const updated = versionData.updated;
-
-    const localVersionPath = path.join(sirHurtPath, "version");
-    let localVersion = "unknown";
-    if (fs.existsSync(localVersionPath)) {
-      localVersion = fs.readFileSync(localVersionPath, "utf-8").trim();
-    }
-
-    const dllPath = path.join(sirHurtPath, "sirhurt.dll");
-    const exePath = path.join(sirHurtPath, "sirhurt.exe");
-
-    const dllExists = fs.existsSync(dllPath);
-    const exeExists = fs.existsSync(exePath);
-
-    const needsUpdate =
-      !dllExists || !exeExists || localVersion !== remoteVersion || !updated;
-
-    if (needsUpdate) {
-      console.log(
-        `[NiceHurt] Update required. Local: ${localVersion}, Remote: ${remoteVersion}`
-      );
-      updateSplash(0, "New version or missing files. Downloading...");
-      await startBootstrapProcess();
-
-      fs.writeFileSync(localVersionPath, remoteVersion);
-    } else {
-      console.log(`[NiceHurt] Version OK. All files present.`);
-      updateSplash(
-        100,
-        "All files present and up to date! Starting NiceHurt..."
-      );
-      setTimeout(() => {
-        splashWindow.close();
-        mainWindow.show();
-      }, 2000);
-    }
-  } catch (err) {
-    console.error("Version check failed:", err);
-    updateSplash(0, "Failed to check version.");
-  }
-}
-
-async function startBootstrapProcess() {
-  updateSplash(0, "Downloading files...");
-
-  await downloadAndUnpackZip();
-
-  updateSplash(40, "Unpacking files...");
-
-  await downloadDLL();
-
-  updateSplash(75, "DLL downloaded.");
-
-  updateSplash(100, "Starting NiceHurt...");
+  await Updater.checkForUpdatesSirhurt(splashWindow);
 
   setTimeout(() => {
     splashWindow.close();
     mainWindow.show();
   }, 2000);
-}
-
-function updateSplash(progress, message) {
-  if (splashWindow && splashWindow.webContents) {
-    splashWindow.webContents.send("update-status", { progress, message });
-  }
 }
 
 async function isRobloxPlayerRunning() {
@@ -242,9 +109,7 @@ async function monitorRobloxPlayer() {
       if (mainWindow?.webContents && state.isInjection) {
         mainWindow.webContents.send("update-status", { message: "red" });
         state.isInjection = false;
-        await axios.post("http://localhost:9292/roblox-console", {
-          content: "[NiceHurt]: Roblox player closed!",
-        });
+        sendToConsole("Roblox player closed!");
       }
     } else if (
       state.autoInject &&
@@ -254,7 +119,7 @@ async function monitorRobloxPlayer() {
       state.autoIsInjection = true;
       mainWindow?.webContents?.send("update-status", { message: "waiting" });
 
-      Status = await InjectorController.startup();
+      Status = await startup();
       console.log("Injection status:", Status);
 
       if (Status === 1) {

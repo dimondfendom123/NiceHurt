@@ -158,12 +158,6 @@ class InjectorController {
       return -1;
     }
   }
-
-  static async logError(message) {
-    const logPath = path.join(process.env.APPDATA, "NiceHurt", "error.log");
-    const logMessage = `[${new Date().toISOString()}] ${message}\n`;
-    await fs.promises.appendFile(logPath, logMessage);
-  }
 }
 
 module.exports = { InjectorController };
