@@ -463,45 +463,49 @@
       }
 
       .file {
-        padding: 6px 8px;
-        border-radius: 5px;
-        margin-bottom: 3px;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 0.8rem;
-      }
+      padding: 6px 8px;
+      border-radius: 5px;
+      margin-bottom: 3px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      width: 100%;
+      background: transparent;
+      border: none;
+      color: inherit;
+      text-align: left;
+    }
 
-      .file:hover {
-        background: var(--bg-lighter);
-        transform: translateX(5px);
-      }
+    .file:hover {
+      background: var(--bg-lighter);
+      transform: translateX(5px);
+    }
 
-      .file:active {
-        transform: translateX(0) scale(0.98);
-      }
+    .file:active {
+      transform: translateX(0) scale(0.98);
+    }
 
-      .delete-button {
-        background: transparent;
-        border: none;
-        color: var(--text-dim);
-        cursor: pointer;
-        opacity: 0;
-        transition: all 0.2s ease;
-        padding: 2px;
-      }
+    .delete-button {
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      cursor: pointer;
+      opacity: 0;
+      transition: all 0.2s ease;
+      padding: 2px;
+    }
 
-      .file:hover .delete-button {
-        opacity: 1;
-        transform: translateX(0);
-      }
+    .file:hover .delete-button {
+      opacity: 1;
+    }
 
-      .delete-button:hover {
-        color: var(--error);
-        transform: scale(1.2);
-      }
+    .delete-button:hover {
+      color: var(--error);
+      transform: scale(1.2);
+    }
 
       #btnOpenFolder {
         width: 100%;
@@ -694,25 +698,25 @@
       }
 
       .notification {
-        position: fixed;
-        bottom: 20px;
-        left: 50%;
-        transform: translateX(-50%) translateY(30px);
-        background: var(--bg-lighter);
-        color: var(--text);
-        padding: 10px 20px;
-        border-radius: 5px;
-        box-shadow: var(--shadow);
-        border-left: 4px solid var(--primary);
-        z-index: 1000;
-        opacity: 0;
-        transition: all 0.3s ease;
-      }
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(30px);
+      background: var(--bg-lighter);
+      color: var(--text);
+      padding: 10px 20px;
+      border-radius: 5px;
+      box-shadow: var(--shadow);
+      border-left: 4px solid var(--primary);
+      z-index: 9000;
+      opacity: 0;
+      transition: all 0.3s ease;
+    }
 
-      .notification.show {
-        opacity: 1;
-        transform: translateX(-50%) translateY(0);
-      }
+    .notification.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
 
       ::-webkit-scrollbar {
         width: 6px;
@@ -805,28 +809,30 @@
           <input type="text" id="fileSearch" placeholder="Search files..." />
         </div>
         <div id="fileList">
-          <div class="file">
-            <span>example.lua</span>
+          <button class="file">
+            <div class="file-content">
+              <span>example.lua</span>
+            </div>
             <button class="delete-button">
-              <img
-                src="assets/Delete.png"
-                alt="Delete"
-                width="14"
-                height="14"
-              />
+              <img src="assets/Delete.png" alt="Delete" width="14" height="14" />
             </button>
-          </div>
-          <div class="file">
-            <span>utils.lua</span>
+          </button>
+          <button class="file">
+            <div class="file-content">
+              <span>utils.lua</span>
+            </div>
             <button class="delete-button">
-              <img
-                src="assets/Delete.png"
-                alt="Delete"
-                width="14"
-                height="14"
-              />
+              <img src="assets/Delete.png" alt="Delete" width="14" height="14" />
             </button>
-          </div>
+          </button>
+          <button class="file">
+            <div class="file-content">
+              <span>main.lua</span>
+            </div>
+            <button class="delete-button">
+              <img src="assets/Delete.png" alt="Delete" width="14" height="14" />
+            </button>
+          </button>
           <div class="file">
             <span>main.lua</span>
             <button class="delete-button">
@@ -843,6 +849,8 @@
         <button id="btnOpenAutoEXE" style="margin-top: 8px;">Open Autoexec Folder</button>
       </div>
     </div>
+
+    <div class="notification" id="notification"></div>
 
     <div class="settings-container" id="settingsContainer">
       <div class="settings">
@@ -982,8 +990,6 @@
         </div>
       </div>
     </div>
-
-    <div class="notification" id="notification"></div>
 
     <script>
       document.addEventListener("DOMContentLoaded", async () => {
@@ -1125,19 +1131,36 @@
           }
           
           files.forEach((file, index) => {
-            const fileDiv = document.createElement("div");
-            fileDiv.classList.add("file");
-            fileDiv.style.display = "flex";
-            fileDiv.style.alignItems = "center";
-            fileDiv.style.justifyContent = "space-between";
-            fileDiv.style.padding = "6px 8px";
-            fileDiv.style.animation = `fadeIn 0.3s ease-out ${index * 0.05}s both`;
+            const fileButton = document.createElement("button");
+            fileButton.classList.add("file");
+            fileButton.style.animation = `fadeIn 0.3s ease-out ${index * 0.05}s both`;
+
+            const fileContent = document.createElement("div");
+            fileContent.classList.add("file-content");
 
             const fileNameSpan = document.createElement("span");
             fileNameSpan.textContent = file;
-            fileNameSpan.style.cursor = "pointer";
-            fileNameSpan.style.fontSize = "0.8rem";
-            fileNameSpan.addEventListener("click", async () => {
+            fileContent.appendChild(fileNameSpan);
+
+            const deleteButton = document.createElement("button");
+            deleteButton.classList.add("delete-button");
+            deleteButton.innerHTML = `<img src="assets/Delete.png" alt="Delete" width="14" height="14" />`;
+            deleteButton.addEventListener("click", async (event) => {
+              event.stopPropagation();
+              const confirmed = confirm(`Do you really want to delete ${file}?`);
+              if (confirmed) {
+                showNotification(`Deleting ${file}...`);
+                const result = await window.electron.deleteScript(file);
+                console.log(result);
+                updateFileList();
+                showNotification(`${file} deleted successfully`, 'success');
+              }
+            });
+
+            fileButton.appendChild(fileContent);
+            fileButton.appendChild(deleteButton);
+
+            fileButton.addEventListener("click", async () => {
               showNotification(`Loading ${file}...`);
               const content = await window.electron.loadScript(file);
               const iframe = document.getElementById("monacoIframe");
@@ -1149,28 +1172,8 @@
                 showNotification(`${file} loaded successfully`, 'success');
               }
             });
-            fileDiv.appendChild(fileNameSpan);
 
-            const deleteButton = document.createElement("button");
-            deleteButton.classList.add("delete-button");
-            deleteButton.innerHTML = `<img src="assets/Delete.png" alt="Delete" width="14" height="14" />`;
-            deleteButton.style.cursor = "pointer";
-            deleteButton.addEventListener("click", async (event) => {
-              event.stopPropagation();
-              const confirmed = confirm(
-                `Do you really want to delete ${file}?`
-              );
-              if (confirmed) {
-                showNotification(`Deleting ${file}...`);
-                const result = await window.electron.deleteScript(file);
-                console.log(result);
-                updateFileList();
-                showNotification(`${file} deleted successfully`, 'success');
-              }
-            });
-            fileDiv.appendChild(deleteButton);
-
-            fileListElement.appendChild(fileDiv);
+            fileListElement.appendChild(fileButton);
           });
         }
         updateFileList();
