@@ -35,7 +35,7 @@ function sendToConsole(message) {
   });
 }
 
-function createWindows() {
+async function createWindows() {
   splashWindow = new BrowserWindow({
     width: 400,
     height: 300,
@@ -74,6 +74,10 @@ function createWindows() {
   require("./src/ipc/ipcScripts")(ipcMain, mainWindow, sendToConsole);
   require("./src/ipc/ipcSettings")(ipcMain, mainWindow, state);
   require("./src/ipc/ipcExecutor")(ipcMain, mainWindow, sendToConsole, state);
+
+  updateSplash(0, "Checking for updates...");
+
+  await Updater.checkForUpdates(splashWindow);
 
   startBootstrapProcess();
 }
@@ -130,10 +134,6 @@ async function downloadDLL() {
   });
 }
 async function startBootstrapProcess() {
-  updateSplash(0, "Checking for updates...");
-
-  Updater.checkForUpdates(mainWindow);
-
   updateSplash(0, "Cleaning up old files...");
 
   deleteFiles(sirHurtPath);

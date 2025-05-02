@@ -6,7 +6,7 @@ const { app, dialog } = require("electron");
 const API_URL = `https://api.github.com/repos/nici002018/NiceHurt/releases/latest`;
 
 class Updater {
-  static async checkForUpdates(mainWindow) {
+  static async checkForUpdates(splashWindow) {
     try {
       const fetch = (await import("node-fetch")).default;
       const res = await fetch(API_URL, {
@@ -19,12 +19,10 @@ class Updater {
       const currentVersion = app.getVersion();
       if (latestVersion <= currentVersion) return;
 
-      const asset = release.assets.find(
-        (a) => a.name.endsWith(".exe") || a.name.endsWith(".dmg")
-      );
+      const asset = release.assets.find((a) => a.name.endsWith(".exe"));
       if (!asset) return;
 
-      const choice = dialog.showMessageBoxSync(mainWindow, {
+      const choice = dialog.showMessageBoxSync(splashWindow, {
         type: "info",
         buttons: ["Update Now", "Later"],
         defaultId: 0,
@@ -33,52 +31,82 @@ class Updater {
         message: `A new version (${latestVersion}) is available! Do you want to update now?`,
       });
       if (choice === 0) {
+        console.log("link: " + asset.browser_download_url);
         await Updater.downloadAndInstall(
           asset.browser_download_url,
-          mainWindow
+          splashWindow
         );
+      } else {
+        console.log("User chose to update later.");
+        return;
       }
     } catch (err) {
       console.error("Auto-update error:", err);
     }
   }
 
-  static downloadAndInstall(url, mainWindow) {
+  static downloadAndInstall(url, splashWindow) {
     return new Promise((resolve, reject) => {
       const tmpFile = path.join(app.getPath("temp"), path.basename(url));
       const fileStream = fs.createWriteStream(tmpFile);
 
-      https
-        .get(url, (res) => {
-          const total = parseInt(res.headers["content-length"], 10) || 0;
-          let downloaded = 0;
+      // download with headers and follow redirects
+      function request(downloadUrl) {
+        const options = {
+          headers: {
+            "User-Agent": "NiceHurt-Updater",
+            Accept: "application/octet-stream",
+          },
+        };
+        https
+          .get(downloadUrl, options, (res) => {
+            if (
+              res.statusCode >= 300 &&
+              res.statusCode < 400 &&
+              res.headers.location
+            ) {
+              return request(res.headers.location);
+            }
 
-          res.on("data", (chunk) => {
-            downloaded += chunk.length;
-            const percent = total
-              ? Math.round((downloaded / total) * 100)
-              : null;
-            mainWindow.webContents.send("update-status", {
-              progress: percent,
-              message: "Downloading update...",
-            });
-          });
-
-          res.pipe(fileStream);
-          fileStream.on("finish", () => {
-            fileStream.close(() => {
-              execFile(tmpFile, (err) => {
-                if (err) return reject(err);
-                app.quit();
-                resolve();
+            const total = parseInt(res.headers["content-length"], 10) || 0;
+            let downloaded = 0;
+            res.on("data", (chunk) => {
+              downloaded += chunk.length;
+              const percent = total
+                ? Math.round((downloaded / total) * 100)
+                : null;
+              splashWindow.webContents.send("update-status", {
+                progress: percent,
+                message: "Downloading update...",
               });
             });
+
+            res.pipe(fileStream);
+            fileStream.on("finish", () => {
+              fileStream.close(() => {
+                // launch the downloaded installer
+                execFile(tmpFile, (err) => {
+                  if (err) {
+                    reject(err);
+                    return;
+                  }
+                  splashWindow.webContents.send("update-status", {
+                    progress: 100,
+                    message: "Installing update...",
+                  });
+
+                  resolve();
+                });
+              });
+            });
+          })
+          .on("error", (err) => {
+            fileStream.close();
+            reject(err);
           });
-        })
-        .on("error", (err) => {
-          fileStream.close();
-          reject(err);
-        });
+      }
+
+      request(url);
     });
   }
 }

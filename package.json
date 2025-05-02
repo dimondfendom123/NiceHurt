@@ -1,6 +1,6 @@
 {
   "name": "nicehurt",
-  "version": "2.0.0-alpha.4",
+  "version": "2.0.0-alpha.5",
   "main": "Main.js",
   "scripts": {
     "start": "electron --core .",
@@ -26,7 +26,7 @@
     "unzipper": "^0.12.3"
   },
   "devDependencies": {
-    "electron": "^36.0.0",
+    "electron": "^35.1.5",
     "electron-builder": "^26.0.12"
   },
   "build": {
