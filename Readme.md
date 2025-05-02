@@ -63,3 +63,6 @@ Contributions are welcome! Please fork the repository and submit a pull request.
 - **Better Console**: Add a better console for the application. (Coloring and etc.)
 - **Better File-Manager**: Add a better file manager for the application. (Folder support and etc.)
 - **Recode**: Recode the application to a better and more optimized version.
+- **Check SirHurt Updates/Versions**: ~~Check for updates and versions of SirHurt.~~
+- **Check for Updates**: ~~Check for updates of the application.~~
+- **Ask for Windows Defender Exclusion**: ~~Ask for Windows Defender exclusion for the application.~~

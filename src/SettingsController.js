@@ -11,6 +11,8 @@ class Settings {
           alwaysOnTop: false,
           autoInject: false,
           screenShareProtect: false,
+          skipWhitelistAsk: false,
+          whitelistFolder: false,
         };
         this.saveSettings(defaultSettings);
         return defaultSettings;
@@ -22,7 +24,7 @@ class Settings {
       throw error;
     }
   }
-  
+
   static saveSettings(settings) {
     try {
       fs.writeFileSync(SETTINGS_PATH, JSON.stringify(settings, null, 2));

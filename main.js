@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain } = require("electron");
+const { app, BrowserWindow, ipcMain, dialog } = require("electron");
 const path = require("path");
 const { exec } = require("child_process");
 const { startup } = require("./src/injector/InjectorController");
@@ -65,6 +65,40 @@ async function createWindows() {
   require("./src/ipc/ipcSettings")(ipcMain, mainWindow, state);
   require("./src/ipc/ipcExecutor")(ipcMain, mainWindow, sendToConsole, state);
   require("./src/ipc/ipcWindow")(ipcMain, mainWindow);
+
+  if (!settings.skipWhitelistAsk) {
+    const choice = dialog.showMessageBoxSync(splashWindow, {
+      type: "info",
+      buttons: ["Yes", "No"],
+      defaultId: 0,
+      cancelId: 1,
+      title: "Windows Defender",
+      message: `Do you want to whitelist the NiceHurt folder for Windows Defender? \nThis will help prevent any false positives.`,
+    });
+    settings.skipWhitelistAsk = true;
+    settings.whitelistFolder = choice === 0;
+    Settings.saveSettings(settings);
+  }
+
+  if (settings.whitelistFolder) {
+    // Whitelist NiceHurt folder for Windows Defender
+    const whitelistCommand = `powershell -Command "Add-MpPreference -ExclusionPath '${path.join(
+      process.env.APPDATA,
+      "NiceHurt"
+    )}'"`;
+    exec(whitelistCommand, (error, stdout, stderr) => {
+      if (error) {
+        console.error(`Error: ${error.message}`);
+        return;
+      }
+      if (stderr) {
+        console.error(`PowerShell-Error: ${stderr}`);
+        return;
+      }
+    });
+  } else {
+    console.log("User chose not to whitelist.");
+  }
 
   splashWindow.webContents.send("update-status", {
     progress: 0,
@@ -141,25 +175,6 @@ async function monitorRobloxPlayer() {
 }
 
 setInterval(monitorRobloxPlayer, 5000);
-
-// Whitelist NiceHurt folder for Windows Defender
-// This is required to prevent the DLL and EXE from being removed
-
-const whitelistCommand = `powershell -Command "Add-MpPreference -ExclusionPath '${path.join(
-  process.env.APPDATA,
-  "NiceHurt"
-)}'"`;
-
-exec(whitelistCommand, (error, stdout, stderr) => {
-  if (error) {
-    console.error(`Error: ${error.message}`);
-    return;
-  }
-  if (stderr) {
-    console.error(`PowerShell-Error: ${stderr}`);
-    return;
-  }
-});
 
 app.whenReady().then(() => {
   createWindows();
