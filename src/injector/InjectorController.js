@@ -42,7 +42,7 @@ class InjectorController {
     this.injected = true;
     try {
       const status = this.injection();
-      console.log("Injection status:", status);
+      console.log("Startup Injection status:", status);
 
       if (status === 1 && !this.loopStarted) {
         this.loopStarted = true;
@@ -84,9 +84,6 @@ class InjectorController {
         });
         return -1;
       }
-      axios.post("http://localhost:9292/roblox-console", {
-        content: "[NiceHurt]: Injecting Roblox Client!",
-      });
     });
     return 1;
   }

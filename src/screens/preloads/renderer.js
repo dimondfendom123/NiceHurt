@@ -100,4 +100,7 @@ contextBridge.exposeInMainWorld("electron", {
     ),
   setSirhurtVersion: (version) =>
     ipcRenderer.send("setSirhurtVersion", version),
+  getConsolePauseState: () => ipcRenderer.invoke("get-console-pause-state"),
+  setConsolePauseState: (state) =>
+    ipcRenderer.send("set-console-pause-state", state),
 });

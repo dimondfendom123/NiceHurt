@@ -2,6 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const { dialog } = require("electron");
 const { InjectorController } = require("../injector/InjectorController");
+const { exec } = require("child_process");
 
 const defaultFolder = path.join(process.env.APPDATA, "NiceHurt", "scripts");
 
@@ -102,4 +103,55 @@ module.exports = (ipcMain, mainWindow, sendToConsole, state) => {
       return `Error executing DLL method: ${error.message}`;
     }
   });
+
+  async function isRobloxPlayerRunning() {
+    return new Promise((resolve, reject) => {
+      exec("tasklist", (error, stdout, stderr) => {
+        if (error) {
+          return reject(error);
+        }
+        resolve(stdout.toLowerCase().includes("robloxplayerbeta.exe"));
+      });
+    });
+  }
+
+  async function monitorRobloxPlayer() {
+    try {
+      const running = await isRobloxPlayerRunning();
+
+      if (!running) {
+        if (mainWindow?.webContents && state.isInjection) {
+          mainWindow.webContents.send("update-status", { message: "red" });
+          state.isInjection = false;
+          InjectorController.injected = false;
+          sendToConsole("Roblox player closed!");
+        }
+      } else if (
+        state.autoInject &&
+        !state.isInjection &&
+        !state.autoIsInjection
+      ) {
+        state.autoIsInjection = true;
+        mainWindow?.webContents?.send("update-status", { message: "waiting" });
+
+        const Status = await InjectorController.startup();
+        console.log("Injection status:", Status);
+
+        if (Status === 1) {
+          mainWindow?.webContents?.send("update-status", {
+            message: "success",
+          });
+          state.isInjection = true;
+        } else if (Status === -1) {
+          mainWindow?.webContents?.send("update-status", { message: "red" });
+        }
+
+        state.autoIsInjection = false;
+      }
+    } catch (err) {
+      console.error("Error checking Roblox player:", err);
+    }
+  }
+
+  setInterval(monitorRobloxPlayer, 5000);
 };

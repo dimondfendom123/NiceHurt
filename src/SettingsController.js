@@ -15,6 +15,7 @@ class Settings {
           alwaysOnTop: false,
           autoInject: false,
           screenShareProtect: false,
+          consolePause: false,
           skipWhitelistAsk: false,
           whitelistFolder: false,
         };

@@ -4,6 +4,15 @@ const socketIo = require("socket.io");
 const path = require("path");
 const fs = require("fs");
 const { InjectorController } = require("../injector/InjectorController");
+const { ipcMain } = require("electron");
+
+let disable = false;
+
+ipcMain.handle("get-console-pause-state", () => disable);
+ipcMain.on("set-console-pause-state", (_, state) => {
+  console.log("Console pause state changed:", state);
+  disable = state;
+});
 
 const app = express();
 const server = http.createServer(app);
@@ -13,6 +22,9 @@ app.use(express.json());
 
 app.post("/roblox-console", (req, res) => {
   const { content } = req.body;
+  if (disable) {
+    return;
+  }
 
   if (content) {
     io.emit("console-update", content);

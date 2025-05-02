@@ -1,7 +1,6 @@
 const { app, BrowserWindow, ipcMain, dialog } = require("electron");
 const path = require("path");
 const { exec } = require("child_process");
-const { startup } = require("./src/injector/InjectorController");
 const { Settings } = require("./src/SettingsController");
 const Updater = require("./src/Auto-Updater");
 const { post } = require("axios");
@@ -11,7 +10,6 @@ require("./src/console/Controller");
 let mainWindow;
 let splashWindow;
 
-let Status;
 const settings = Settings.loadSettings();
 const state = {
   autoInject: settings.autoInject,
@@ -118,58 +116,6 @@ async function createWindows() {
     mainWindow.show();
   }, 2000);
 }
-
-async function isRobloxPlayerRunning() {
-  return new Promise((resolve, reject) => {
-    exec("tasklist", (error, stdout, stderr) => {
-      if (error) {
-        return reject(error);
-      }
-      if (stdout.toLowerCase().includes("robloxplayerbeta.exe")) {
-        resolve(true);
-      } else {
-        resolve(false);
-      }
-    });
-  });
-}
-
-async function monitorRobloxPlayer() {
-  try {
-    const running = await isRobloxPlayerRunning();
-
-    if (!running) {
-      if (mainWindow?.webContents && state.isInjection) {
-        mainWindow.webContents.send("update-status", { message: "red" });
-        state.isInjection = false;
-        sendToConsole("Roblox player closed!");
-      }
-    } else if (
-      state.autoInject &&
-      !state.isInjection &&
-      !state.autoIsInjection
-    ) {
-      state.autoIsInjection = true;
-      mainWindow?.webContents?.send("update-status", { message: "waiting" });
-
-      Status = await startup();
-      console.log("Injection status:", Status);
-
-      if (Status === 1) {
-        mainWindow?.webContents?.send("update-status", { message: "success" });
-        state.isInjection = true;
-      } else if (Status === -1) {
-        mainWindow?.webContents?.send("update-status", { message: "red" });
-      }
-
-      state.autoIsInjection = false;
-    }
-  } catch (err) {
-    console.error("Error checking Roblox player:", err);
-  }
-}
-
-setInterval(monitorRobloxPlayer, 5000);
 
 app.whenReady().then(() => {
   createWindows();

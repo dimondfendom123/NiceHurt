@@ -7,15 +7,17 @@ module.exports = (ipcMain, mainWindow, state) => {
 
   ipcMain.handle("save-settings", async (event, newSettings) => {
     const currentSettings = Settings.loadSettings();
-    newSettings.skipWhitelistAsk = currentSettings.skipWhitelistAsk;
-    newSettings.whitelistFolder = currentSettings.whitelistFolder;
+    const mergedSettings = {
+      ...currentSettings,
+      ...newSettings,
+    };
+    Settings.saveSettings(mergedSettings);
 
-    Settings.saveSettings(newSettings);
     if (mainWindow) {
-      mainWindow.setAlwaysOnTop(newSettings.alwaysOnTop);
-      mainWindow.setContentProtection(newSettings.screenShareProtect);
+      mainWindow.setAlwaysOnTop(mergedSettings.alwaysOnTop);
+      mainWindow.setContentProtection(mergedSettings.screenShareProtect);
     }
-    state.autoInject = newSettings.autoInject;
+    state.autoInject = mergedSettings.autoInject;
     return true;
   });
 };
