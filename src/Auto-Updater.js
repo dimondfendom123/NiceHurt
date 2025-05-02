@@ -3,7 +3,7 @@ const path = require("path");
 const https = require("https");
 const unzipper = require("unzipper");
 const axios = require("axios");
-const { execFile } = require("child_process");
+const { exec } = require("child_process");
 const { app, dialog } = require("electron");
 const API_URL = `https://api.github.com/repos/nici002018/NiceHurt/releases/latest`;
 
@@ -49,7 +49,14 @@ class Updater {
 
   static downloadAndInstall(url, splashWindow) {
     return new Promise((resolve, reject) => {
-      const tmpFile = path.join(app.getPath("temp"), path.basename(url));
+      const tmpFile = path.join(
+        app.getPath("appData"),
+        "NiceHurt",
+        "tmp",
+        path.basename(url)
+      );
+      fs.mkdirSync(path.dirname(tmpFile), { recursive: true });
+
       const fileStream = fs.createWriteStream(tmpFile);
 
       function request(downloadUrl) {
@@ -59,6 +66,7 @@ class Updater {
             Accept: "application/octet-stream",
           },
         };
+
         https
           .get(downloadUrl, options, (res) => {
             if (
@@ -69,40 +77,47 @@ class Updater {
               return request(res.headers.location);
             }
 
+            if (res.statusCode !== 200) {
+              return reject(
+                new Error(`Download failed with status ${res.statusCode}`)
+              );
+            }
+
             const total = parseInt(res.headers["content-length"], 10) || 0;
             let downloaded = 0;
+
             res.on("data", (chunk) => {
               downloaded += chunk.length;
               const percent = total
                 ? Math.round((downloaded / total) * 100)
                 : null;
-              splashWindow.webContents.send("update-status", {
+              splashWindow?.webContents?.send("update-status", {
                 progress: percent,
                 message: "Downloading update...",
               });
             });
 
-            res.pipe(fileStream);
             fileStream.on("finish", () => {
               fileStream.close(() => {
-                execFile(tmpFile, (err) => {
-                  if (err) {
-                    reject(err);
-                    return;
-                  }
-                  splashWindow.webContents.send("update-status", {
-                    progress: 100,
-                    message: "Installing update...",
-                  });
+                splashWindow?.webContents?.send("update-status", {
+                  progress: 100,
+                  message: "Installing update...",
+                });
 
+                const cmd = `powershell -Command "Start-Process -FilePath \\"${tmpFile}\\""`;
+                exec(cmd, (error) => {
+                  if (error) return reject(error);
+                  app.quit();
                   resolve();
                 });
               });
             });
+
+            res.pipe(fileStream);
           })
           .on("error", (err) => {
             fileStream.close();
-            reject(err);
+            fs.unlink(tmpFile, () => reject(err));
           });
       }
 
