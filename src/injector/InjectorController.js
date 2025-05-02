@@ -4,6 +4,9 @@ const { exec } = require("child_process");
 const axios = require("axios");
 
 class InjectorController {
+  static injected = false;
+  static loopStarted = false;
+
   static async autoexec() {
     try {
       const autoexecPath = path.join(
@@ -35,18 +38,19 @@ class InjectorController {
   }
 
   static async startup() {
+    if (this.injected) return 1;
+    this.injected = true;
     try {
-      const status = await this.injection();
-
+      const status = this.injection();
       console.log("Injection status:", status);
 
-      if (status === 1) {
+      if (status === 1 && !this.loopStarted) {
+        this.loopStarted = true;
         this.loopExecution();
         axios.post("http://localhost:9292/roblox-console", {
           content: "[NiceHurt]: Injection successful!",
         });
       }
-      console.log("Injection status:", status);
       return status;
     } catch {
       return -1;
@@ -54,8 +58,10 @@ class InjectorController {
   }
 
   static async loopExecution() {
-    const luaFilePath = path.join(__dirname, "src/console/Roblox-Console.lua");
-    setInterval(async () => {
+    if (this.loopStarted && this._intervalId) return;
+
+    const luaFilePath = path.join(__dirname, "../console/Roblox-Console.lua");
+    this._intervalId = setInterval(async () => {
       try {
         const luaContent = await fs.promises.readFile(luaFilePath, "utf-8");
         await this.execution(luaContent);
@@ -78,9 +84,9 @@ class InjectorController {
         });
         return -1;
       }
-    });
-    axios.post("http://localhost:9292/roblox-console", {
-      content: "[NiceHurt]: Injecting Roblox Client!",
+      axios.post("http://localhost:9292/roblox-console", {
+        content: "[NiceHurt]: Injecting Roblox Client!",
+      });
     });
     return 1;
   }

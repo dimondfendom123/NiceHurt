@@ -21,7 +21,10 @@
         margin: 0;
         padding: 0;
         box-sizing: border-box;
+        overflow: hidden;
         font-family: "Segoe UI", "Roboto", "Oxygen", "Ubuntu", sans-serif;
+        user-select: none;
+        -webkit-app-region: drag;
       }
 
       body {
@@ -44,46 +47,28 @@
           );
         padding: 20px;
         text-align: center;
+        animation: fadeIn 1s ease-out;
       }
 
-      .logo {
-        font-size: 2rem;
-        font-weight: 600;
-        margin-bottom: 30px;
-        background: linear-gradient(to right, var(--text), var(--primary));
-        -webkit-background-clip: text;
-        background-clip: text;
-        color: transparent;
-        text-shadow: 0 0 10px rgba(109, 40, 217, 0.3);
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
       }
 
-      .progress-container {
-        width: 100%;
-        max-width: 400px;
-        height: 8px;
-        background-color: var(--progress-bg);
-        border-radius: 4px;
-        overflow: hidden;
-        margin-bottom: 20px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-      }
-
-      .progress-bar {
-        height: 100%;
-        width: 0;
-        background: linear-gradient(90deg, var(--primary), var(--primary-dark));
-        border-radius: 4px;
-        transition: width 0.3s ease;
-        box-shadow: 0 0 10px rgba(109, 40, 217, 0.5);
-      }
-
-      .status {
-        color: var(--text-dim);
-        font-size: 0.9rem;
-        margin-top: 10px;
-        text-align: center;
-        max-width: 400px;
-        line-height: 1.5;
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-5px);
+        }
       }
 
       @keyframes pulse {
@@ -98,12 +83,125 @@
         }
       }
 
+      @keyframes glow {
+        0% {
+          text-shadow: 0 0 5px rgba(109, 40, 217, 0);
+        }
+        50% {
+          text-shadow: 0 0 15px rgba(109, 40, 217, 0.5);
+        }
+        100% {
+          text-shadow: 0 0 5px rgba(109, 40, 217, 0);
+        }
+      }
+
+      @keyframes progressPulse {
+        0% {
+          box-shadow: 0 0 5px rgba(109, 40, 217, 0.3);
+        }
+        50% {
+          box-shadow: 0 0 15px rgba(109, 40, 217, 0.6);
+        }
+        100% {
+          box-shadow: 0 0 5px rgba(109, 40, 217, 0.3);
+        }
+      }
+
+      @keyframes rotate {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      @keyframes scaleIn {
+        from {
+          transform: scale(0.9);
+          opacity: 0;
+        }
+        to {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+
+      .logo {
+        font-size: 2rem;
+        font-weight: 600;
+        margin-bottom: 30px;
+        background: linear-gradient(to right, var(--text), var(--primary));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        text-shadow: 0 0 10px rgba(109, 40, 217, 0.3);
+        animation: float 3s ease-in-out infinite, glow 2s ease-in-out infinite;
+        transition: all 0.3s ease;
+      }
+
+      .logo:hover {
+        transform: scale(1.05) rotate(2deg);
+      }
+
+      .progress-container {
+        width: 100%;
+        max-width: 400px;
+        height: 8px;
+        background-color: var(--progress-bg);
+        border-radius: 4px;
+        overflow: hidden;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        animation: scaleIn 0.5s ease-out 0.2s both;
+      }
+
+      .progress-bar {
+        height: 100%;
+        width: 0;
+        background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+        border-radius: 4px;
+        transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 0 10px rgba(109, 40, 217, 0.5);
+        animation: progressPulse 2s infinite;
+      }
+
+      .status {
+        color: var(--text-dim);
+        font-size: 0.9rem;
+        margin-top: 10px;
+        text-align: center;
+        max-width: 400px;
+        line-height: 1.5;
+        animation: fadeIn 0.5s ease-out 0.4s both;
+      }
+
       .loading-dots::after {
         content: "...";
         animation: pulse 1.5s infinite;
         display: inline-block;
         width: 20px;
         text-align: left;
+      }
+
+      .spinner {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: var(--primary);
+        animation: rotate 1s linear infinite;
+        margin-left: 8px;
+        vertical-align: middle;
+      }
+
+      .completed-check {
+        display: inline-block;
+        color: var(--primary);
+        font-size: 1.2rem;
+        margin-left: 8px;
+        animation: scaleIn 0.3s ease-out;
       }
     </style>
   </head>
@@ -117,22 +215,46 @@
     </div>
 
     <script>
-      window.electron.updateStatus((data) => {
+      document.addEventListener("DOMContentLoaded", () => {
         const progressBar = document.getElementById("progress-bar");
         const statusText = document.getElementById("status-text");
 
-        progressBar.style.width = data.progress + "%";
+        progressBar.addEventListener("transitionend", () => {
+          progressBar.style.animation = "none";
+          void progressBar.offsetWidth;
+          progressBar.style.animation = "progressPulse 2s infinite";
+        });
 
-        if (data.progress >= 100) {
-          statusText.innerHTML = data.message;
-        } else {
-          statusText.innerHTML =
-            data.message + '<span class="loading-dots"></span>';
-        }
+        window.electron.updateStatus((data) => {
+          progressBar.style.width = data.progress + "%";
 
-        progressBar.style.animation = "none";
-        void progressBar.offsetWidth;
-        progressBar.style.animation = "pulse 0.5s ease";
+          if (data.progress >= 100) {
+            statusText.innerHTML = data.message;
+            progressBar.style.animation = "none";
+            progressBar.style.boxShadow = "0 0 15px rgba(109, 40, 217, 0.8)";
+
+            setTimeout(() => {
+              document.body.style.animation =
+                "fadeIn 0.5s ease reverse forwards";
+            }, 1500);
+          } else {
+            statusText.innerHTML =
+              data.message + '<span class="loading-dots"></span>';
+          }
+
+          progressBar.style.animation = "none";
+          void progressBar.offsetWidth;
+          progressBar.style.animation = "progressPulse 2s infinite";
+        });
+
+        setTimeout(() => {
+          const dots = document.querySelector(".loading-dots");
+          if (dots) {
+            dots.style.animation = "none";
+            void dots.offsetWidth;
+            dots.style.animation = "pulse 1.5s infinite";
+          }
+        }, 100);
       });
     </script>
   </body>

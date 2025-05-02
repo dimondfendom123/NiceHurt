@@ -1,6 +1,9 @@
 const fs = require("fs");
+const path = require("path");
 const { dialog } = require("electron");
 const { InjectorController } = require("../injector/InjectorController");
+
+const defaultFolder = path.join(process.env.APPDATA, "NiceHurt", "scripts");
 
 module.exports = (ipcMain, mainWindow, sendToConsole, state) => {
   const sendStatus = (message) => {
@@ -40,7 +43,6 @@ module.exports = (ipcMain, mainWindow, sendToConsole, state) => {
           return "Autoexec executed";
 
         case "execution":
-          console.log("Executing script:", arg);
           await sendToConsole("Executing script!");
           InjectorController.execution(arg);
           return "Script executed";
@@ -62,7 +64,7 @@ module.exports = (ipcMain, mainWindow, sendToConsole, state) => {
             mainWindow,
             {
               title: "Save Lua Script",
-              defaultPath: "script.lua",
+              defaultPath: path.join(defaultFolder, "script.lua"),
               filters: [{ name: "Lua Files", extensions: ["lua"] }],
             }
           );
@@ -78,6 +80,7 @@ module.exports = (ipcMain, mainWindow, sendToConsole, state) => {
             mainWindow,
             {
               title: "Open Script",
+              defaultPath: defaultFolder,
               filters: [
                 { name: "Script Files", extensions: ["txt", "lua", "luau"] },
               ],

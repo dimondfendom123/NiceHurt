@@ -6,6 +6,10 @@ module.exports = (ipcMain, mainWindow, state) => {
   });
 
   ipcMain.handle("save-settings", async (event, newSettings) => {
+    const currentSettings = Settings.loadSettings();
+    newSettings.skipWhitelistAsk = currentSettings.skipWhitelistAsk;
+    newSettings.whitelistFolder = currentSettings.whitelistFolder;
+
     Settings.saveSettings(newSettings);
     if (mainWindow) {
       mainWindow.setAlwaysOnTop(newSettings.alwaysOnTop);

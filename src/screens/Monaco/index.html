@@ -68,6 +68,12 @@ html, body {
     overflow: hidden;
     border-top: 1px solid var(--widget-border);
     background-color: var(--editor-bg);
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+#container.fade-out {
+    opacity: 0;
 }
 
 #tabs-container {
@@ -105,13 +111,41 @@ html, body {
     user-select: none;
     font-size: 11px;
     color: var(--tab-text);
-    transition: all 0.2s ease;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     align-items: center;
     height: 28px;
     border: 1px solid transparent;
     white-space: nowrap;
     flex-shrink: 0;
+    transform-origin: left center;
+    animation: tabEnter 0.3s ease-out forwards;
+}
+
+@keyframes tabEnter {
+    0% {
+        transform: scaleX(0.8);
+        opacity: 0;
+    }
+    100% {
+        transform: scaleX(1);
+        opacity: 1;
+    }
+}
+
+.tab.exit {
+    animation: tabExit 0.2s ease-in forwards;
+}
+
+@keyframes tabExit {
+    0% {
+        transform: scaleX(1);
+        opacity: 1;
+    }
+    100% {
+        transform: scaleX(0.8);
+        opacity: 0;
+    }
 }
 
 .tab::before {
@@ -134,6 +168,7 @@ html, body {
 
 .tab:hover {
     background-color: color-mix(in srgb, var(--tab-bg) 85%, white);
+    transform: translateY(-1px);
 }
 
 .tab:hover::before {
@@ -144,7 +179,8 @@ html, body {
     background-color: var(--tab-active-bg);
     color: var(--tab-text-active);
     border-color: var(--tab-border);
-    box-shadow: 0 0 0 1px var(--tab-border);
+    box-shadow: 0 0 0 1px var(--tab-border), 0 2px 4px rgba(0, 0, 0, 0.2);
+    transform: translateY(0);
 }
 
 .tab.dirty::after {
@@ -155,6 +191,13 @@ html, body {
     transform: translateY(-50%);
     color: var(--tab-border);
     font-weight: bold;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 0.5; }
+    50% { opacity: 1; }
+    100% { opacity: 0.5; }
 }
 
 .tab-close {
@@ -169,17 +212,20 @@ html, body {
     opacity: 0;
     transition: all 0.2s ease;
     color: inherit;
+    transform: scale(0.8);
 }
 
 .tab:hover .tab-close,
 .tab.active .tab-close {
     opacity: 0.7;
+    transform: scale(1);
 }
 
 .tab-close:hover {
     background-color: var(--tab-border);
     color: white;
     opacity: 1 !important;
+    transform: scale(1.1);
 }
 
 .tab-actions {
@@ -202,12 +248,17 @@ html, body {
     justify-content: center;
     border-radius: 4px;
     font-size: 12px;
-    transition: all 0.2s ease;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .tab-action:hover {
     background-color: var(--tab-border);
     color: white;
+    transform: scale(1.1);
+}
+
+.tab-action:active {
+    transform: scale(0.95);
 }
 
 #tabs-container::after {
@@ -289,10 +340,42 @@ html, body {
 ::-webkit-scrollbar-thumb {
     background: var(--indent-guide);
     border-radius: 3px;
+    transition: background 0.2s ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {
     background: var(--active-indent-guide);
+}
+
+/* Loading animation for editor */
+.loading-editor {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    z-index: 100;
+}
+
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    border-top-color: var(--function-color);
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.loading-text {
+    color: var(--tab-text);
+    font-size: 14px;
 }
     </style>
 </head>
@@ -311,10 +394,16 @@ html, body {
             </div>
         </div>
         <div id="container"></div>
+        <div class="loading-editor" id="loading-indicator" style="display: none;">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Loading editor...</div>
+        </div>
     </div>
 
     <script src="vs/loader.js"></script>
     <script type="text/javascript">
+        document.getElementById('loading-indicator').style.display = 'flex';
+
         require.config({
             paths: {
                 'vs': 'vs',
@@ -341,6 +430,7 @@ html, body {
         var minimapEnabled = false;
 
         require(['vs/editor/editor.main'], function () {
+            document.getElementById('loading-indicator').style.display = 'none';
 
             function getCssVar(name) {
                 return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
@@ -514,11 +604,9 @@ html, body {
                 });
 
                 editor.onDidChangeCursorPosition(function(e) {
-                    
                 });
 
                 editor.onDidChangeCursorSelection(function(e) {
-                    
                 });
 
                 editor.onDidChangeModelContent(function() {
@@ -592,15 +680,22 @@ html, body {
 
             function switchToTab(tabId) {
                 if (!tabs[tabId]) return;
-                
-                currentTab = tabId;
-                
-                document.querySelectorAll('.tab').forEach(tab => {
-                    tab.classList.toggle('active', tab.dataset.id === tabId);
-                });
-                
-                editor.setValue(tabs[tabId].content);
-                monaco.editor.setModelLanguage(editor.getModel(), tabs[tabId].language);
+
+                const container = document.getElementById('container');
+                container.classList.add('fade-out');
+
+                setTimeout(() => {
+                    currentTab = tabId;
+                    
+                    document.querySelectorAll('.tab').forEach(tab => {
+                        tab.classList.toggle('active', tab.dataset.id === tabId);
+                    });
+                    
+                    editor.setValue(tabs[tabId].content);
+                    monaco.editor.setModelLanguage(editor.getModel(), tabs[tabId].language);
+
+                    container.classList.remove('fade-out');
+                }, 150);
             }
 
             function closeTab(tabId) {
@@ -609,14 +704,17 @@ html, body {
                 }
                 
                 const tabElement = document.querySelector(`.tab[data-id="${tabId}"]`);
-                tabElement.remove();
+                tabElement.classList.add('exit');
                 
-                delete tabs[tabId];
-                
-                if (currentTab === tabId) {
-                    const newTabId = Object.keys(tabs)[0];
-                    switchToTab(newTabId);
-                }
+                setTimeout(() => {
+                    tabElement.remove();
+                    delete tabs[tabId];
+                    
+                    if (currentTab === tabId) {
+                        const newTabId = Object.keys(tabs)[0];
+                        switchToTab(newTabId);
+                    }
+                }, 200);
             }
 
             GetText = function() {
@@ -1219,37 +1317,37 @@ html, body {
         });
 
         function setText(text) {
-        if (window.editor) {
-          window.editor.setValue(String(text));
-        } else {
-          console.error("Editor is not initialized");
+            if (window.editor) {
+                window.editor.setValue(String(text));
+            } else {
+                console.error("Editor is not initialized");
+            }
         }
-      }
 
-      function getEditorContent() {
-        if (window.editor) {
-          return window.editor.getValue();
-        } else {
-          console.error("Editor is not initialized");
-          return "";
+        function getEditorContent() {
+            if (window.editor) {
+                return window.editor.getValue();
+            } else {
+                console.error("Editor is not initialized");
+                return "";
+            }
         }
-      }
 
-      window.addEventListener("message", (event) => {
-        if (event.data.action === "getEditorContent") {
-          const editorContent = editor.getValue();
-          window.parent.postMessage(
-            { action: "editorContent", content: editorContent },
-            "*"
-          );
-        }
-      });
+        window.addEventListener("message", (event) => {
+            if (event.data.action === "getEditorContent") {
+                const editorContent = editor.getValue();
+                window.parent.postMessage(
+                    { action: "editorContent", content: editorContent },
+                    "*"
+                );
+            }
+        });
 
-      window.addEventListener("message", (event) => {
-        if (event.data.action === "setText") {
-          SetText(event.data.text);
-        }
-      });
+        window.addEventListener("message", (event) => {
+            if (event.data.action === "setText") {
+                SetText(event.data.text);
+            }
+        });
     </script>
 </body>
 </html>
