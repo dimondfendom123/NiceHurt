@@ -93,7 +93,7 @@ class Updater {
                 : null;
               splashWindow?.webContents?.send("update-status", {
                 progress: percent,
-                message: "Downloading update...",
+                message: "Downloading update",
               });
             });
 
@@ -101,7 +101,7 @@ class Updater {
               fileStream.close(() => {
                 splashWindow?.webContents?.send("update-status", {
                   progress: 100,
-                  message: "Installing update...",
+                  message: "Installing update",
                 });
 
                 const cmd = `powershell -Command "Start-Process -FilePath \\"${tmpFile}\\""`;
@@ -177,7 +177,7 @@ class Updater {
 
     splashWindow.webContents.send("update-status", {
       progress: 20,
-      message: "Checking SirHurt updates...",
+      message: "Checking SirHurt updates",
     });
     try {
       const { data } = await axios.get(statusURL);
@@ -198,18 +198,19 @@ class Updater {
           progress: 0,
           message: "SirHurt is not updated for the latest Roblox Version.",
         });
+        return;
       }
 
       if (needsUpdate) {
         splashWindow.webContents.send("update-status", {
           progress: 0,
-          message: "Downloading SirHurt...",
+          message: "Downloading SirHurt",
         });
         await this.downloadAndUnpackZip(zipURL, sirHurtPath);
 
         splashWindow.webContents.send("update-status", {
           progress: 75,
-          message: "Downloading DLL...",
+          message: "Downloading DLL",
         });
         await this.downloadDLL(dllURL, sirHurtPath);
 

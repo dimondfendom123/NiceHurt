@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NiceHurt Bootstrap</title>
+    <style>
+      :root {
+        --primary: #6d28d9;
+        --primary-dark: #5b21b6;
+        --bg: #0f0f13;
+        --bg-light: #1a1a23;
+        --text: #e0e0e8;
+        --text-dim: #a1a1aa;
+        --border: #3a3a45;
+        --progress-bg: #252533;
+        --progress-fill: #6d28d9;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", "Roboto", "Oxygen", "Ubuntu", sans-serif;
+      }
+
+      body {
+        background: var(--bg);
+        color: var(--text);
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background-image: radial-gradient(
+            circle at 10% 20%,
+            rgba(109, 40, 217, 0.15) 0%,
+            transparent 20%
+          ),
+          radial-gradient(
+            circle at 90% 80%,
+            rgba(109, 40, 217, 0.15) 0%,
+            transparent 20%
+          );
+        padding: 20px;
+        text-align: center;
+      }
+
+      .logo {
+        font-size: 2rem;
+        font-weight: 600;
+        margin-bottom: 30px;
+        background: linear-gradient(to right, var(--text), var(--primary));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        text-shadow: 0 0 10px rgba(109, 40, 217, 0.3);
+      }
+
+      .progress-container {
+        width: 100%;
+        max-width: 400px;
+        height: 8px;
+        background-color: var(--progress-bg);
+        border-radius: 4px;
+        overflow: hidden;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      }
+
+      .progress-bar {
+        height: 100%;
+        width: 0;
+        background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+        border-radius: 4px;
+        transition: width 0.3s ease;
+        box-shadow: 0 0 10px rgba(109, 40, 217, 0.5);
+      }
+
+      .status {
+        color: var(--text-dim);
+        font-size: 0.9rem;
+        margin-top: 10px;
+        text-align: center;
+        max-width: 400px;
+        line-height: 1.5;
+      }
+
+      @keyframes pulse {
+        0% {
+          opacity: 0.6;
+        }
+        50% {
+          opacity: 1;
+        }
+        100% {
+          opacity: 0.6;
+        }
+      }
+
+      .loading-dots::after {
+        content: "...";
+        animation: pulse 1.5s infinite;
+        display: inline-block;
+        width: 20px;
+        text-align: left;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="logo">NiceHurt</div>
+    <div class="progress-container">
+      <div class="progress-bar" id="progress-bar"></div>
+    </div>
+    <div class="status" id="status-text">
+      Initializing<span class="loading-dots"></span>
+    </div>
+
+    <script>
+      window.electron.updateStatus((data) => {
+        const progressBar = document.getElementById("progress-bar");
+        const statusText = document.getElementById("status-text");
+
+        progressBar.style.width = data.progress + "%";
+
+        if (data.progress >= 100) {
+          statusText.innerHTML = data.message;
+        } else {
+          statusText.innerHTML =
+            data.message + '<span class="loading-dots"></span>';
+        }
+
+        progressBar.style.animation = "none";
+        void progressBar.offsetWidth;
+        progressBar.style.animation = "pulse 0.5s ease";
+      });
+    </script>
+  </body>
+</html>

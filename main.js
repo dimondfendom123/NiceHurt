@@ -39,7 +39,7 @@ async function createWindows() {
       contextIsolation: true,
     },
   });
-  splashWindow.loadFile("src/screens/splash.html");
+  splashWindow.loadFile("src/screens/Bootscreen.html");
 
   mainWindow = new BrowserWindow({
     width: 750,
@@ -54,7 +54,7 @@ async function createWindows() {
       nodeIntegration: true,
     },
   });
-  mainWindow.loadFile("src/screens/index.html");
+  mainWindow.loadFile("src/screens/Mainscreen.html");
 
   mainWindow.setAlwaysOnTop(settings.alwaysOnTop);
   mainWindow.setContentProtection(settings.screenShareProtect);
@@ -64,7 +64,7 @@ async function createWindows() {
   require("./src/ipc/ipcScripts")(ipcMain, mainWindow, sendToConsole);
   require("./src/ipc/ipcSettings")(ipcMain, mainWindow, state);
   require("./src/ipc/ipcExecutor")(ipcMain, mainWindow, sendToConsole, state);
-  require("./src/ipc/ipcWindow")(ipcMain, mainWindow);
+  require("./src/ipc/ipcWindow")(app, ipcMain, mainWindow);
 
   if (!settings.skipWhitelistAsk) {
     const choice = dialog.showMessageBoxSync(splashWindow, {
@@ -81,7 +81,6 @@ async function createWindows() {
   }
 
   if (settings.whitelistFolder) {
-    // Whitelist NiceHurt folder for Windows Defender
     const whitelistCommand = `powershell -Command "Add-MpPreference -ExclusionPath '${path.join(
       process.env.APPDATA,
       "NiceHurt"
@@ -161,10 +160,6 @@ async function monitorRobloxPlayer() {
         state.isInjection = true;
       } else if (Status === -1) {
         mainWindow?.webContents?.send("update-status", { message: "red" });
-      } else if (Status === -5) {
-        mainWindow?.webContents?.send("update-status", {
-          message: "error-code-5",
-        });
       }
 
       state.autoIsInjection = false;

@@ -5,15 +5,15 @@
     <style type="text/css">
 :root {
     /* Editor Colors */
-    --editor-bg: #0a0a0a7c;
-    --editor-fg: #f0f0f0;
+    --editor-bg: #1a1a23;
+    --editor-fg: #e0e0e8;
     --editor-line-numbers: #2e2e2e;
     --editor-cursor: #ffffff;
 
     /* Text Colors */
-    --editor-selection: rgba(255, 255, 255, 0.15);
-    --editor-selection-inactive: rgba(200, 200, 200, 0.1);
-    --editor-line-highlight: #1a1a1a;
+    --editor-selection: rgba(109, 40, 217, 0.5);
+    --editor-selection-inactive: rgba(109, 40, 217, 0.2);
+    --editor-line-highlight: #252533;
     --editor-active-line-number: #d0d0d0;
     --editor-font: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
 
@@ -31,18 +31,17 @@
     /* Editor Secondary Colors */
     --indent-guide: #333333;
     --active-indent-guide: #444444;
-    --widget-bg: #1a1a1a;
-    --widget-border: #3a3a3a;
-    --autocomplete-selected: #111111;
+    --widget-bg: #252533;
+    --widget-border: #3a3a45;
+    --autocomplete-selected: #2a2a35;
 
     /* Tab Colors */
-    --tab-bg: #121212;
-    --tab-active-bg: #1f1f1f;
-    --tab-border: #3d3d3d;
-    --tab-text: #b0b0b0;
+    --tab-bg: #1a1a23;
+    --tab-active-bg: #252533;
+    --tab-border: #3a3a45;
+    --tab-text: #a1a1aa;
     --tab-text-active: #ffffff;
 }
-
 
 html, body {
     background-color: var(--editor-bg);
@@ -71,17 +70,15 @@ html, body {
     background-color: var(--editor-bg);
 }
 
-
-
 #tabs-container {
     display: flex;
     align-items: center;
-    padding: 0 12px;
-    height: 42px;
+    padding: 0 10px;
+    height: 36px;
     background-color: var(--editor-bg);
     border-bottom: 1px solid var(--widget-border);
     z-index: 10;
-    gap: 8px;
+    gap: 6px;
 }
 
 #tabs {
@@ -95,38 +92,35 @@ html, body {
     padding: 4px 0;
 }
 
-
 #tabs::-webkit-scrollbar {
     display: none;
 }
 
-
 .tab {
     position: relative;
-    padding: 0 16px 0 12px;
+    padding: 0 12px 0 10px;
     background-color: var(--tab-bg);
-    border-radius: 6px;
+    border-radius: 4px;
     cursor: pointer;
     user-select: none;
-    font-size: 12px;
+    font-size: 11px;
     color: var(--tab-text);
     transition: all 0.2s ease;
     display: flex;
     align-items: center;
-    height: 32px;
+    height: 28px;
     border: 1px solid transparent;
     white-space: nowrap;
     flex-shrink: 0;
 }
 
-
 .tab::before {
     content: '';
     display: inline-block;
-    width: 14px;
-    height: 14px;
-    margin-right: 8px;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23a6accd'%3E%3Cpath d='M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z'/%3E%3C/svg%3E");
+    width: 12px;
+    height: 12px;
+    margin-right: 6px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23a1a1aa'%3E%3Cpath d='M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z'/%3E%3C/svg%3E");
     background-size: contain;
     background-repeat: no-repeat;
     opacity: 1;
@@ -136,15 +130,14 @@ html, body {
 .tab.active::before {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ffffff'%3E%3Cpath d='M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z'/%3E%3C/svg%3E");
     opacity: 1;
-
 }
+
 .tab:hover {
     background-color: color-mix(in srgb, var(--tab-bg) 85%, white);
 }
 
 .tab:hover::before {
     opacity: 1;
-    transform: rotate(360deg);
 }
 
 .tab.active {
@@ -154,12 +147,10 @@ html, body {
     box-shadow: 0 0 0 1px var(--tab-border);
 }
 
-
-
 .tab.dirty::after {
     content: '•';
     position: absolute;
-    right: 8px;
+    right: 6px;
     top: 50%;
     transform: translateY(-50%);
     color: var(--tab-border);
@@ -167,14 +158,14 @@ html, body {
 }
 
 .tab-close {
-    margin-left: 8px;
-    width: 18px;
-    height: 18px;
+    margin-left: 6px;
+    width: 16px;
+    height: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    font-size: 12px;
+    font-size: 11px;
     opacity: 0;
     transition: all 0.2s ease;
     color: inherit;
@@ -196,7 +187,7 @@ html, body {
     align-items: center;
     gap: 4px;
     margin-left: auto;
-    padding-left: 8px;
+    padding-left: 6px;
 }
 
 .tab-action {
@@ -204,13 +195,13 @@ html, body {
     border: none;
     color: var(--tab-text);
     cursor: pointer;
-    width: 28px;
-    height: 28px;
+    width: 24px;
+    height: 24px;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 4px;
-    font-size: 14px;
+    font-size: 12px;
     transition: all 0.2s ease;
 }
 
@@ -219,14 +210,13 @@ html, body {
     color: white;
 }
 
-
 #tabs-container::after {
     content: '';
     position: absolute;
-    right: 120px;
+    right: 100px;
     top: 0;
     bottom: 0;
-    width: 20px;
+    width: 16px;
     background: linear-gradient(90deg, transparent, var(--editor-bg));
     pointer-events: none;
     opacity: 0;
@@ -236,6 +226,7 @@ html, body {
 #tabs-container.scrollable::after {
     opacity: 1;
 }
+
 .monaco-editor .margin {
     background-color: transparent !important;
 }
@@ -287,8 +278,8 @@ html, body {
 }
 
 ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 6px;
+    height: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -297,7 +288,7 @@ html, body {
 
 ::-webkit-scrollbar-thumb {
     background: var(--indent-guide);
-    border-radius: 4px;
+    border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {

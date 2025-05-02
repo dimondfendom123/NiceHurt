@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NiceHurt</title>
+    <style>
+      :root {
+        --primary: #6d28d9;
+        --primary-dark: #5b21b6;
+        --primary-darker: #4c1d95;
+        --bg: #0f0f13;
+        --bg-light: #1a1a23;
+        --bg-lighter: #252533;
+        --text: #e0e0e8;
+        --text-dim: #a1a1aa;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --error: #ef4444;
+        --border: #3a3a45;
+        --border-light: #4a4a55;
+        --shadow: 0 5px 10px -3px rgba(0, 0, 0, 0.3),
+          0 2px 4px -2px rgba(0, 0, 0, 0.2);
+        --glass: rgba(15, 15, 19, 0.7);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", "Roboto", "Oxygen", "Ubuntu", sans-serif;
+      }
+
+      body {
+        background: var(--bg);
+        color: var(--text);
+        width: 750px;
+        height: 600px;
+        overflow: hidden;
+        background-image: radial-gradient(
+            circle at 10% 20%,
+            rgba(109, 40, 217, 0.15) 0%,
+            transparent 20%
+          ),
+          radial-gradient(
+            circle at 90% 80%,
+            rgba(109, 40, 217, 0.15) 0%,
+            transparent 20%
+          );
+      }
+
+      header {
+        display: flex;
+        align-items: center;
+        padding: 8px 15px;
+        background: linear-gradient(
+          to right,
+          var(--bg-light),
+          var(--bg-lighter)
+        );
+        border-bottom: 1px solid var(--border);
+        position: relative;
+        z-index: 10;
+        box-shadow: var(--shadow);
+        height: 40px;
+        user-select: none;
+        -webkit-app-region: drag;
+      }
+
+      header img {
+        height: 22px;
+        margin-right: 10px;
+        filter: drop-shadow(0 0 6px rgba(109, 40, 217, 0.5));
+      }
+
+      header h1 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        background: linear-gradient(to right, var(--text), var(--primary));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        text-shadow: 0 0 8px rgba(109, 40, 217, 0.3);
+      }
+
+      .status {
+        display: flex;
+        align-items: center;
+        margin-left: auto;
+        margin-right: 15px;
+        font-size: 0.8rem;
+        color: var(--text-dim);
+      }
+
+      #status {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        margin-left: 6px;
+        background: var(--error);
+        box-shadow: 0 0 8px currentColor;
+      }
+
+      .window-buttons {
+        display: flex;
+        gap: 6px;
+        -webkit-app-region: no-drag;
+      }
+
+      .window-buttons button {
+        width: 26px;
+        height: 26px;
+        border-radius: 5px;
+        border: none;
+        background: var(--bg-light);
+        color: var(--text);
+        display: flex;
+        align-items: center;
+        text-align: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-size: 0.9rem;
+      }
+
+      .window-buttons button:hover {
+        background: var(--bg-lighter);
+      }
+
+      .window-buttons button#btnClose:hover {
+        background: var(--error);
+        color: white;
+      }
+
+      .window-buttons button img {
+        width: 14px;
+        height: 14px;
+        margin-left: 9px;
+        filter: invert(1) brightness(0.8);
+      }
+
+      .container {
+        display: flex;
+        height: calc(600px - 40px);
+      }
+
+      .script-console-container {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        padding: 10px;
+      }
+
+      .script-executor {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        background: var(--bg-light);
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border);
+        height: 60%;
+      }
+
+      #monacoIframe {
+        flex: 1;
+        background: var(--bg-light);
+        min-height: 0;
+      }
+
+      .buttons {
+        display: flex;
+        padding: 6px 10px;
+        gap: 8px;
+        background: var(--bg-lighter);
+        border-top: 1px solid var(--border);
+        flex-wrap: wrap;
+      }
+
+      .buttons button {
+        padding: 6px 12px;
+        border-radius: 5px;
+        border: none;
+        background: var(--primary);
+        color: white;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 0.8rem;
+      }
+
+      .buttons button:hover {
+        background: var(--primary-dark);
+        transform: translateY(-1px);
+      }
+
+      .buttons button:active {
+        transform: translateY(0);
+      }
+
+      .right-buttons {
+        margin-left: auto;
+      }
+
+      #btnInject {
+        background: var(--success);
+      }
+
+      #btnInject:hover {
+        background: #0ea371;
+      }
+
+      .console-output {
+        margin-top: 10px;
+        background: var(--bg-light);
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border);
+        flex: 0 0 35%;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .console-output h2 {
+        padding: 8px 12px;
+        background: var(--bg-lighter);
+        font-size: 0.9rem;
+        font-weight: 500;
+        border-bottom: 1px solid var(--border);
+      }
+
+      #console {
+        flex: 1;
+        background: var(--bg);
+        border: none;
+        padding: 10px;
+        color: var(--text);
+        font-family: "Consolas", "Monaco", monospace;
+        font-size: 0.8rem;
+        line-height: 1.4;
+        resize: none;
+        outline: none;
+        overflow-y: auto;
+      }
+
+      .file-manager {
+        width: 200px;
+        padding: 10px;
+        background: var(--bg-light);
+        border-left: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+      }
+
+      .file-search {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+        background: var(--bg-lighter);
+        border-radius: 4px;
+        border: 1px solid var(--border);
+        overflow: hidden;
+      }
+
+      #fileSearch {
+        flex: 1;
+        background: transparent;
+        border: none;
+        padding: 6px 8px;
+        color: var(--text);
+        font-size: 0.8rem;
+        outline: none;
+      }
+
+      #fileSearch::placeholder {
+        color: var(--text-dim);
+        opacity: 0.7;
+      }
+
+      #fileList {
+        flex: 1;
+        overflow-y: auto;
+        margin-bottom: 10px;
+      }
+
+      .file {
+        padding: 6px 8px;
+        border-radius: 5px;
+        margin-bottom: 3px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.8rem;
+      }
+
+      .file:hover {
+        background: var(--bg-lighter);
+      }
+
+      .delete-button {
+        background: transparent;
+        border: none;
+        color: var(--text-dim);
+        cursor: pointer;
+        opacity: 0;
+        transition: opacity 0.2s ease;
+        padding: 2px;
+      }
+
+      .file:hover .delete-button {
+        opacity: 1;
+      }
+
+      .delete-button:hover {
+        color: var(--error);
+      }
+
+      #btnOpenFolder {
+        width: 100%;
+        padding: 8px;
+        border-radius: 5px;
+        border: none;
+        background: var(--primary);
+        color: white;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-size: 0.8rem;
+      }
+
+      #btnOpenFolder:hover {
+        background: var(--primary-dark);
+      }
+
+      .settings-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 750px;
+        height: 600px;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(5px);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 100;
+      }
+
+      .settings {
+        width: 500px;
+        max-height: 500px;
+        background: var(--bg-light);
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border);
+        position: relative;
+      }
+
+      .settings h2 {
+        padding: 15px;
+        font-size: 1.1rem;
+        border-bottom: 1px solid var(--border);
+      }
+
+      #btnCloseSettings {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        border: none;
+        background: var(--bg);
+        color: var(--text);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-size: 0.9rem;
+      }
+
+      #btnCloseSettings:hover {
+        background: var(--error);
+        color: white;
+      }
+
+      .settings-sections {
+        display: flex;
+        height: calc(500px - 50px);
+        overflow: hidden;
+      }
+
+      .theme-settings,
+      .misc-settings {
+        flex: 1;
+        padding: 15px;
+        overflow-y: auto;
+      }
+
+      .settings-headers {
+        font-size: 0.95rem;
+        margin-bottom: 12px;
+        color: var(--primary);
+      }
+
+      .settings-toggle {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--border-light);
+        font-size: 0.85rem;
+      }
+
+      .settings-toggle input[type="checkbox"] {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 40px;
+        height: 22px;
+        background: var(--bg);
+        border-radius: 11px;
+        position: relative;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: 1px solid var(--border);
+      }
+
+      .settings-toggle input[type="checkbox"]:checked {
+        background: var(--primary);
+      }
+
+      .settings-toggle input[type="checkbox"]::after {
+        content: "";
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 16px;
+        height: 16px;
+        background: white;
+        border-radius: 50%;
+        transition: all 0.3s ease;
+      }
+
+      .settings-toggle input[type="checkbox"]:checked::after {
+        left: calc(100% - 18px);
+      }
+
+      /* Scrollbar styling */
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+
+      ::-webkit-scrollbar-track {
+        background: var(--bg);
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 3px;
+      }
+
+      ::-webkit-scrollbar-thumb:hover {
+        background: var(--border-light);
+      }
+    </style>
+    <script src="https://cdn.socket.io/4.1.3/socket.io.min.js"></script>
+  </head>
+  <body>
+    <header>
+      <img src="assets/NiceHurt-Logo.png" alt="NiceHurt Logo" />
+      <h1>NiceHurt</h1>
+      <div class="status">
+        Status:
+        <div id="status"></div>
+      </div>
+      <div class="window-buttons">
+        <button id="btnSettings">
+          <img src="assets/Settings.png" alt="Settings" />
+        </button>
+        <button id="btnMinimize">
+          <img src="assets/Minimize.png" alt="Settings" />
+        </button>
+        <button id="btnClose">
+          <img src="assets/Close.png" alt="Settings" />
+        </button>
+      </div>
+    </header>
+
+    <div class="container">
+      <div class="script-console-container">
+        <div class="script-executor">
+          <iframe
+            id="monacoIframe"
+            src="Monaco/index.html"
+            width="100%"
+            height="100%"
+            style="border: none"
+          ></iframe>
+          <div class="buttons">
+            <button id="btnExecute">Execute</button>
+            <button id="btnClear">Clear</button>
+            <button id="btnOpen">Open</button>
+            <button id="btnSave">Save</button>
+
+            <div class="right-buttons">
+              <button id="btnInject">
+                <img
+                  src="assets/Inject.png"
+                  alt="Inject"
+                  width="17"
+                  height="17"
+                />
+                Inject
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="console-output">
+          <h2>Console Output</h2>
+          <textarea id="console" readonly>
+[NiceHurt]: Welcome to NiceHurt!</textarea
+          >
+        </div>
+      </div>
+
+      <div class="file-manager">
+        <div class="file-search">
+          <input type="text" id="fileSearch" placeholder="Search files..." />
+        </div>
+        <div id="fileList">
+          <div class="file">
+            <span>example.lua</span>
+            <button class="delete-button">
+              <img
+                src="assets/Delete.png"
+                alt="Delete"
+                width="14"
+                height="14"
+              />
+            </button>
+          </div>
+          <div class="file">
+            <span>utils.lua</span>
+            <button class="delete-button">
+              <img
+                src="assets/Delete.png"
+                alt="Delete"
+                width="14"
+                height="14"
+              />
+            </button>
+          </div>
+          <div class="file">
+            <span>main.lua</span>
+            <button class="delete-button">
+              <img
+                src="assets/Delete.png"
+                alt="Delete"
+                width="14"
+                height="14"
+              />
+            </button>
+          </div>
+        </div>
+        <button id="btnOpenFolder">Open Folder</button>
+      </div>
+    </div>
+
+    <div class="settings-container">
+      <div class="settings">
+        <h2>Settings</h2>
+        <button id="btnCloseSettings">X</button>
+
+        <div class="settings-sections">
+          <div class="theme-settings">
+            <h3 class="settings-headers">Theme</h3>
+            <p
+              style="
+                color: var(--text-dim);
+                margin-top: 8px;
+                font-size: 0.85rem;
+              "
+            >
+              Work in Progress!
+            </p>
+            <div
+              style="
+                margin-top: 15px;
+                background: var(--bg);
+                padding: 12px;
+                border-radius: 6px;
+                border: 1px solid var(--border);
+              "
+            >
+              <p style="margin-bottom: 8px; font-size: 0.85rem">
+                Dark theme customization coming soon
+              </p>
+              <div style="display: flex; gap: 8px">
+                <div
+                  style="
+                    width: 25px;
+                    height: 25px;
+                    background: var(--primary);
+                    border-radius: 5px;
+                  "
+                ></div>
+                <div
+                  style="
+                    width: 25px;
+                    height: 25px;
+                    background: var(--success);
+                    border-radius: 5px;
+                  "
+                ></div>
+                <div
+                  style="
+                    width: 25px;
+                    height: 25px;
+                    background: var(--warning);
+                    border-radius: 5px;
+                  "
+                ></div>
+                <div
+                  style="
+                    width: 25px;
+                    height: 25px;
+                    background: var(--error);
+                    border-radius: 5px;
+                  "
+                ></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="misc-settings">
+            <h3 class="settings-headers">Miscellaneous</h3>
+            <label for="alwaysOnTop" class="settings-toggle">
+              Always On Top
+              <input type="checkbox" id="alwaysOnTop" checked />
+            </label>
+
+            <label for="autoInject" class="settings-toggle">
+              Auto Inject
+              <input type="checkbox" id="autoInject" />
+            </label>
+
+            <label for="screenShareProtect" class="settings-toggle">
+              Screen Share Protect
+              <input type="checkbox" id="screenShareProtect" checked />
+            </label>
+
+            <div
+              style="
+                margin-top: 20px;
+                background: var(--bg);
+                padding: 12px;
+                border-radius: 6px;
+                border: 1px solid var(--border);
+              "
+            >
+              <h4
+                style="
+                  margin-bottom: 8px;
+                  color: var(--text-dim);
+                  font-size: 0.8rem;
+                "
+              >
+                Application Version
+              </h4>
+              <p id="appVersion" style="font-weight: 500; font-size: 0.85rem">
+                Loading version...
+              </p>
+            </div>
+            <div
+              style="
+                margin-top: 20px;
+                background: var(--bg);
+                padding: 12px;
+                border-radius: 6px;
+                border: 1px solid var(--border);
+              "
+            >
+              <h4
+                style="
+                  margin-bottom: 8px;
+                  color: var(--text-dim);
+                  font-size: 0.8rem;
+                "
+              >
+                Sirhurt Version
+              </h4>
+              <p
+                id="sirhurtVersion"
+                style="font-weight: 500; font-size: 0.85rem"
+              >
+                Loading version...
+              </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", async () => {
+        window.electron.updateStatus((data) => {
+          const message = data.message;
+          const statusElement = document.getElementById("status");
+          if (message === "success") {
+            statusElement.style.backgroundColor = "var(--success)";
+          } else if (message === "error") {
+            statusElement.style.backgroundColor = "var(--error)";
+          } else if (message === "waiting") {
+            statusElement.style.backgroundColor = "var(--warning)";
+          } else {
+            statusElement.style.backgroundColor = "var(--error)";
+          }
+        });
+
+        window.electron.getAppVersion().then((version) => {
+          const el = document.getElementById("appVersion");
+          if (el) el.textContent = `NiceHurt V${version}`;
+        });
+
+        window.electron.onAppVersionUpdate((version) => {
+          const el = document.getElementById("appVersion");
+          if (el) el.textContent = `NiceHurt V${version}`;
+        });
+
+        window.electron.getSirhurtVersion().then((version) => {
+          const el = document.getElementById("sirhurtVersion");
+          if (el) el.textContent = `SirHurt ${version}`;
+        });
+
+        window.electron.onSirhurtVersionUpdate((version) => {
+          const el = document.getElementById("sirhurtVersion");
+          if (el) el.textContent = `SirHurt ${version}`;
+        });
+
+        const btnSettings = document.getElementById("btnSettings");
+        const settingsContainer = document.querySelector(".settings-container");
+        btnSettings.addEventListener("click", () => {
+          settingsContainer.style.display = "flex";
+        });
+
+        const btnCloseSettings = document.getElementById("btnCloseSettings");
+        if (btnCloseSettings) {
+          btnCloseSettings.addEventListener("click", () => {
+            settingsContainer.style.display = "none";
+          });
+        }
+
+        settingsContainer.addEventListener("click", (event) => {
+          if (event.target === settingsContainer) {
+            settingsContainer.style.display = "none";
+          }
+        });
+
+        async function loadAndApplySettings() {
+          const settings = await window.electron.getSettings();
+          document.getElementById("alwaysOnTop").checked = settings.alwaysOnTop;
+          document.getElementById("autoInject").checked = settings.autoInject;
+          document.getElementById("screenShareProtect").checked =
+            settings.screenShareProtect;
+        }
+        loadAndApplySettings();
+
+        function saveSettings() {
+          const alwaysOnTop = document.getElementById("alwaysOnTop").checked;
+          const autoInject = document.getElementById("autoInject").checked;
+          const screenShareProtect =
+            document.getElementById("screenShareProtect").checked;
+          window.electron.saveSettings({
+            alwaysOnTop,
+            autoInject,
+            screenShareProtect,
+          });
+        }
+        document
+          .getElementById("alwaysOnTop")
+          .addEventListener("change", saveSettings);
+        document
+          .getElementById("autoInject")
+          .addEventListener("change", saveSettings);
+        document
+          .getElementById("screenShareProtect")
+          .addEventListener("change", saveSettings);
+
+        document
+          .getElementById("btnOpenFolder")
+          .addEventListener("click", () => {
+            window.electron.openScriptsFolder();
+          });
+
+        async function updateFileList() {
+          const files = await window.electron.getScriptList();
+          const fileListElement = document.getElementById("fileList");
+          fileListElement.innerHTML = "";
+          files.forEach((file) => {
+            const fileDiv = document.createElement("div");
+            fileDiv.classList.add("file");
+            fileDiv.style.display = "flex";
+            fileDiv.style.alignItems = "center";
+            fileDiv.style.justifyContent = "space-between";
+            fileDiv.style.padding = "6px 8px";
+
+            const fileNameSpan = document.createElement("span");
+            fileNameSpan.textContent = file;
+            fileNameSpan.style.cursor = "pointer";
+            fileNameSpan.style.fontSize = "0.8rem";
+            fileNameSpan.addEventListener("click", async () => {
+              const content = await window.electron.loadScript(file);
+              const iframe = document.getElementById("monacoIframe");
+              if (iframe && iframe.contentWindow) {
+                iframe.contentWindow.postMessage(
+                  { action: "setText", text: content },
+                  "*"
+                );
+              }
+            });
+            fileDiv.appendChild(fileNameSpan);
+
+            const deleteButton = document.createElement("button");
+            deleteButton.classList.add("delete-button");
+            deleteButton.innerHTML = `<img src="assets/Delete.png" alt="Delete" width="14" height="14" />`;
+            deleteButton.style.cursor = "pointer";
+            deleteButton.addEventListener("click", async (event) => {
+              event.stopPropagation();
+              const confirmed = confirm(
+                `Do you really want to delete ${file}?`
+              );
+              if (confirmed) {
+                const result = await window.electron.deleteScript(file);
+                console.log(result);
+                updateFileList();
+              }
+            });
+            fileDiv.appendChild(deleteButton);
+
+            fileListElement.appendChild(fileDiv);
+          });
+        }
+        updateFileList();
+
+        window.electron.onScriptsUpdated(() => {
+          updateFileList();
+        });
+        const socket = io("http://localhost:9292");
+
+        socket.on("console-update", (content) => {
+          const consoleTextArea = document.getElementById("console");
+          consoleTextArea.value += "\n" + content;
+          consoleTextArea.scrollTop = consoleTextArea.scrollHeight;
+        });
+
+        document
+          .getElementById("fileSearch")
+          .addEventListener("input", function (e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const files = document.querySelectorAll(".file");
+
+            files.forEach((file) => {
+              const fileName = file
+                .querySelector("span")
+                .textContent.toLowerCase();
+              file.style.display = fileName.includes(searchTerm)
+                ? "flex"
+                : "none";
+            });
+          });
+
+        document
+          .getElementById("btnClearSearch")
+          .addEventListener("click", function () {
+            document.getElementById("fileSearch").value = "";
+            document.querySelectorAll(".file").forEach((file) => {
+              file.style.display = "flex";
+            });
+          });
+      });
+    </script>
+  </body>
+</html>

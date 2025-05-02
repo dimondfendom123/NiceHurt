@@ -1,7 +1,11 @@
 const fs = require("fs");
 const { app } = require("electron");
 const path = require("path");
-const SETTINGS_PATH = path.join(app.getPath("userData"), "settings.json");
+const SETTINGS_PATH = path.join(
+  app.getPath("appData"),
+  "NiceHurt",
+  "settings.json"
+);
 
 class Settings {
   static loadSettings() {

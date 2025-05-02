@@ -88,4 +88,16 @@ contextBridge.exposeInMainWorld("electron", {
   onScriptsUpdated: (callback) => ipcRenderer.on("update-scripts", callback),
   getSettings: () => ipcRenderer.invoke("load-settings"),
   saveSettings: (settings) => ipcRenderer.invoke("save-settings", settings),
+  getAppVersion: () => ipcRenderer.invoke("getAppVersion"),
+  onAppVersionUpdate: (callback) =>
+    ipcRenderer.on("appVersionUpdate", (_event, version) => callback(version)),
+  setAppVersion: (version) => ipcRenderer.send("setAppVersion", version),
+
+  getSirhurtVersion: () => ipcRenderer.invoke("getSirhurtVersion"),
+  onSirhurtVersionUpdate: (callback) =>
+    ipcRenderer.on("sirhurtVersionUpdate", (_event, version) =>
+      callback(version)
+    ),
+  setSirhurtVersion: (version) =>
+    ipcRenderer.send("setSirhurtVersion", version),
 });

@@ -55,15 +55,13 @@ Contributions are welcome! Please fork the repository and submit a pull request.
 
 ## To-Do (2.0)
 
-- **Autoexecute**: Add an auto-execute feature for scripts.
-- **Auto-Check**: Check for the game is loaded before executing the scripts.
-- **Injector**: Fixing the error reading for the injector.
-- **Settings-Theme**: Add a theme system for the application.
-- **Better UI**: Change the UI to a more modern look and better user experience.
-- **Better Console**: Add a better console for the application. (Coloring and etc.)
-- **Better File-Manager**: Add a better file manager for the application. (Folder support and etc.)
-- **Recode**: Recode the application to a better and more optimized version.
-- **Check SirHurt Updates/Versions**: ~~Check for updates and versions of SirHurt.~~
-- **Check for Updates**: ~~Check for updates of the application.~~
-- **Ask for Windows Defender Exclusion**: ~~Ask for Windows Defender exclusion for the application.~~
-- **Discord Rich Presence**: Add Discord Rich Presence for the application.
+- [ ] Autoexecute: Add an auto-execute feature for scripts.
+- [ ] Auto-Check: Check for the game is loaded before executing the scripts.
+- [ ] Injector: Fixing the error reading for the injector.
+- [ ] Settings-Theme: Add a theme system for the application.
+- [x] Better UI: Change the UI to a more modern look and better user experience.
+- [x] Recode: Recode the application to a better and more optimized version.
+- [x] Check SirHurt Updates/Versions: Check for updates and versions of SirHurt.
+- [x] Check for Updates: Check for updates of the application.
+- [x] Ask for Windows Defender Exclusion: Ask for Windows Defender exclusion for the application.
+- [ ] Discord Rich Presence: Add Discord Rich Presence for the application.

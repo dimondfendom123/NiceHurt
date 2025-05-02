@@ -1,6 +1,6 @@
 {
   "name": "nicehurt",
-  "version": "2.0.0-alpha.7",
+  "version": "2.0.0-beta.1",
   "main": "Main.js",
   "scripts": {
     "start": "electron --core .",
@@ -49,10 +49,10 @@
       "requestedExecutionLevel": "requireAdministrator"
     },
     "nsis": {
-      "oneClick": false,
+      "oneClick": true,
       "perMachine": true,
       "allowElevation": true,
-      "allowToChangeInstallationDirectory": true,
+      "allowToChangeInstallationDirectory": false,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true
     }
