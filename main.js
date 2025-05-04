@@ -4,13 +4,18 @@ const { exec } = require("child_process");
 const { Settings } = require("./src/SettingsController");
 const Updater = require("./src/Auto-Updater");
 const { post } = require("axios");
+const { initRPC, toggleRPC } = require("./src/DiscordRPC");
 
 require("./src/console/Controller");
 
 let mainWindow;
 let splashWindow;
 
+initRPC();
+
 const settings = Settings.loadSettings();
+toggleRPC(settings.DiscordRPC);
+
 const state = {
   autoInject: settings.autoInject,
   isInjection: false,
@@ -101,15 +106,29 @@ async function createWindows() {
     progress: 0,
     message: "Checking for updates...",
   });
-
-  await Updater.checkForUpdates(splashWindow);
+  try {
+    await Updater.checkForUpdates(splashWindow);
+  } catch (e) {
+    console.error("Error during auto-update:", e);
+    splashWindow.webContents.send("update-status", {
+      progress: 0,
+      message: "Update check failed",
+    });
+  }
 
   splashWindow.webContents.send("update-status", {
     progress: 20,
     message: "Checking for SirHurt updates...",
   });
-
-  await Updater.checkForUpdatesSirhurt(splashWindow);
+  try {
+    await Updater.checkForUpdatesSirhurt(splashWindow);
+  } catch (e) {
+    console.error("Error during SirHurt update:", e);
+    splashWindow.webContents.send("update-status", {
+      progress: 0,
+      message: "SirHurt update failed",
+    });
+  }
 
   setTimeout(() => {
     splashWindow.close();
@@ -124,3 +143,8 @@ app.whenReady().then(() => {
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") app.quit();
 });
+
+module.exports = {
+  mainWindow: () => mainWindow,
+  state: () => state,
+};

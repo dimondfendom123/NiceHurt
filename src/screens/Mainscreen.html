@@ -29,6 +29,7 @@
         padding: 0;
         box-sizing: border-box;
         font-family: "Segoe UI", "Roboto", "Oxygen", "Ubuntu", sans-serif;
+        user-select: none;
       }
 
       body {
@@ -117,7 +118,6 @@
         z-index: 10;
         box-shadow: var(--shadow);
         height: 40px;
-        user-select: none;
         -webkit-app-region: drag;
       }
 
@@ -401,6 +401,7 @@
         outline: none;
         overflow-y: auto;
         transition: all 0.3s ease;
+        user-select: text;
       }
 
       #console:focus {
@@ -554,6 +555,82 @@
     #btnOpenAutoEXE:active {
       transform: translateY(0) scale(0.98);
       box-shadow: 0 2px 4px rgba(109, 40, 217, 0.1);
+    }
+
+    .action-button {
+      padding: 10px 15px;
+      border-radius: 6px;
+      border: none;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    
+    .action-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    
+    .action-button:active {
+      transform: translateY(0) scale(0.98);
+    }
+    
+    .action-button.danger {
+      background: var(--error);
+      color: white;
+    }
+    
+    .action-button.danger:hover {
+      background: #dc2626;
+      animation: pulse 1s infinite;
+    }
+    
+    .action-button.warning {
+      background: var(--warning);
+      color: #1a1a23;
+    }
+    
+    .action-button.warning:hover {
+      background: #e7900b;
+      animation: float 2s ease-in-out infinite;
+    }
+    
+    .action-button img {
+      width: 16px;
+      height: 16px;
+      filter: invert(1);
+    }
+    
+    .action-button.warning img {
+      filter: invert(0);
+    }
+    
+    .progress-container {
+      width: 100%;
+      background: var(--bg);
+      border-radius: 4px;
+      margin-top: 5px;
+      overflow: hidden;
+      display: none;
+    }
+    
+    .progress-bar {
+      height: 6px;
+      background: var(--primary);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+    
+    .progress-text {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      margin-top: 4px;
+      text-align: center;
     }
 
       .settings-container {
@@ -940,6 +1017,23 @@
               <input type="checkbox" id="consolePauseToggle" checked />
             </label>
 
+            <label for="DiscordRPC" class="settings-toggle">
+              Discord RPC
+              <input type="checkbox" id="DiscordRPC" checked />
+            </label>
+
+            <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
+              <button id="btnForceReinstall" class="action-button danger" style="width: 100%;">
+                <img src="assets/Reinstall.png" alt="Reinstall" />
+                Force Reinstall SirHurt
+              </button>
+
+              <button id="btnCleanRoblox" class="action-button warning" style="width: 100%;">
+                <img src="assets/Clean.png" alt="Clean" />
+                Clean Roblox Cache
+              </button>
+            </div>
+
             <div
               style="
                 margin-top: 20px;
@@ -1082,6 +1176,7 @@
           document.getElementById("autoInject").checked = settings.autoInject;
           document.getElementById("screenShareProtect").checked = settings.screenShareProtect;
           document.getElementById("consolePauseToggle").checked = settings.consolePause;
+          document.getElementById("DiscordRPC").checked = settings.discordRPC;
         }
         loadAndApplySettings();
 
@@ -1090,11 +1185,13 @@
           const autoInject = document.getElementById("autoInject").checked;
           const screenShareProtect = document.getElementById("screenShareProtect").checked;
           const consolePause = document.getElementById("consolePauseToggle").checked;
+          const DiscordRPC = document.getElementById("DiscordRPC").checked;
           window.electron.saveSettings({
             alwaysOnTop,
             autoInject,
             screenShareProtect,
             consolePause,
+            DiscordRPC,
           });
           showNotification('Settings saved successfully', 'success');
         }
@@ -1106,6 +1203,9 @@
           .addEventListener("change", saveSettings);
         document
           .getElementById("screenShareProtect")
+          .addEventListener("change", saveSettings);
+        document
+          .getElementById("DiscordRPC")
           .addEventListener("change", saveSettings);
 
         const consolePauseToggle = document.getElementById("consolePauseToggle");
@@ -1236,6 +1336,47 @@
               this.style.transform = '';
             }, 200);
           });
+        });
+
+        document.getElementById('btnForceReinstall').addEventListener('click', async () => {
+          const btn = document.getElementById('btnForceReinstall');
+          const originalText = btn.textContent;
+
+          btn.innerHTML = '<span class="spinner"></span> Reinstalling...';
+          btn.disabled = true;
+
+          try {
+            const result = await window.electron.forceReinstallSirHurt();
+            showNotification(result.message || 'SirHurt reinstalled successfully', 'success');
+            const sirhurtVersion = await window.electron.getSirhurtVersion();
+            const el = document.getElementById("sirhurtVersion");
+            if (el) el.textContent = `SirHurt ${sirhurtVersion}`;
+          } catch (error) {
+            showNotification(error.message || 'Failed to reinstall SirHurt', 'error');
+            console.error(error);
+          } finally {
+            btn.textContent = originalText;
+            btn.disabled = false;
+          }
+        });
+
+        document.getElementById('btnCleanRoblox').addEventListener('click', async () => {
+          const btn = document.getElementById('btnCleanRoblox');
+          const originalText = btn.textContent;
+
+          btn.innerHTML = '<span class="spinner"></span> Cleaning...';
+          btn.disabled = true;
+
+          try {
+            const result = await window.electron.cleanRoblox();
+            showNotification(result.message || 'Roblox cleaned successfully', 'success');
+          } catch (error) {
+            showNotification(error.message || 'Failed to clean Roblox', 'error');
+            console.error(error);
+          } finally {
+            btn.textContent = originalText;
+            btn.disabled = false;
+          }
         });
 
         const fileManager = document.querySelector('.file-manager');

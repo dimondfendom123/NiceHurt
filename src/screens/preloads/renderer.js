@@ -105,4 +105,6 @@ contextBridge.exposeInMainWorld("electron", {
     ipcRenderer.send("set-console-pause-state", state),
   openAutoEXEFolder: () => ipcRenderer.invoke("openAutoEXEFolder"),
   openScriptsFolder: () => ipcRenderer.invoke("openScriptsFolder"),
+  forceReinstallSirHurt: () => ipcRenderer.invoke("force-reinstall-sirhurt"),
+  cleanRoblox: () => ipcRenderer.invoke("clean-roblox"),
 });

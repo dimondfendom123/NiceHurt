@@ -18,6 +18,11 @@ module.exports = (ipcMain, mainWindow, sendToConsole) => {
     }
   });
 
+  ipcMain.removeHandler("list-scripts");
+  ipcMain.removeHandler("load-script");
+  ipcMain.removeHandler("delete-script");
+  ipcMain.removeHandler("open-scripts-folder");
+
   ipcMain.handle("list-scripts", async () => {
     try {
       const files = fs.readdirSync(scriptDir);

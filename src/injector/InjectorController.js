@@ -3,6 +3,8 @@ const path = require("path");
 const { exec } = require("child_process");
 const axios = require("axios");
 const { shell } = require("electron");
+const util = require("util");
+const execAsync = util.promisify(exec);
 
 class InjectorController {
   static injected = false;
@@ -152,14 +154,14 @@ class InjectorController {
         "del /S /Q %systemdrive%\\Users\\%username%\\AppData\\Local\\Roblox\\logs\\*",
       ];
       for (const cmd of commands) {
-        exec(`cmd.exe /c ${cmd}`);
+        await execAsync(`cmd.exe /c ${cmd}`);
       }
-
-      axios.post("http://localhost:9292/roblox-console", {
+      await axios.post("http://localhost:9292/roblox-console", {
         content: "[NiceHurt]: Cleaning Roblox Client!",
       });
       return 1;
-    } catch {
+    } catch (error) {
+      console.error("cleanRobloxPlayerBeta error:", error);
       return -1;
     }
   }

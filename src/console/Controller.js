@@ -1,7 +1,6 @@
 const express = require("express");
 const http = require("http");
 const socketIo = require("socket.io");
-const path = require("path");
 const fs = require("fs");
 const { InjectorController } = require("../injector/InjectorController");
 const { ipcMain } = require("electron");
@@ -9,6 +8,7 @@ const { ipcMain } = require("electron");
 let disable = false;
 let messageQueue = [];
 let isProcessing = false;
+let inGame = false;
 
 ipcMain.handle("get-console-pause-state", () => disable);
 ipcMain.on("set-console-pause-state", (_, state) => {
@@ -90,6 +90,7 @@ app.post("/roblox-session", async (req, res) => {
 
     setTimeout(async () => {
       try {
+        inGame = true;
         await InjectorController.autoexec();
       } catch (error) {
         console.error("Error in autoexec:", error);
@@ -99,28 +100,6 @@ app.post("/roblox-session", async (req, res) => {
 
   res.json({ status: "ok" });
 });
-
-async function triggerExecute() {
-  try {
-    const luaPath = path.join(__dirname, "/Roblox-Console.lua");
-    const content = await fs.promises.readFile(luaPath, "utf-8");
-    const result = await InjectorController.execution(content);
-    io.emit(
-      "console-update",
-      result === 1
-        ? "[NiceHurt]: Console logger started."
-        : "[NiceHurt]: Console logger failed."
-    );
-    console.log(
-      result === 1
-        ? "[NiceHurt]: Execute successfully."
-        : "[NiceHurt]: Execute failed."
-    );
-  } catch (e) {
-    console.error("Error during Execute:", e);
-    throw e;
-  }
-}
 
 io.on("connection", (socket) => {
   console.log("A client connected");

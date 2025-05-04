@@ -4,9 +4,10 @@ const https = require("https");
 const unzipper = require("unzipper");
 const axios = require("axios");
 const { exec } = require("child_process");
-const { app, dialog } = require("electron");
+const { app, dialog, BrowserWindow } = require("electron");
 const API_URL = `https://api.github.com/repos/nici002018/NiceHurt/releases/latest`;
 
+let splashWindowReinstall = null;
 class Updater {
   static async checkForUpdates(splashWindow) {
     try {
@@ -229,6 +230,68 @@ class Updater {
       });
     }
   }
-}
 
+  static async forceReinstallSirHurt() {
+    try {
+      const sirHurtPath = path.join(app.getPath("appData"), "NiceHurt");
+      fs.mkdirSync(sirHurtPath, { recursive: true });
+
+      const filesToRemove = [
+        "sirhurt.exe",
+        "sirhurt.dll",
+        "version",
+        "sirhurt.zip",
+      ];
+      filesToRemove.forEach((file) => {
+        const filePath = path.join(sirHurtPath, file);
+        if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+      });
+
+      const splashWindowReinstall = new BrowserWindow({
+        width: 400,
+        height: 300,
+        frame: false,
+        transparent: true,
+        resizable: false,
+        icon: path.join(__dirname, "screens/assets/NiceHurt-Logo.png"),
+        webPreferences: {
+          preload: path.join(__dirname, "screens/preloads/bootstrap.js"),
+          contextIsolation: true,
+        },
+      });
+      splashWindowReinstall.loadFile("src/screens/Bootscreen.html");
+
+      splashWindowReinstall.webContents.send("update-status", {
+        progress: 0,
+        message: "Reinstalling SirHurt",
+      });
+
+      await this.checkForUpdatesSirhurt(splashWindowReinstall);
+
+      const verFile = path.join(sirHurtPath, "version");
+      const remoteVersion = fs.existsSync(verFile)
+        ? fs.readFileSync(verFile, "utf-8").trim()
+        : null;
+
+      splashWindowReinstall.webContents.send("update-status", {
+        progress: 100,
+        message: "SirHurt reinstalled successfully",
+      });
+      splashWindowReinstall.close();
+
+      return {
+        success: true,
+        message: "SirHurt reinstalled successfully",
+        version: remoteVersion,
+      };
+    } catch (error) {
+      console.error("Force reinstall failed:", error);
+      return {
+        success: false,
+        message: error.message || "Failed to reinstall SirHurt",
+        error: error,
+      };
+    }
+  }
+}
 module.exports = Updater;
