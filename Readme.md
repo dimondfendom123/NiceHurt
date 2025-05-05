@@ -58,7 +58,7 @@ Contributions are welcome! Please fork the repository and submit a pull request.
 - [x] Autoexecute: Add an auto-execute feature for scripts.
 - [x] Auto-Check: Check for the game is loaded before executing the scripts.
 - [ ] Injector: Fixing the error reading for the injector.
-- [ ] Settings-Theme: Add a theme system for the application.
+- [x] Settings-Theme: Add a theme system for the application.
 - [x] Better UI: Change the UI to a more modern look and better user experience.
 - [x] Recode: Recode the application to a better and more optimized version.
 - [x] Check SirHurt Updates/Versions: Check for updates and versions of SirHurt.
