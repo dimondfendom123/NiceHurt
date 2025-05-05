@@ -9,6 +9,7 @@
         --primary: #6d28d9;
         --primary-dark: #5b21b6;
         --primary-darker: #4c1d95;
+        --primary-rgb: 109, 40, 217;
         --bg: #0f0f13;
         --bg-light: #1a1a23;
         --bg-lighter: #252533;
@@ -22,6 +23,97 @@
         --shadow: 0 5px 10px -3px rgba(0, 0, 0, 0.3),
           0 2px 4px -2px rgba(0, 0, 0, 0.2);
         --glass: rgba(15, 15, 19, 0.7);
+      }
+
+      .theme-blue {
+        --primary: #3b82f6;
+        --primary-dark: #2563eb;
+        --primary-darker: #1d4ed8;
+        --primary-rgb: 59, 130, 246;
+      }
+
+      .theme-red {
+        --primary: #ef4444;
+        --primary-dark: #dc2626;
+        --primary-darker: #b91c1c;
+        --primary-rgb: 239, 68, 68;
+      }
+
+      .theme-green {
+        --primary: #10b981;
+        --primary-dark: #059669;
+        --primary-darker: #047857;
+        --primary-rgb: 16, 185, 129;
+      }
+
+      .theme-pink {
+        --primary: #ec4899;
+        --primary-dark: #db2777;
+        --primary-darker: #be185d;
+        --primary-rgb: 236, 72, 153;
+      }
+
+      .theme-cyber {
+        --primary: #00f0ff;
+        --primary-dark: #00a2ff;
+        --primary-darker: #0062ff;
+        --primary-rgb: 0, 240, 255;
+        --bg: #0a0a12;
+        --bg-light: #141420;
+        --bg-lighter: #1e1e2e;
+        --text: #e0e0ff;
+        --text-dim: #a1a1cc;
+        --border: #3a3a66;
+        --border-light: #4a4a77;
+      }
+
+      .theme-orange {
+        --primary: #f97316;
+        --primary-dark: #ea580c;
+        --primary-darker: #c2410c;
+        --primary-rgb: 249, 115, 22;
+      }
+
+      .theme-teal {
+        --primary: #14b8a6;
+        --primary-dark: #0d9488;
+        --primary-darker: #0f766e;
+        --primary-rgb: 20, 184, 166;
+      }
+
+      .theme-gold {
+        --primary: #facc15;
+        --primary-dark: #eab308;
+        --primary-darker: #ca8a04;
+        --primary-rgb: 250, 204, 21;
+      }
+
+      .theme-midnight {
+        --primary: #6366f1;
+        --primary-dark: #4f46e5;
+        --primary-darker: #4338ca;
+        --primary-rgb: 99, 102, 241;
+        --bg: #080818;
+        --bg-light: #12122a;
+        --bg-lighter: #1c1c3d;
+        --text: #dcdcff;
+        --text-dim: #a5a5d6;
+        --border: #34345c;
+        --border-light: #454576;
+      }
+
+      .theme-neon {
+        --primary: #39ff14;
+        --primary-dark: #32cc12;
+        --primary-darker: #29aa0f;
+        --primary-rgb: 57, 255, 20;
+        --bg: #000000;
+        --bg-light: #0a0a0a;
+        --bg-lighter: #141414;
+        --text: #e0ffe0;
+        --text-dim: #aaffaa;
+        --border: #2a2a2a;
+        --border-light: #3a3a3a;
       }
 
       * {
@@ -38,70 +130,160 @@
         width: 750px;
         height: 600px;
         overflow: hidden;
+      }
+
+      body::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
         background-image: radial-gradient(
-            circle at 10% 20%,
-            rgba(109, 40, 217, 0.15) 0%,
+            circle at 20% 30%,
+            rgba(var(--primary-rgb), 0.15) 0%,
             transparent 20%
           ),
           radial-gradient(
-            circle at 90% 80%,
-            rgba(109, 40, 217, 0.15) 0%,
+            circle at 80% 70%,
+            rgba(var(--primary-rgb), 0.15) 0%,
             transparent 20%
           );
+        z-index: -1;
+        animation: floatParticles 15s ease-in-out infinite alternate;
+      }
+
+      @keyframes floatParticles {
+        0% {
+          transform: translate(0, 0);
+          opacity: 0.7;
+        }
+        25% {
+          transform: translate(-5%, 5%);
+        }
+        50% {
+          transform: translate(5%, -5%);
+          opacity: 1;
+        }
+        75% {
+          transform: translate(-5%, -5%);
+        }
+        100% {
+          transform: translate(5%, 5%);
+          opacity: 0.7;
+        }
       }
 
       @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
       }
 
       @keyframes slideIn {
-        from { transform: translateY(10px); opacity: 0; }
-        to { transform: translateY(0); opacity: 1; }
+        from {
+          transform: translateY(10px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
       }
 
       @keyframes slideInRight {
-        from { transform: translateX(20px); opacity: 0; }
-        to { transform: translateX(0); opacity: 1; }
+        from {
+          transform: translateX(20px);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
       }
 
       @keyframes pulse {
-        0% { box-shadow: 0 0 0 0 rgba(109, 40, 217, 0.4); }
-        70% { box-shadow: 0 0 0 10px rgba(109, 40, 217, 0); }
-        100% { box-shadow: 0 0 0 0 rgba(109, 40, 217, 0); }
+        0% {
+          box-shadow: 0 0 0 0 rgba(var(--primary-rgb), 0.4);
+        }
+        70% {
+          box-shadow: 0 0 0 10px rgba(109, 40, 217, 0);
+        }
+        100% {
+          box-shadow: 0 0 0 0 rgba(109, 40, 217, 0);
+        }
       }
 
       @keyframes statusPulse {
-        0% { transform: scale(1); opacity: 1; }
-        50% { transform: scale(1.2); opacity: 0.8; }
-        100% { transform: scale(1); opacity: 1; }
+        0% {
+          transform: scale(1);
+          opacity: 1;
+        }
+        50% {
+          transform: scale(1.2);
+          opacity: 0.8;
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
       }
 
       @keyframes rotate {
-        from { transform: rotate(0deg); }
-        to { transform: rotate(360deg); }
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
       }
 
       @keyframes bounce {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-5px); }
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-5px);
+        }
       }
 
       @keyframes float {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-3px); }
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-3px);
+        }
       }
 
       @keyframes shake {
-        0%, 100% { transform: translateX(0); }
-        25% { transform: translateX(-3px); }
-        75% { transform: translateX(3px); }
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        25% {
+          transform: translateX(-3px);
+        }
+        75% {
+          transform: translateX(3px);
+        }
       }
 
       @keyframes glow {
-        0% { box-shadow: 0 0 5px rgba(109, 40, 217, 0); }
-        50% { box-shadow: 0 0 15px rgba(109, 40, 217, 0.5); }
-        100% { box-shadow: 0 0 5px rgba(109, 40, 217, 0); }
+        0% {
+          box-shadow: 0 0 5px rgba(109, 40, 217, 0);
+        }
+        50% {
+          box-shadow: 0 0 15px rgba(var(--primary-rgb), 0.5);
+        }
+        100% {
+          box-shadow: 0 0 5px rgba(109, 40, 217, 0);
+        }
       }
 
       header {
@@ -124,7 +306,7 @@
       header img {
         height: 22px;
         margin-right: 10px;
-        filter: drop-shadow(0 0 6px rgba(109, 40, 217, 0.5));
+        filter: drop-shadow(0 0 6px rgba(var(--primary-rgb), 0.5));
         transition: transform 0.3s ease;
       }
 
@@ -139,7 +321,7 @@
         -webkit-background-clip: text;
         background-clip: text;
         color: transparent;
-        text-shadow: 0 0 8px rgba(109, 40, 217, 0.3);
+        text-shadow: 0 0 8px rgba(var(--primary-rgb), 0.3);
       }
 
       .status {
@@ -328,7 +510,7 @@
         font-weight: 500;
         border-bottom: 1px solid var(--border);
       }
-      
+
       .console-clear-button {
         padding: 4px 8px;
         border-radius: 4px;
@@ -342,22 +524,22 @@
         align-items: center;
         gap: 4px;
       }
-      
+
       .console-clear-button:hover {
         background: var(--error);
         color: white;
         transform: translateY(-1px);
       }
-      
+
       .console-clear-button:active {
         transform: translateY(0) scale(0.95);
       }
-      
+
       .console-clear-button img {
         filter: invert(1) brightness(0.8);
         transition: transform 0.2s ease;
       }
-      
+
       .console-clear-button:hover img {
         transform: scale(1.1);
       }
@@ -431,7 +613,7 @@
       }
 
       .file-search:focus-within {
-        box-shadow: 0 0 0 2px rgba(109, 40, 217, 0.3);
+        box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.3);
         transform: translateY(-1px);
       }
 
@@ -464,49 +646,49 @@
       }
 
       .file {
-      padding: 6px 8px;
-      border-radius: 5px;
-      margin-bottom: 3px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.8rem;
-      width: 100%;
-      background: transparent;
-      border: none;
-      color: inherit;
-      text-align: left;
-    }
+        padding: 6px 8px;
+        border-radius: 5px;
+        margin-bottom: 3px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.8rem;
+        width: 100%;
+        background: transparent;
+        border: none;
+        color: inherit;
+        text-align: left;
+      }
 
-    .file:hover {
-      background: var(--bg-lighter);
-      transform: translateX(5px);
-    }
+      .file:hover {
+        background: var(--bg-lighter);
+        transform: translateX(5px);
+      }
 
-    .file:active {
-      transform: translateX(0) scale(0.98);
-    }
+      .file:active {
+        transform: translateX(0) scale(0.98);
+      }
 
-    .delete-button {
-      background: transparent;
-      border: none;
-      color: var(--text-dim);
-      cursor: pointer;
-      opacity: 0;
-      transition: all 0.2s ease;
-      padding: 2px;
-    }
+      .delete-button {
+        background: transparent;
+        border: none;
+        color: var(--text-dim);
+        cursor: pointer;
+        opacity: 0;
+        transition: all 0.2s ease;
+        padding: 2px;
+      }
 
-    .file:hover .delete-button {
-      opacity: 1;
-    }
+      .file:hover .delete-button {
+        opacity: 1;
+      }
 
-    .delete-button:hover {
-      color: var(--error);
-      transform: scale(1.2);
-    }
+      .delete-button:hover {
+        color: var(--error);
+        transform: scale(1.2);
+      }
 
       #btnOpenFolder {
         width: 100%;
@@ -531,107 +713,107 @@
       }
 
       #btnOpenAutoEXE {
-      width: 100%;
-      padding: 8px;
-      border-radius: 5px;
-      border: none;
-      background: var(--bg-lighter);
-      color: var(--primary);
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      font-size: 0.8rem;
-      margin-top: 8px;
-      border: 1px solid var(--primary);
-    }
-    
-    #btnOpenAutoEXE:hover {
-      background: var(--primary);
-      color: white;
-      transform: translateY(-1px);
-      box-shadow: 0 4px 8px rgba(109, 40, 217, 0.2);
-    }
-    
-    #btnOpenAutoEXE:active {
-      transform: translateY(0) scale(0.98);
-      box-shadow: 0 2px 4px rgba(109, 40, 217, 0.1);
-    }
+        width: 100%;
+        padding: 8px;
+        border-radius: 5px;
+        border: none;
+        background: var(--bg-lighter);
+        color: var(--primary);
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-size: 0.8rem;
+        margin-top: 8px;
+        border: 1px solid var(--primary);
+      }
 
-    .action-button {
-      padding: 10px 15px;
-      border-radius: 6px;
-      border: none;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      font-size: 0.85rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-    
-    .action-button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    }
-    
-    .action-button:active {
-      transform: translateY(0) scale(0.98);
-    }
-    
-    .action-button.danger {
-      background: var(--error);
-      color: white;
-    }
-    
-    .action-button.danger:hover {
-      background: #dc2626;
-      animation: pulse 1s infinite;
-    }
-    
-    .action-button.warning {
-      background: var(--warning);
-      color: #1a1a23;
-    }
-    
-    .action-button.warning:hover {
-      background: #e7900b;
-      animation: float 2s ease-in-out infinite;
-    }
-    
-    .action-button img {
-      width: 16px;
-      height: 16px;
-      filter: invert(1);
-    }
-    
-    .action-button.warning img {
-      filter: invert(0);
-    }
-    
-    .progress-container {
-      width: 100%;
-      background: var(--bg);
-      border-radius: 4px;
-      margin-top: 5px;
-      overflow: hidden;
-      display: none;
-    }
-    
-    .progress-bar {
-      height: 6px;
-      background: var(--primary);
-      width: 0%;
-      transition: width 0.3s ease;
-    }
-    
-    .progress-text {
-      font-size: 0.75rem;
-      color: var(--text-dim);
-      margin-top: 4px;
-      text-align: center;
-    }
+      #btnOpenAutoEXE:hover {
+        background: var(--primary);
+        color: white;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(var(--primary-rgb), 0.2);
+      }
+
+      #btnOpenAutoEXE:active {
+        transform: translateY(0) scale(0.98);
+        box-shadow: 0 2px 4px rgba(var(--primary-rgb), 0.1);
+      }
+
+      .action-button {
+        padding: 10px 15px;
+        border-radius: 6px;
+        border: none;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-size: 0.85rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      .action-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      .action-button:active {
+        transform: translateY(0) scale(0.98);
+      }
+
+      .action-button.danger {
+        background: var(--error);
+        color: white;
+      }
+
+      .action-button.danger:hover {
+        background: #dc2626;
+        animation: pulse 1s infinite;
+      }
+
+      .action-button.warning {
+        background: var(--warning);
+        color: #1a1a23;
+      }
+
+      .action-button.warning:hover {
+        background: #e7900b;
+        animation: float 2s ease-in-out infinite;
+      }
+
+      .action-button img {
+        width: 16px;
+        height: 16px;
+        filter: invert(1);
+      }
+
+      .action-button.warning img {
+        filter: invert(0);
+      }
+
+      .progress-container {
+        width: 100%;
+        background: var(--bg);
+        border-radius: 4px;
+        margin-top: 5px;
+        overflow: hidden;
+        display: none;
+      }
+
+      .progress-bar {
+        height: 6px;
+        background: var(--primary);
+        width: 0%;
+        transition: width 0.3s ease;
+      }
+
+      .progress-text {
+        font-size: 0.75rem;
+        color: var(--text-dim);
+        margin-top: 4px;
+        text-align: center;
+      }
 
       .settings-container {
         position: fixed;
@@ -706,6 +888,7 @@
         display: flex;
         height: calc(500px - 50px);
         overflow: hidden;
+        animation: slideIn 0.4s ease-out 0.2s both;
       }
 
       .theme-settings,
@@ -719,6 +902,105 @@
         font-size: 0.95rem;
         margin-bottom: 12px;
         color: var(--primary);
+      }
+
+      .misc-settings {
+        flex: 1;
+        padding: 15px;
+        overflow-y: auto;
+      }
+
+      .theme-selector {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 15px;
+      }
+
+      .theme-option {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition: all 0.2s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .theme-option:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+      }
+
+      .theme-option.active {
+        border-color: var(--text);
+        box-shadow: 0 0 0 2px var(--primary);
+      }
+
+      .theme-option::after {
+        content: "✓";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: white;
+        font-size: 1.2rem;
+        opacity: 0;
+        transition: opacity 0.2s ease;
+        text-shadow: 0 0 5px black;
+      }
+
+      .theme-option.active::after {
+        opacity: 1;
+      }
+
+      .theme-option.purple {
+        background: linear-gradient(135deg, #6d28d9 0%, #4c1d95 100%);
+      }
+
+      .theme-option.blue {
+        background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+      }
+
+      .theme-option.red {
+        background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+      }
+
+      .theme-option.green {
+        background: linear-gradient(135deg, #10b981 0%, #047857 100%);
+      }
+
+      .theme-option.pink {
+        background: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
+      }
+
+      .theme-option.cyber {
+        background: linear-gradient(135deg, #00f0ff 0%, #0062ff 100%);
+      }
+
+      .theme-option.gold {
+        background: linear-gradient(135deg, #f59e0b 0%, #b45309 100%);
+      }
+
+      .theme-option.orange {
+        background: linear-gradient(135deg, #f97316 0%, #c2410c 100%);
+      }
+
+      .theme-option.teal {
+        background: linear-gradient(135deg, #14b8a6 0%, #0f766e 100%);
+      }
+
+      .theme-option.gold {
+        background: linear-gradient(135deg, #facc15 0%, #ca8a04 100%);
+      }
+
+      .theme-option.midnight {
+        background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%);
+      }
+
+      .theme-option.neon {
+        background: linear-gradient(135deg, #39ff14 0%, #29aa0f 100%);
       }
 
       .settings-toggle {
@@ -775,25 +1057,25 @@
       }
 
       .notification {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%) translateY(30px);
-      background: var(--bg-lighter);
-      color: var(--text);
-      padding: 10px 20px;
-      border-radius: 5px;
-      box-shadow: var(--shadow);
-      border-left: 4px solid var(--primary);
-      z-index: 9000;
-      opacity: 0;
-      transition: all 0.3s ease;
-    }
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%) translateY(30px);
+        background: var(--bg-lighter);
+        color: var(--text);
+        padding: 10px 20px;
+        border-radius: 5px;
+        box-shadow: var(--shadow);
+        border-left: 4px solid var(--primary);
+        z-index: 9000;
+        opacity: 0;
+        transition: all 0.3s ease;
+      }
 
-    .notification.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
+      .notification.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
 
       ::-webkit-scrollbar {
         width: 6px;
@@ -869,19 +1151,20 @@
         </div>
 
         <div class="console-output">
-      <div class="console-header">
-        <h2>Console Output</h2>
-        <button id="btnClearConsole" class="console-clear-button">
-          <img src="assets/Clean.png" alt="Clear" width="14" height="14" />
-          Clear
-        </button>
-      </div>
-      <textarea id="console" readonly>
-[NiceHurt]: Welcome to NiceHurt!</textarea>
-    </div>
+          <div class="console-header">
+            <h2>Console Output</h2>
+            <button id="btnClearConsole" class="console-clear-button">
+              <img src="assets/Clean.png" alt="Clear" width="14" height="14" />
+              Clear
+            </button>
+          </div>
+          <textarea id="console" readonly>
+[NiceHurt]: Welcome to NiceHurt!</textarea
+          >
+        </div>
       </div>
 
-       <div class="file-manager">
+      <div class="file-manager">
         <div class="file-search">
           <input type="text" id="fileSearch" placeholder="Search files..." />
         </div>
@@ -891,7 +1174,12 @@
               <span>example.lua</span>
             </div>
             <button class="delete-button">
-              <img src="assets/Delete.png" alt="Delete" width="14" height="14" />
+              <img
+                src="assets/Delete.png"
+                alt="Delete"
+                width="14"
+                height="14"
+              />
             </button>
           </button>
           <button class="file">
@@ -899,7 +1187,12 @@
               <span>utils.lua</span>
             </div>
             <button class="delete-button">
-              <img src="assets/Delete.png" alt="Delete" width="14" height="14" />
+              <img
+                src="assets/Delete.png"
+                alt="Delete"
+                width="14"
+                height="14"
+              />
             </button>
           </button>
           <button class="file">
@@ -907,7 +1200,12 @@
               <span>main.lua</span>
             </div>
             <button class="delete-button">
-              <img src="assets/Delete.png" alt="Delete" width="14" height="14" />
+              <img
+                src="assets/Delete.png"
+                alt="Delete"
+                width="14"
+                height="14"
+              />
             </button>
           </button>
           <div class="file">
@@ -923,7 +1221,9 @@
           </div>
         </div>
         <button id="btnOpenFolder">Open Folder</button>
-        <button id="btnOpenAutoEXE" style="margin-top: 8px;">Open Autoexec Folder</button>
+        <button id="btnOpenAutoEXE" style="margin-top: 8px">
+          Open Autoexec Folder
+        </button>
       </div>
     </div>
 
@@ -936,62 +1236,42 @@
 
         <div class="settings-sections">
           <div class="theme-settings">
-            <h3 class="settings-headers">Theme</h3>
-            <p
-              style="
-                color: var(--text-dim);
-                margin-top: 8px;
-                font-size: 0.85rem;
-              "
-            >
-              Work in Progress!
-            </p>
+            <h3 class="settings-headers">Themes</h3>
+
+            <div class="theme-selector">
+              <div
+                class="theme-option purple active"
+                data-theme="default"
+              ></div>
+              <div class="theme-option blue" data-theme="blue"></div>
+              <div class="theme-option red" data-theme="red"></div>
+              <div class="theme-option green" data-theme="green"></div>
+              <div class="theme-option pink" data-theme="pink"></div>
+              <div class="theme-option cyber" data-theme="cyber"></div>
+              <div class="theme-option orange" data-theme="orange"></div>
+              <div class="theme-option teal" data-theme="teal"></div>
+              <div class="theme-option gold" data-theme="gold"></div>
+              <div class="theme-option midnight" data-theme="midnight"></div>
+              <div class="theme-option neon" data-theme="neon"></div>
+            </div>
             <div
               style="
-                margin-top: 15px;
+                margin-top: 20px;
                 background: var(--bg);
                 padding: 12px;
                 border-radius: 6px;
                 border: 1px solid var(--border);
               "
             >
-              <p style="margin-bottom: 8px; font-size: 0.85rem">
-                Dark theme customization coming soon
-              </p>
-              <div style="display: flex; gap: 8px">
-                <div
-                  style="
-                    width: 25px;
-                    height: 25px;
-                    background: var(--primary);
-                    border-radius: 5px;
-                  "
-                ></div>
-                <div
-                  style="
-                    width: 25px;
-                    height: 25px;
-                    background: var(--success);
-                    border-radius: 5px;
-                  "
-                ></div>
-                <div
-                  style="
-                    width: 25px;
-                    height: 25px;
-                    background: var(--warning);
-                    border-radius: 5px;
-                  "
-                ></div>
-                <div
-                  style="
-                    width: 25px;
-                    height: 25px;
-                    background: var(--error);
-                    border-radius: 5px;
-                  "
-                ></div>
-              </div>
+              <h4
+                style="
+                  margin-bottom: 8px;
+                  color: var(--text-dim);
+                  font-size: 0.8rem;
+                "
+              >
+                Custom themes coming soon! Stay tuned for more updates.
+              </h4>
             </div>
           </div>
 
@@ -1022,13 +1302,28 @@
               <input type="checkbox" id="DiscordRPC" checked />
             </label>
 
-            <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
-              <button id="btnForceReinstall" class="action-button danger" style="width: 100%;">
+            <div
+              style="
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                margin-top: 10px;
+              "
+            >
+              <button
+                id="btnForceReinstall"
+                class="action-button danger"
+                style="width: 100%"
+              >
                 <img src="assets/Reinstall.png" alt="Reinstall" />
                 Force Reinstall SirHurt
               </button>
 
-              <button id="btnCleanRoblox" class="action-button warning" style="width: 100%;">
+              <button
+                id="btnCleanRoblox"
+                class="action-button warning"
+                style="width: 100%"
+              >
                 <img src="assets/Clean.png" alt="Clean" />
                 Clean Roblox Cache
               </button>
@@ -1050,7 +1345,7 @@
                   font-size: 0.8rem;
                 "
               >
-                Application Version
+                NiceHurt Version
               </h4>
               <p id="appVersion" style="font-weight: 500; font-size: 0.85rem">
                 Loading version...
@@ -1080,6 +1375,7 @@
               >
                 Loading version...
               </p>
+            </div>
           </div>
         </div>
       </div>
@@ -1087,47 +1383,121 @@
 
     <script>
       document.addEventListener("DOMContentLoaded", async () => {
-        function showNotification(message, type = 'info', duration = 3000) {
-          const notification = document.getElementById('notification');
+        let themeSave = "default";
+        function showNotification(message, type = "info", duration = 3000) {
+          const notification = document.getElementById("notification");
           notification.textContent = message;
-          notification.className = 'notification show';
-          
-          if (type === 'success') {
-            notification.style.borderLeftColor = 'var(--success)';
-          } else if (type === 'error') {
-            notification.style.borderLeftColor = 'var(--error)';
-          } else if (type === 'warning') {
-            notification.style.borderLeftColor = 'var(--warning)';
+          notification.className = "notification show";
+
+          if (type === "success") {
+            notification.style.borderLeftColor = "var(--success)";
+          } else if (type === "error") {
+            notification.style.borderLeftColor = "var(--error)";
+          } else if (type === "warning") {
+            notification.style.borderLeftColor = "var(--warning)";
           } else {
-            notification.style.borderLeftColor = 'var(--primary)';
+            notification.style.borderLeftColor = "var(--primary)";
           }
-          
+
           setTimeout(() => {
-            notification.className = 'notification';
+            notification.className = "notification";
           }, duration);
         }
+
+        const themeOptions = document.querySelectorAll(".theme-option");
+
+        async function loadTheme(theme) {
+          if (theme) {
+            applyPresetTheme(theme);
+            updateActiveThemeOption(theme);
+            themeSave = theme;
+          }
+        }
+
+        function applyPresetTheme(themeName) {
+          if (themeName === "default") {
+            document.body.className = "";
+          } else {
+            document.body.className = `theme-${themeName}`;
+          }
+
+          const iframe = document.getElementById("monacoIframe");
+          let retries = 10;
+          let ackReceived = false;
+
+          function sendTheme() {
+            if (iframe && iframe.contentWindow) {
+              iframe.contentWindow.postMessage(
+                { action: "setThemeFormMainscreen", theme: themeName },
+                "*"
+              );
+            }
+
+            if (!ackReceived && retries > 0) {
+              retries--;
+              setTimeout(sendTheme, 200);
+            } else if (!ackReceived) {
+              console.error(
+                "Theme ack not received from iframe after retries."
+              );
+            }
+          }
+
+          function onMessage(event) {
+            if (
+              event.data.action === "themeSetAck" &&
+              event.data.theme === themeName
+            ) {
+              ackReceived = true;
+              window.removeEventListener("message", onMessage);
+            }
+          }
+
+          window.addEventListener("message", onMessage);
+          sendTheme();
+        }
+
+        function updateActiveThemeOption(themeName) {
+          themeOptions.forEach((option) => {
+            option.classList.remove("active");
+            if (option.dataset.theme === themeName) {
+              option.classList.add("active");
+            }
+          });
+        }
+
+        themeOptions.forEach((option) => {
+          option.addEventListener("click", () => {
+            const themeName = option.dataset.theme;
+            applyPresetTheme(themeName);
+            updateActiveThemeOption(themeName);
+            themeSave = themeName;
+
+            saveSettings();
+          });
+        });
 
         window.electron.updateStatus((data) => {
           const message = data.message;
           const statusElement = document.getElementById("status");
-          
-          statusElement.className = '';
-          
+
+          statusElement.className = "";
+
           if (message === "success") {
             statusElement.style.backgroundColor = "var(--success)";
-            statusElement.classList.add('connected');
-            showNotification('Successfully connected', 'success');
+            statusElement.classList.add("connected");
+            showNotification("Successfully connected", "success");
           } else if (message === "error") {
             statusElement.style.backgroundColor = "var(--error)";
-            statusElement.classList.add('error');
-            showNotification('Connection error', 'error');
+            statusElement.classList.add("error");
+            showNotification("Connection error", "error");
           } else if (message === "waiting") {
             statusElement.style.backgroundColor = "var(--warning)";
-            statusElement.classList.add('connecting');
-            showNotification('Waiting for connection...', 'warning');
+            statusElement.classList.add("connecting");
+            showNotification("Waiting for connection...", "warning");
           } else {
             statusElement.style.backgroundColor = "var(--error)";
-            showNotification('Unknown status', 'error');
+            showNotification("Unknown status", "error");
           }
         });
 
@@ -1174,17 +1544,22 @@
           const settings = await window.electron.getSettings();
           document.getElementById("alwaysOnTop").checked = settings.alwaysOnTop;
           document.getElementById("autoInject").checked = settings.autoInject;
-          document.getElementById("screenShareProtect").checked = settings.screenShareProtect;
-          document.getElementById("consolePauseToggle").checked = settings.consolePause;
+          document.getElementById("screenShareProtect").checked =
+            settings.screenShareProtect;
+          document.getElementById("consolePauseToggle").checked =
+            settings.consolePause;
           document.getElementById("DiscordRPC").checked = settings.discordRPC;
+          await loadTheme(settings.theme);
         }
         loadAndApplySettings();
 
         function saveSettings() {
           const alwaysOnTop = document.getElementById("alwaysOnTop").checked;
           const autoInject = document.getElementById("autoInject").checked;
-          const screenShareProtect = document.getElementById("screenShareProtect").checked;
-          const consolePause = document.getElementById("consolePauseToggle").checked;
+          const screenShareProtect =
+            document.getElementById("screenShareProtect").checked;
+          const consolePause =
+            document.getElementById("consolePauseToggle").checked;
           const DiscordRPC = document.getElementById("DiscordRPC").checked;
           window.electron.saveSettings({
             alwaysOnTop,
@@ -1192,8 +1567,9 @@
             screenShareProtect,
             consolePause,
             DiscordRPC,
+            theme: themeSave,
           });
-          showNotification('Settings saved successfully', 'success');
+          showNotification("Settings saved successfully", "success");
         }
         document
           .getElementById("alwaysOnTop")
@@ -1208,7 +1584,8 @@
           .getElementById("DiscordRPC")
           .addEventListener("change", saveSettings);
 
-        const consolePauseToggle = document.getElementById("consolePauseToggle");
+        const consolePauseToggle =
+          document.getElementById("consolePauseToggle");
         consolePauseToggle.addEventListener("change", () => {
           window.electron.setConsolePauseState(consolePauseToggle.checked);
           saveSettings();
@@ -1218,22 +1595,24 @@
           const files = await window.electron.getScriptList();
           const fileListElement = document.getElementById("fileList");
           fileListElement.innerHTML = "";
-          
+
           if (files.length === 0) {
-            const emptyMessage = document.createElement('div');
-            emptyMessage.textContent = 'No scripts found';
-            emptyMessage.style.color = 'var(--text-dim)';
-            emptyMessage.style.textAlign = 'center';
-            emptyMessage.style.padding = '20px';
-            emptyMessage.style.fontSize = '0.85rem';
+            const emptyMessage = document.createElement("div");
+            emptyMessage.textContent = "No scripts found";
+            emptyMessage.style.color = "var(--text-dim)";
+            emptyMessage.style.textAlign = "center";
+            emptyMessage.style.padding = "20px";
+            emptyMessage.style.fontSize = "0.85rem";
             fileListElement.appendChild(emptyMessage);
             return;
           }
-          
+
           files.forEach((file, index) => {
             const fileButton = document.createElement("button");
             fileButton.classList.add("file");
-            fileButton.style.animation = `fadeIn 0.3s ease-out ${index * 0.05}s both`;
+            fileButton.style.animation = `fadeIn 0.3s ease-out ${
+              index * 0.05
+            }s both`;
 
             const fileContent = document.createElement("div");
             fileContent.classList.add("file-content");
@@ -1247,13 +1626,15 @@
             deleteButton.innerHTML = `<img src="assets/Delete.png" alt="Delete" width="14" height="14" />`;
             deleteButton.addEventListener("click", async (event) => {
               event.stopPropagation();
-              const confirmed = confirm(`Do you really want to delete ${file}?`);
+              const confirmed = confirm(
+                `Do you really want to delete ${file}?`
+              );
               if (confirmed) {
                 showNotification(`Deleting ${file}...`);
                 const result = await window.electron.deleteScript(file);
                 console.log(result);
                 updateFileList();
-                showNotification(`${file} deleted successfully`, 'success');
+                showNotification(`${file} deleted successfully`, "success");
               }
             });
 
@@ -1269,7 +1650,7 @@
                   { action: "setText", text: content },
                   "*"
                 );
-                showNotification(`${file} loaded successfully`, 'success');
+                showNotification(`${file} loaded successfully`, "success");
               }
             });
 
@@ -1288,11 +1669,11 @@
           consoleTextArea.value += "\n" + content;
           consoleTextArea.scrollTop = consoleTextArea.scrollHeight;
 
-          const lines = consoleTextArea.value.split('\n');
+          const lines = consoleTextArea.value.split("\n");
           if (lines.length > 0) {
-            consoleTextArea.style.animation = 'none';
+            consoleTextArea.style.animation = "none";
             setTimeout(() => {
-              consoleTextArea.style.animation = 'fadeIn 0.3s ease-out';
+              consoleTextArea.style.animation = "fadeIn 0.3s ease-out";
             }, 10);
           }
         });
@@ -1313,86 +1694,108 @@
             });
           });
 
-        document.getElementById('btnClearConsole').addEventListener('click', function() {
-          const consoleTextArea = document.getElementById('console');
-          consoleTextArea.value = '[NiceHurt]: Console cleared\n';
-          consoleTextArea.style.animation = 'none';
-          setTimeout(() => {
-            consoleTextArea.style.animation = 'fadeIn 0.3s ease-out';
-          }, 10);
-
-          this.style.transform = 'scale(0.9)';
-          setTimeout(() => {
-            this.style.transform = 'scale(1)';
-          }, 200);
-
-          showNotification('Console cleared', 'success');
-        });
-
-        document.querySelectorAll('.buttons button').forEach(button => {
-          button.addEventListener('click', function() {
-            this.style.transform = 'scale(0.95)';
+        document
+          .getElementById("btnClearConsole")
+          .addEventListener("click", function () {
+            const consoleTextArea = document.getElementById("console");
+            consoleTextArea.value = "[NiceHurt]: Console cleared\n";
+            consoleTextArea.style.animation = "none";
             setTimeout(() => {
-              this.style.transform = '';
+              consoleTextArea.style.animation = "fadeIn 0.3s ease-out";
+            }, 10);
+
+            this.style.transform = "scale(0.9)";
+            setTimeout(() => {
+              this.style.transform = "scale(1)";
+            }, 200);
+
+            showNotification("Console cleared", "success");
+          });
+
+        document.querySelectorAll(".buttons button").forEach((button) => {
+          button.addEventListener("click", function () {
+            this.style.transform = "scale(0.95)";
+            setTimeout(() => {
+              this.style.transform = "";
             }, 200);
           });
         });
 
-        document.getElementById('btnForceReinstall').addEventListener('click', async () => {
-          const btn = document.getElementById('btnForceReinstall');
-          const originalText = btn.textContent;
+        document
+          .getElementById("btnForceReinstall")
+          .addEventListener("click", async () => {
+            const btn = document.getElementById("btnForceReinstall");
+            const originalText = btn.textContent;
 
-          btn.innerHTML = '<span class="spinner"></span> Reinstalling...';
-          btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span> Reinstalling...';
+            btn.disabled = true;
 
-          try {
-            const result = await window.electron.forceReinstallSirHurt();
-            showNotification(result.message || 'SirHurt reinstalled successfully', 'success');
-            const sirhurtVersion = await window.electron.getSirhurtVersion();
-            const el = document.getElementById("sirhurtVersion");
-            if (el) el.textContent = `SirHurt ${sirhurtVersion}`;
-          } catch (error) {
-            showNotification(error.message || 'Failed to reinstall SirHurt', 'error');
-            console.error(error);
-          } finally {
-            btn.textContent = originalText;
-            btn.disabled = false;
-          }
+            try {
+              const result = await window.electron.forceReinstallSirHurt();
+              showNotification(
+                result.message || "SirHurt reinstalled successfully",
+                "success"
+              );
+              const sirhurtVersion = await window.electron.getSirhurtVersion();
+              const el = document.getElementById("sirhurtVersion");
+              if (el) el.textContent = `SirHurt ${sirhurtVersion}`;
+            } catch (error) {
+              showNotification(
+                error.message || "Failed to reinstall SirHurt",
+                "error"
+              );
+              console.error(error);
+            } finally {
+              btn.textContent = originalText;
+              btn.disabled = false;
+            }
+          });
+
+        document
+          .getElementById("btnCleanRoblox")
+          .addEventListener("click", async () => {
+            const btn = document.getElementById("btnCleanRoblox");
+            const originalText = btn.textContent;
+
+            btn.innerHTML = '<span class="spinner"></span> Cleaning...';
+            btn.disabled = true;
+
+            try {
+              const result = await window.electron.cleanRoblox();
+              showNotification(
+                result.message || "Roblox cleaned successfully",
+                "success"
+              );
+            } catch (error) {
+              showNotification(
+                error.message || "Failed to clean Roblox",
+                "error"
+              );
+              console.error(error);
+            } finally {
+              btn.textContent = originalText;
+              btn.disabled = false;
+            }
+          });
+
+        const fileManager = document.querySelector(".file-manager");
+        fileManager.addEventListener("mouseenter", () => {
+          fileManager.style.transform = "translateX(0)";
         });
 
-        document.getElementById('btnCleanRoblox').addEventListener('click', async () => {
-          const btn = document.getElementById('btnCleanRoblox');
-          const originalText = btn.textContent;
+        document
+          .getElementById("btnOpenFolder")
+          .addEventListener("click", () => {
+            window.electron.openScriptsFolder();
+            showNotification("Opening scripts folder...", "info");
+          });
 
-          btn.innerHTML = '<span class="spinner"></span> Cleaning...';
-          btn.disabled = true;
-
-          try {
-            const result = await window.electron.cleanRoblox();
-            showNotification(result.message || 'Roblox cleaned successfully', 'success');
-          } catch (error) {
-            showNotification(error.message || 'Failed to clean Roblox', 'error');
-            console.error(error);
-          } finally {
-            btn.textContent = originalText;
-            btn.disabled = false;
-          }
-        });
-
-        const fileManager = document.querySelector('.file-manager');
-        fileManager.addEventListener('mouseenter', () => {
-          fileManager.style.transform = 'translateX(0)';
-        });
-
-        document.getElementById('btnOpenFolder').addEventListener('click', () => {
-          window.electron.openScriptsFolder();
-          showNotification('Opening scripts folder...', 'info');
-        });
-
-        document.getElementById('btnOpenAutoEXE').addEventListener('click', () => {
-          window.electron.openAutoEXEFolder();
-          showNotification('Opening Autoexe folder...', 'info');
-        });
+        document
+          .getElementById("btnOpenAutoEXE")
+          .addEventListener("click", () => {
+            window.electron.openAutoEXEFolder();
+            showNotification("Opening Autoexe folder...", "info");
+          });
       });
     </script>
   </body>

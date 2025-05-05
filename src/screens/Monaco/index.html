@@ -1,1481 +1,2975 @@
 ﻿<!DOCTYPE html>
-<head>
+<html lang="en">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Monaco Editor with Tabs" />
+    <meta name="author" content="NiceHurt" />
+    <link
+      rel="icon"
+      href="/assets/favicon.png"
+      type="image/png"
+      sizes="16x16"
+    />
     <meta charset="utf-8" />
     <title>MonacoWithTabs</title>
     <style type="text/css">
-:root {
-    /* Editor Colors */
-    --editor-bg: #1a1a23;
-    --editor-fg: #e0e0e8;
-    --editor-line-numbers: #2e2e2e;
-    --editor-cursor: #ffffff;
+      :root {
+        /* Theme Variables */
+        --primary: #6d28d9;
+        --primary-dark: #5b21b6;
+        --primary-darker: #4c1d95;
+        --primary-rgb: 109, 40, 217;
+        --bg: #0f0f13;
+        --bg-light: #1a1a23;
+        --bg-lighter: #252533;
+        --text: #e0e0e8;
+        --text-dim: #a1a1aa;
+        --success: #0f8f64;
+        --warning: #f59e0b;
+        --error: #ef4444;
+        --border: #3a3a45;
+        --border-light: #4a4a55;
+        --shadow: 0 5px 10px -3px rgba(0, 0, 0, 0.3),
+          0 2px 4px -2px rgba(0, 0, 0, 0.2);
+        --glass: rgba(15, 15, 19, 0.7);
 
-    /* Text Colors */
-    --editor-selection: rgba(109, 40, 217, 0.5);
-    --editor-selection-inactive: rgba(109, 40, 217, 0.2);
-    --editor-line-highlight: #252533;
-    --editor-active-line-number: #d0d0d0;
-    --editor-font: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+        /* Editor Colors */
+        --editor-bg: var(--bg-light);
+        --editor-fg: var(--text);
+        --editor-line-numbers: var(--text-dim);
+        --editor-cursor: #ffffff;
+        --editor-selection: rgba(var(--primary-rgb), 0.5);
+        --editor-selection-inactive: rgba(var(--primary-rgb), 0.2);
+        --editor-line-highlight: var(--bg-lighter);
+        --editor-active-line-number: #d0d0d0;
+        --editor-font: "JetBrains Mono", "Fira Code", Consolas, monospace;
 
-    /* Editor Script text colors */
-    --keyword-color: #ff5555;
-    --local-keyword-color: #4dabf7;
-    --comment-color: #6a9955;
-    --string-color: #50fa7b;
-    --number-color: #bd93f9;
-    --function-color: #ff79c6;
-    --variable-color: #8be9fd;
-    --operator-color: #f1fa8c;
-    --type-color: #66d9ef;
+        /* Editor Script text colors */
+        --keyword-color: #ff5555;
+        --local-keyword-color: #4dabf7;
+        --comment-color: #6a9955;
+        --string-color: #50fa7b;
+        --number-color: #bd93f9;
+        --function-color: #ff79c6;
+        --variable-color: #8be9fd;
+        --operator-color: #f1fa8c;
+        --type-color: #66d9ef;
 
-    /* Editor Secondary Colors */
-    --indent-guide: #333333;
-    --active-indent-guide: #444444;
-    --widget-bg: #252533;
-    --widget-border: #3a3a45;
-    --autocomplete-selected: #2a2a35;
+        /* Editor Secondary Colors */
+        --indent-guide: #333333;
+        --active-indent-guide: #444444;
+        --widget-bg: var(--bg-lighter);
+        --widget-border: var(--border);
+        --autocomplete-selected: #2a2a35;
 
-    /* Tab Colors */
-    --tab-bg: #1a1a23;
-    --tab-active-bg: #252533;
-    --tab-border: #3a3a45;
-    --tab-text: #a1a1aa;
-    --tab-text-active: #ffffff;
-}
+        /* Tab Colors */
+        --tab-bg: var(--bg-light);
+        --tab-active-bg: var(--bg-lighter);
+        --tab-border: var(--border);
+        --tab-text: var(--text-dim);
+        --tab-text-active: var(--text);
+      }
 
-html, body {
-    background-color: var(--editor-bg);
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-    font-family: var(--editor-font);
-    color: var(--editor-fg);
-}
+      .theme-blue {
+        --primary: #3b82f6;
+        --primary-dark: #2563eb;
+        --primary-darker: #1d4ed8;
+        --primary-rgb: 59, 130, 246;
+        --bg: #0f0f13;
+        --bg-light: #1a1a23;
+        --bg-lighter: #252533;
+        --text: #e0e0e8;
+        --text-dim: #a1a1aa;
+      }
 
-#editor-container {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    width: 100%;
-    position: relative;
-    background-color: var(--editor-bg);
-}
+      .theme-red {
+        --primary: #ef4444;
+        --primary-dark: #dc2626;
+        --primary-darker: #b91c1c;
+        --primary-rgb: 239, 68, 68;
+        --bg: #0f0f13;
+        --bg-light: #1a1a23;
+        --bg-lighter: #252533;
+        --text: #e0e0e8;
+        --text-dim: #a1a1aa;
+      }
 
-#container {
-    flex: 1;
-    overflow: hidden;
-    border-top: 1px solid var(--widget-border);
-    background-color: var(--editor-bg);
-    opacity: 1;
-    transition: opacity 0.3s ease;
-}
+      .theme-green {
+        --primary: #10b981;
+        --primary-dark: #059669;
+        --primary-darker: #047857;
+        --primary-rgb: 16, 185, 129;
+        --bg: #0f0f13;
+        --bg-light: #1a1a23;
+        --bg-lighter: #252533;
+        --text: #e0e0e8;
+        --text-dim: #a1a1aa;
+      }
 
-#container.fade-out {
-    opacity: 0;
-}
+      .theme-pink {
+        --primary: #ec4899;
+        --primary-dark: #db2777;
+        --primary-darker: #be185d;
+        --primary-rgb: 236, 72, 153;
+        --bg: #0f0f13;
+        --bg-light: #1a1a23;
+        --bg-lighter: #252533;
+        --text: #e0e0e8;
+        --text-dim: #a1a1aa;
+      }
 
-#tabs-container {
-    display: flex;
-    align-items: center;
-    padding: 0 10px;
-    height: 36px;
-    background-color: var(--editor-bg);
-    border-bottom: 1px solid var(--widget-border);
-    z-index: 10;
-    gap: 6px;
-}
+      .theme-cyber {
+        --primary: #00f0ff;
+        --primary-dark: #00a2ff;
+        --primary-darker: #0062ff;
+        --primary-rgb: 0, 240, 255;
+        --bg: #0a0a12;
+        --bg-light: #141420;
+        --bg-lighter: #1e1e2e;
+        --text: #e0e0ff;
+        --text-dim: #a1a1cc;
+        --border: #3a3a66;
+        --border-light: #4a4a77;
+      }
 
-#tabs {
-    display: flex;
-    overflow-x: auto;
-    scrollbar-width: none;
-    flex: 1;
-    height: 100%;
-    align-items: center;
-    gap: 2px;
-    padding: 4px 0;
-}
+      .theme-orange {
+        --primary: #f97316;
+        --primary-dark: #ea580c;
+        --primary-darker: #c2410c;
+        --primary-rgb: 249, 115, 22;
+        --bg: #0f0f13;
+        --bg-light: #1a1a23;
+        --bg-lighter: #252533;
+        --text: #e0e0e8;
+        --text-dim: #a1a1aa;
+      }
 
-#tabs::-webkit-scrollbar {
-    display: none;
-}
+      .theme-teal {
+        --primary: #14b8a6;
+        --primary-dark: #0d9488;
+        --primary-darker: #0f766e;
+        --primary-rgb: 20, 184, 166;
+        --bg: #0f0f13;
+        --bg-light: #1a1a23;
+        --bg-lighter: #252533;
+        --text: #e0e0e8;
+        --text-dim: #a1a1aa;
+      }
 
-.tab {
-    position: relative;
-    padding: 0 12px 0 10px;
-    background-color: var(--tab-bg);
-    border-radius: 4px;
-    cursor: pointer;
-    user-select: none;
-    font-size: 11px;
-    color: var(--tab-text);
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    display: flex;
-    align-items: center;
-    height: 28px;
-    border: 1px solid transparent;
-    white-space: nowrap;
-    flex-shrink: 0;
-    transform-origin: left center;
-    animation: tabEnter 0.3s ease-out forwards;
-}
+      .theme-gold {
+        --primary: #facc15;
+        --primary-dark: #eab308;
+        --primary-darker: #ca8a04;
+        --primary-rgb: 250, 204, 21;
+        --bg: #0f0f13;
+        --bg-light: #1a1a23;
+        --bg-lighter: #252533;
+        --text: #e0e0e8;
+        --text-dim: #a1a1aa;
+      }
 
-@keyframes tabEnter {
-    0% {
-        transform: scaleX(0.8);
-        opacity: 0;
-    }
-    100% {
-        transform: scaleX(1);
+      .theme-midnight {
+        --primary: #6366f1;
+        --primary-dark: #4f46e5;
+        --primary-darker: #4338ca;
+        --primary-rgb: 99, 102, 241;
+        --bg: #080818;
+        --bg-light: #12122a;
+        --bg-lighter: #1c1c3d;
+        --text: #dcdcff;
+        --text-dim: #a5a5d6;
+        --border: #34345c;
+        --border-light: #454576;
+      }
+
+      .theme-neon {
+        --primary: #39ff14;
+        --primary-dark: #32cc12;
+        --primary-darker: #29aa0f;
+        --primary-rgb: 57, 255, 20;
+        --bg: #000000;
+        --bg-light: #0a0a0a;
+        --bg-lighter: #141414;
+        --text: #e0ffe0;
+        --text-dim: #aaffaa;
+        --border: #2a2a2a;
+        --border-light: #3a3a3a;
+      }
+
+      html,
+      body {
+        background-color: var(--editor-bg);
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        font-family: var(--editor-font);
+        color: var(--editor-fg);
+      }
+
+      #editor-container {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        width: 100%;
+        position: relative;
+        background-color: var(--editor-bg);
+      }
+
+      #container {
+        flex: 1;
+        overflow: hidden;
+        border-top: 1px solid var(--widget-border);
+        background-color: var(--editor-bg);
         opacity: 1;
-    }
-}
+        transition: opacity 0.3s ease;
+      }
 
-.tab.exit {
-    animation: tabExit 0.2s ease-in forwards;
-}
+      #container.fade-out {
+        opacity: 0;
+      }
 
-@keyframes tabExit {
-    0% {
-        transform: scaleX(1);
+      #tabs-container {
+        display: flex;
+        align-items: center;
+        padding: 0 10px;
+        height: 36px;
+        background-color: var(--editor-bg);
+        border-bottom: 1px solid var(--widget-border);
+        z-index: 10;
+        gap: 6px;
+      }
+
+      #tabs {
+        display: flex;
+        overflow-x: auto;
+        scrollbar-width: none;
+        flex: 1;
+        height: 100%;
+        align-items: center;
+        gap: 2px;
+        padding: 4px 0;
+      }
+
+      #tabs::-webkit-scrollbar {
+        display: none;
+      }
+
+      .tab {
+        position: relative;
+        padding: 0 12px 0 10px;
+        background-color: var(--tab-bg);
+        border-radius: 4px;
+        cursor: pointer;
+        user-select: none;
+        font-size: 11px;
+        color: var(--tab-text);
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        align-items: center;
+        height: 28px;
+        border: 1px solid transparent;
+        white-space: nowrap;
+        flex-shrink: 0;
+        transform-origin: left center;
+        animation: tabEnter 0.3s ease-out forwards;
+      }
+
+      @keyframes tabEnter {
+        0% {
+          transform: scaleX(0.8);
+          opacity: 0;
+        }
+        100% {
+          transform: scaleX(1);
+          opacity: 1;
+        }
+      }
+
+      .tab.exit {
+        animation: tabExit 0.2s ease-in forwards;
+      }
+
+      @keyframes tabExit {
+        0% {
+          transform: scaleX(1);
+          opacity: 1;
+        }
+        100% {
+          transform: scaleX(0.8);
+          opacity: 0;
+        }
+      }
+
+      .tab::before {
+        content: "";
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        margin-right: 6px;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23a1a1aa'%3E%3Cpath d='M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z'/%3E%3C/svg%3E");
+        background-size: contain;
+        background-repeat: no-repeat;
         opacity: 1;
-    }
-    100% {
-        transform: scaleX(0.8);
+        transition: all 0.2s ease;
+      }
+
+      .tab.active::before {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ffffff'%3E%3Cpath d='M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z'/%3E%3C/svg%3E");
+        opacity: 1;
+      }
+
+      .tab:hover {
+        background-color: color-mix(in srgb, var(--tab-bg) 85%, white);
+        transform: translateY(-1px);
+      }
+
+      .tab:hover::before {
+        opacity: 1;
+      }
+
+      .tab.active {
+        background-color: var(--tab-active-bg);
+        color: var(--tab-text-active);
+        border-color: var(--tab-border);
+        box-shadow: 0 0 0 1px var(--tab-border), 0 2px 4px rgba(0, 0, 0, 0.2);
+        transform: translateY(0);
+      }
+
+      .tab.dirty::after {
+        content: "•";
+        position: absolute;
+        right: 6px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--tab-border);
+        font-weight: bold;
+        animation: pulse 1.5s infinite;
+      }
+
+      @keyframes pulse {
+        0% {
+          opacity: 0.5;
+        }
+        50% {
+          opacity: 1;
+        }
+        100% {
+          opacity: 0.5;
+        }
+      }
+
+      .tab-close {
+        margin-left: 6px;
+        width: 16px;
+        height: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        font-size: 11px;
         opacity: 0;
-    }
-}
+        transition: all 0.2s ease;
+        color: inherit;
+        transform: scale(0.8);
+      }
 
-.tab::before {
-    content: '';
-    display: inline-block;
-    width: 12px;
-    height: 12px;
-    margin-right: 6px;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23a1a1aa'%3E%3Cpath d='M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z'/%3E%3C/svg%3E");
-    background-size: contain;
-    background-repeat: no-repeat;
-    opacity: 1;
-    transition: all 0.2s ease;
-}
+      .tab:hover .tab-close,
+      .tab.active .tab-close {
+        opacity: 0.7;
+        transform: scale(1);
+      }
 
-.tab.active::before {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ffffff'%3E%3Cpath d='M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z'/%3E%3C/svg%3E");
-    opacity: 1;
-}
+      .tab-close:hover {
+        background-color: var(--tab-border);
+        color: white;
+        opacity: 1 !important;
+        transform: scale(1.1);
+      }
 
-.tab:hover {
-    background-color: color-mix(in srgb, var(--tab-bg) 85%, white);
-    transform: translateY(-1px);
-}
+      .tab-actions {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        margin-left: auto;
+        padding-left: 6px;
+      }
 
-.tab:hover::before {
-    opacity: 1;
-}
+      .tab-action {
+        background-color: var(--tab-bg);
+        border: none;
+        color: var(--tab-text);
+        cursor: pointer;
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 4px;
+        font-size: 12px;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      }
 
-.tab.active {
-    background-color: var(--tab-active-bg);
-    color: var(--tab-text-active);
-    border-color: var(--tab-border);
-    box-shadow: 0 0 0 1px var(--tab-border), 0 2px 4px rgba(0, 0, 0, 0.2);
-    transform: translateY(0);
-}
+      .tab-action:hover {
+        background-color: var(--tab-border);
+        color: white;
+        transform: scale(1.1);
+      }
 
-.tab.dirty::after {
-    content: '•';
-    position: absolute;
-    right: 6px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--tab-border);
-    font-weight: bold;
-    animation: pulse 1.5s infinite;
-}
+      .tab-action:active {
+        transform: scale(0.95);
+      }
 
-@keyframes pulse {
-    0% { opacity: 0.5; }
-    50% { opacity: 1; }
-    100% { opacity: 0.5; }
-}
-
-.tab-close {
-    margin-left: 6px;
-    width: 16px;
-    height: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    font-size: 11px;
-    opacity: 0;
-    transition: all 0.2s ease;
-    color: inherit;
-    transform: scale(0.8);
-}
-
-.tab:hover .tab-close,
-.tab.active .tab-close {
-    opacity: 0.7;
-    transform: scale(1);
-}
-
-.tab-close:hover {
-    background-color: var(--tab-border);
-    color: white;
-    opacity: 1 !important;
-    transform: scale(1.1);
-}
-
-.tab-actions {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    margin-left: auto;
-    padding-left: 6px;
-}
-
-.tab-action {
-    background-color: var(--tab-bg);
-    border: none;
-    color: var(--tab-text);
-    cursor: pointer;
-    width: 24px;
-    height: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 4px;
-    font-size: 12px;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.tab-action:hover {
-    background-color: var(--tab-border);
-    color: white;
-    transform: scale(1.1);
-}
-
-.tab-action:active {
-    transform: scale(0.95);
-}
-
-#tabs-container::after {
-    content: '';
-    position: absolute;
-    right: 100px;
-    top: 0;
-    bottom: 0;
-    width: 16px;
-    background: linear-gradient(90deg, transparent, var(--editor-bg));
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.2s ease;
-}
-
-#tabs-container.scrollable::after {
-    opacity: 1;
-}
-
-.monaco-editor .margin {
-    background-color: transparent !important;
-}
-
-.monaco-editor .line-numbers {
-    color: var(--editor-line-numbers) !important;
-    font-family: var(--editor-font);
-}
-
-.monaco-editor .cursor {
-    background-color: var(--editor-cursor) !important;
-    border-color: transparent !important;
-    width: 2px !important;
-}
-
-.monaco-editor .selected-text {
-    background-color: var(--editor-selection) !important;
-}
-
-.monaco-editor .inactive-selection .selected-text {
-    background-color: var(--editor-selection-inactive) !important;
-}
-
-.monaco-editor .line-numbers.active-line-number {
-    color: var(--editor-active-line-number) !important;
-    font-weight: bold;
-}
-
-.monaco-editor .current-line {
-    background-color: var(--editor-line-highlight) !important;
-    border: none !important;
-}
-
-.monaco-editor .indent-guide {
-    border-left: 1px solid var(--indent-guide);
-}
-
-.monaco-editor .active-indent-guide {
-    border-left: 1px solid var(--active-indent-guide);
-}
-
-.monaco-editor .suggest-widget {
-    background-color: var(--widget-bg) !important;
-    border: 1px solid var(--widget-border) !important;
-}
-
-.monaco-editor .suggest-widget .selected {
-    background-color: var(--autocomplete-selected) !important;
-}
-
-::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-}
-
-::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-    background: var(--indent-guide);
-    border-radius: 3px;
-    transition: background 0.2s ease;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: var(--active-indent-guide);
-}
-
-/* Loading animation for editor */
-.loading-editor {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    z-index: 100;
-}
-
-.loading-spinner {
-    width: 40px;
-    height: 40px;
-    border: 4px solid rgba(255, 255, 255, 0.1);
-    border-radius: 50%;
-    border-top-color: var(--function-color);
-    animation: spin 1s ease-in-out infinite;
-}
-
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
-
-.loading-text {
-    color: var(--tab-text);
-    font-size: 14px;
-}
-
-/* Smooth background transition for editor line highlight */
-.monaco-editor .view-overlays .current-line {
-    transition: background-color 0.3s ease-out;
-}
-
-/* Pulse animation for error squiggles */
-.monaco-editor .squiggly-error {
-    animation: squiggly-error-pulse 0.8s ease-in-out infinite alternate;
-}
-
-@keyframes squiggly-error-pulse {
-    0% { opacity: 0.7; }
-    100% { opacity: 1; }
-}
-
-/* Bounce animation for active tab */
-.tab.active {
-    animation: tab-bounce 0.4s ease;
-}
-
-@keyframes tab-bounce {
-    0% { transform: translateY(0); }
-    50% { transform: translateY(-3px); }
-    100% { transform: translateY(0); }
-}
-
-/* Ripple effect for buttons */
-.tab-action {
-    position: relative;
-    overflow: hidden;
-}
-
-.tab-action:after {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 5px;
-    height: 5px;
-    background: rgba(255, 255, 255, 0.2);
-    opacity: 0;
-    border-radius: 100%;
-    transform: scale(1, 1) translate(-50%, -50%);
-    transform-origin: 50% 50%;
-}
-
-.tab-action:focus:not(:active)::after {
-    animation: ripple 0.6s ease-out;
-}
-
-@keyframes ripple {
-    0% {
-        transform: scale(0, 0);
-        opacity: 0.5;
-    }
-    100% {
-        transform: scale(20, 20);
+      #tabs-container::after {
+        content: "";
+        position: absolute;
+        right: 100px;
+        top: 0;
+        bottom: 0;
+        width: 16px;
+        background: linear-gradient(90deg, transparent, var(--editor-bg));
+        pointer-events: none;
         opacity: 0;
-    }
-}
+        transition: opacity 0.2s ease;
+      }
 
-/* Smooth scroll for editor */
-.monaco-scrollable-element > .scrollbar > .slider {
-    transition: background-color 0.2s, width 0.2s, height 0.2s;
-}
+      #tabs-container.scrollable::after {
+        opacity: 1;
+      }
 
-/* Typewriter effect for new tabs */
-@keyframes typewriter {
-    from { width: 0 }
-    to { width: 100% }
-}
+      .monaco-editor .margin {
+        background-color: transparent !important;
+      }
 
-.tab span {
-    display: inline-block;
-    overflow: hidden;
-    white-space: nowrap;
-    animation: typewriter 0.5s steps(20) forwards;
-}
+      .monaco-editor .line-numbers {
+        color: var(--editor-line-numbers) !important;
+        font-family: var(--editor-font);
+      }
 
-/* Glow effect for active line number */
-.monaco-editor .line-numbers.active-line-number {
-    text-shadow: 0 0 5px var(--editor-active-line-number);
-    transition: text-shadow 0.3s ease;
-}
+      .monaco-editor .cursor {
+        background-color: var(--editor-cursor) !important;
+        border-color: transparent !important;
+        width: 2px !important;
+      }
 
-/* Floating animation for suggestions widget */
-.monaco-editor .suggest-widget {
-    animation: widget-float 3s ease-in-out infinite;
-}
+      .monaco-editor .selected-text {
+        background-color: var(--editor-selection) !important;
+      }
 
-@keyframes widget-float {
-    0% { transform: translateY(0); }
-    50% { transform: translateY(-3px); }
-    100% { transform: translateY(0); }
-}
+      .monaco-editor .inactive-selection .selected-text {
+        background-color: var(--editor-selection-inactive) !important;
+      }
 
-/* Shake animation for invalid actions */
-.shake {
-    animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
-}
+      .monaco-editor .line-numbers.active-line-number {
+        color: var(--editor-active-line-number) !important;
+        font-weight: bold;
+      }
 
-@keyframes shake {
-    10%, 90% { transform: translateX(-1px); }
-    20%, 80% { transform: translateX(2px); }
-    30%, 50%, 70% { transform: translateX(-3px); }
-    40%, 60% { transform: translateX(3px); }
-}
+      .monaco-editor .current-line {
+        background-color: var(--editor-line-highlight) !important;
+        border: none !important;
+      }
 
+      .monaco-editor .indent-guide {
+        border-left: 1px solid var(--indent-guide);
+      }
 
-/* Subtle float for editor cursor */
-.monaco-editor .cursor {
-    animation: cursor-float 2s ease-in-out infinite;
-}
+      .monaco-editor .active-indent-guide {
+        border-left: 1px solid var(--active-indent-guide);
+      }
 
-@keyframes cursor-float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-2px); }
-}
+      .monaco-editor .suggest-widget {
+        background-color: var(--widget-bg) !important;
+        border: 1px solid var(--widget-border) !important;
+      }
 
-/* Folded code block animation */
-.monaco-editor .folding-collapsed {
-    transition: all 0.3s ease;
-}
+      .monaco-editor .suggest-widget .selected {
+        background-color: var(--autocomplete-selected) !important;
+      }
 
-.monaco-editor .folding-collapsed:hover {
-    transform: scale(1.05);
-}
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background: var(--indent-guide);
+        border-radius: 3px;
+        transition: background 0.2s ease;
+      }
+
+      ::-webkit-scrollbar-thumb:hover {
+        background: var(--active-indent-guide);
+      }
+
+      /* Loading animation for editor */
+      .loading-editor {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        z-index: 100;
+      }
+
+      .loading-spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        border-top-color: var(--function-color);
+        animation: spin 1s ease-in-out infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .loading-text {
+        color: var(--tab-text);
+        font-size: 14px;
+      }
+
+      /* Smooth background transition for editor line highlight */
+      .monaco-editor .view-overlays .current-line {
+        transition: background-color 0.3s ease-out;
+      }
+
+      /* Pulse animation for error squiggles */
+      .monaco-editor .squiggly-error {
+        animation: squiggly-error-pulse 0.8s ease-in-out infinite alternate;
+      }
+
+      @keyframes squiggly-error-pulse {
+        0% {
+          opacity: 0.7;
+        }
+        100% {
+          opacity: 1;
+        }
+      }
+
+      /* Bounce animation for active tab */
+      .tab.active {
+        animation: tab-bounce 0.4s ease;
+      }
+
+      @keyframes tab-bounce {
+        0% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-3px);
+        }
+        100% {
+          transform: translateY(0);
+        }
+      }
+
+      /* Ripple effect for buttons */
+      .tab-action {
+        position: relative;
+        overflow: hidden;
+      }
+
+      .tab-action:after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 5px;
+        height: 5px;
+        background: rgba(255, 255, 255, 0.2);
+        opacity: 0;
+        border-radius: 100%;
+        transform: scale(1, 1) translate(-50%, -50%);
+        transform-origin: 50% 50%;
+      }
+
+      .tab-action:focus:not(:active)::after {
+        animation: ripple 0.6s ease-out;
+      }
+
+      @keyframes ripple {
+        0% {
+          transform: scale(0, 0);
+          opacity: 0.5;
+        }
+        100% {
+          transform: scale(20, 20);
+          opacity: 0;
+        }
+      }
+
+      /* Smooth scroll for editor */
+      .monaco-scrollable-element > .scrollbar > .slider {
+        transition: background-color 0.2s, width 0.2s, height 0.2s;
+      }
+
+      /* Typewriter effect for new tabs */
+      @keyframes typewriter {
+        from {
+          width: 0;
+        }
+        to {
+          width: 100%;
+        }
+      }
+
+      .tab span {
+        display: inline-block;
+        overflow: hidden;
+        white-space: nowrap;
+        animation: typewriter 0.5s steps(20) forwards;
+      }
+
+      /* Glow effect for active line number */
+      .monaco-editor .line-numbers.active-line-number {
+        text-shadow: 0 0 5px var(--editor-active-line-number);
+        transition: text-shadow 0.3s ease;
+      }
+
+      /* Floating animation for suggestions widget */
+      .monaco-editor .suggest-widget {
+        animation: widget-float 3s ease-in-out infinite;
+      }
+
+      @keyframes widget-float {
+        0% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-3px);
+        }
+        100% {
+          transform: translateY(0);
+        }
+      }
+
+      /* Shake animation for invalid actions */
+      .shake {
+        animation: shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+      }
+
+      @keyframes shake {
+        10%,
+        90% {
+          transform: translateX(-1px);
+        }
+        20%,
+        80% {
+          transform: translateX(2px);
+        }
+        30%,
+        50%,
+        70% {
+          transform: translateX(-3px);
+        }
+        40%,
+        60% {
+          transform: translateX(3px);
+        }
+      }
+
+      /* Subtle float for editor cursor */
+      .monaco-editor .cursor {
+        animation: cursor-float 2s ease-in-out infinite;
+      }
+
+      @keyframes cursor-float {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-2px);
+        }
+      }
+
+      /* Folded code block animation */
+      .monaco-editor .folding-collapsed {
+        transition: all 0.3s ease;
+      }
+
+      .monaco-editor .folding-collapsed:hover {
+        transform: scale(1.05);
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div id="editor-container">
-        <div id="tabs-container">
-            <div id="tabs">
-                <div class="tab active" data-id="main">
-                    <span>Tab-0</span>
-                    <div class="tab-close">×</div>
-                </div>
-            </div>
-            <div class="tab-actions">
-                <button class="tab-action" id="add-tab">+</button>
-                <button class="tab-action" id="remove-tab">−</button>
-            </div>
+      <div id="tabs-container">
+        <div id="tabs">
+          <div class="tab active" data-id="main">
+            <span>Tab-0</span>
+            <div class="tab-close">×</div>
+          </div>
         </div>
-        <div id="container"></div>
-        <div class="loading-editor" id="loading-indicator" style="display: none;">
-            <div class="loading-spinner"></div>
-            <div class="loading-text">Loading editor...</div>
+        <div class="tab-actions">
+          <button class="tab-action" id="add-tab">+</button>
+          <button class="tab-action" id="remove-tab">−</button>
         </div>
+      </div>
+      <div id="container"></div>
+      <div class="loading-editor" id="loading-indicator" style="display: none">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Loading editor...</div>
+      </div>
     </div>
 
     <script src="vs/loader.js"></script>
     <script type="text/javascript">
-        document.getElementById('loading-indicator').style.display = 'flex';
+      document.getElementById("loading-indicator").style.display = "flex";
 
-        require.config({
-            paths: {
-                'vs': 'vs',
-            }
+      require.config({
+        paths: {
+          vs: "vs",
+        },
+      });
+
+      var GetText;
+      var SetText;
+      var SetTheme;
+      var SetScroll;
+      var ShowError;
+      var SwitchMinimap;
+      var AddIntellisense;
+
+      var editor;
+      var Proposals = [];
+      var currentTab = "main";
+      var tabs = {
+        main: {
+          content: "-- Welcome to NiceHurt!",
+          language: "lua",
+        },
+      };
+      var minimapEnabled = false;
+
+      require(["vs/editor/editor.main"], function () {
+        document.getElementById("loading-indicator").style.display = "none";
+
+        function getCssVar(name) {
+          return getComputedStyle(document.documentElement)
+            .getPropertyValue(name)
+            .trim();
+        }
+
+        monaco.editor.defineTheme("dark-theme", {
+          base: "vs-dark",
+          inherit: true,
+          rules: [
+            {
+              token: "variable.language.self",
+              foreground: getCssVar("--variable-color").substring(1),
+            },
+            {
+              token: "variable.parameter.variadic",
+              foreground: getCssVar("--variable-color").substring(1),
+            },
+            {
+              token: "variable.parameter.function",
+              foreground: getCssVar("--variable-color").substring(1),
+            },
+            {
+              token: "variable.other.constant",
+              foreground: getCssVar("--variable-color").substring(1),
+            },
+            {
+              token: "variable.property",
+              foreground: getCssVar("--variable-color").substring(1),
+            },
+            {
+              token: "variable.object.property",
+              foreground: getCssVar("--variable-color").substring(1),
+            },
+
+            {
+              token: "keyword",
+              foreground: getCssVar("--keyword-color").substring(1),
+            },
+
+            {
+              token: "keyword.local",
+              foreground: getCssVar("--local-keyword-color").substring(1),
+              fontStyle: "bold",
+            },
+            {
+              token: "keyword.operator",
+              foreground: getCssVar("--operator-color").substring(1),
+            },
+            {
+              token: "keyword.operator.type.annotation",
+              foreground: getCssVar("--operator-color").substring(1),
+            },
+            {
+              token: "keyword.operator.typedef.annotation",
+              foreground: getCssVar("--operator-color").substring(1),
+            },
+            {
+              token: "keyword.control.export",
+              foreground: getCssVar("--keyword-color").substring(1),
+              fontStyle: "bold",
+            },
+
+            {
+              token: "operator",
+              foreground: getCssVar("--operator-color").substring(1),
+            },
+            {
+              token: "operator.type",
+              foreground: getCssVar("--operator-color").substring(1),
+            },
+            {
+              token: "operator.special",
+              foreground: getCssVar("--operator-color").substring(1),
+            },
+
+            {
+              token: "entity.name.type.alias",
+              foreground: getCssVar("--function-color").substring(1),
+            },
+            {
+              token: "entity.name.function",
+              foreground: getCssVar("--function-color").substring(1),
+            },
+
+            {
+              token: "global",
+              foreground: getCssVar("--variable-color").substring(1),
+              fontStyle: "bold",
+            },
+
+            {
+              token: "storage.type",
+              foreground: getCssVar("--keyword-color").substring(1),
+            },
+
+            {
+              token: "comment",
+              foreground: getCssVar("--comment-color").substring(1),
+              fontStyle: "italic",
+            },
+            {
+              token: "comment.highlight.title",
+              foreground: getCssVar("--comment-color").substring(1),
+              fontStyle: "italic",
+            },
+            {
+              token: "comment.highlight.name",
+              foreground: getCssVar("--comment-color").substring(1),
+              fontStyle: "italic",
+            },
+            {
+              token: "comment.delimiter.modifier",
+              foreground: getCssVar("--comment-color").substring(1),
+              fontStyle: "italic",
+            },
+            {
+              token: "comment.highlight.modifier",
+              foreground: getCssVar("--comment-color").substring(1),
+              fontStyle: "italic",
+            },
+            {
+              token: "comment.highlight.descriptor",
+              foreground: getCssVar("--comment-color").substring(1),
+              fontStyle: "italic",
+            },
+
+            {
+              token: "string",
+              foreground: getCssVar("--string-color").substring(1),
+            },
+            {
+              token: "longstring",
+              foreground: getCssVar("--string-color").substring(1),
+            },
+            {
+              token: "string.delimeter",
+              foreground: getCssVar("--string-color").substring(1),
+            },
+            {
+              token: "string.escape",
+              foreground: getCssVar("--string-color").substring(1),
+            },
+
+            {
+              token: "number",
+              foreground: getCssVar("--number-color").substring(1),
+            },
+            {
+              token: "constants",
+              foreground: getCssVar("--number-color").substring(1),
+            },
+            {
+              token: "constant.language",
+              foreground: getCssVar("--number-color").substring(1),
+            },
+          ],
+          colors: {
+            "editor.background": getCssVar("--editor-bg"),
+            "editor.foreground": "#ffffff",
+            "editorCursor.foreground": getCssVar("--editor-cursor"),
+            "editor.lineHighlightBackground": getCssVar("--line-highlight"),
+            "editorLineNumber.foreground": getCssVar("--editor-line-numbers"),
+            "editorLineNumber.activeForeground": getCssVar(
+              "--active-line-number"
+            ),
+            "editor.selectionBackground": getCssVar("--editor-selection"),
+            "editorIndentGuide.background": getCssVar("--indent-guide"),
+            "editorIndentGuide.activeBackground": getCssVar(
+              "--active-indent-guide"
+            ),
+            "editorSuggestWidget.selectedBackground": getCssVar(
+              "--autocomplete-selected"
+            ),
+          },
         });
 
-        var GetText;
-        var SetText;
-        var SetTheme;
-        var SetScroll;
-        var ShowError;
-        var SwitchMinimap;
-        var AddIntellisense;
-
-        var editor;
-        var Proposals = [];
-        var currentTab = "main";
-        var tabs = {
-            "main": {
-                content: '-- Welcome to NiceHurt!',
-                language: "lua"
+        function getDependencyProposals() {
+          let newProposals = [];
+          for (let index = 0; index < Proposals.length; index++) {
+            const element = Proposals[index];
+            let newElement = {};
+            for (const key in element) {
+              if (key == "__children__") {
+                continue;
+              }
+              newElement[key] = element[key];
             }
-        };
-        var minimapEnabled = false;
+            newProposals.push(newElement);
+          }
+          return newProposals;
+        }
 
-        require(['vs/editor/editor.main'], function () {
-            document.getElementById('loading-indicator').style.display = 'none';
+        require(["vs/basic-languages/monaco.contribution"], function () {
+          monaco.languages.registerCompletionItemProvider("lua", {
+            provideCompletionItems: function (model, position) {
+              return {
+                suggestions: getDependencyProposals(),
+              };
+            },
+            triggerCharacters: [".", ":", '"'],
+          });
 
-            function getCssVar(name) {
-                return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+          createEditor();
+          setupEventListeners();
+
+          addLuaStandardLibrary();
+          addRobloxFunctions();
+          addKrnlFunctions();
+        });
+
+        function createEditor() {
+          editor = monaco.editor.create(document.getElementById("container"), {
+            value: tabs[currentTab].content,
+            language: tabs[currentTab].language,
+            theme: "dark-theme",
+            folding: true,
+            dragAndDrop: true,
+            links: true,
+            minimap: {
+              enabled: minimapEnabled,
+            },
+            lineNumbers: "on",
+            lineDecorationsWidth: 10,
+            lineNumbersMinChars: 3,
+            showFoldingControls: "always",
+            smoothScrolling: true,
+            stopRenderingLineAfter: 10000,
+            fontSize: 12,
+            cursorBlinking: "smooth",
+            cursorSmoothCaretAnimation: true,
+            foldingHighlight: true,
+            fontLigatures: true,
+            formatOnPaste: true,
+            showDeprecated: true,
+            renderWhitespace: "none",
+            bracketPairColorization: {
+              enabled: true,
+            },
+            autoIndent: "full",
+            tabSize: 4,
+            fontFamily: "'JetBrains Mono', 'Fira Code', Consolas, monospace",
+            suggest: {
+              snippetsPreventQuickSuggestions: false,
+              showIcons: true,
+              showMethods: true,
+              showFunctions: true,
+              showConstructors: true,
+              showFields: true,
+              showVariables: true,
+              showClasses: true,
+              showStructs: true,
+              showInterfaces: true,
+              showModules: true,
+              showProperties: true,
+              showEvents: true,
+              showOperators: true,
+              showUnits: true,
+              showValues: true,
+              showConstants: true,
+              showEnums: true,
+              showEnumMembers: true,
+              showKeywords: true,
+              showWords: true,
+              showColors: true,
+              showFiles: true,
+              showReferences: true,
+              showFolders: true,
+              showTypeParameters: true,
+              showIssues: true,
+              showUsers: true,
+            },
+            wordWrap: "off",
+          });
+
+          editor.onDidChangeCursorPosition(function (e) {});
+
+          editor.onDidChangeCursorSelection(function (e) {});
+
+          editor.onDidChangeModelContent(function () {
+            tabs[currentTab].content = editor.getValue();
+          });
+
+          window.onresize = function () {
+            editor.layout();
+          };
+        }
+
+        function setupEventListeners() {
+          document
+            .getElementById("add-tab")
+            .addEventListener("click", createNewFile);
+          document
+            .getElementById("remove-tab")
+            .addEventListener("click", removeCurrentTab);
+
+          document.addEventListener("click", function (e) {
+            if (e.target.classList.contains("tab-close")) {
+              const tab = e.target.parentElement;
+              const tabId = tab.dataset.id;
+              closeTab(tabId);
+            } else if (e.target.closest(".tab")) {
+              const tab = e.target.closest(".tab");
+              const tabId = tab.dataset.id;
+              switchToTab(tabId);
             }
+          });
 
-           monaco.editor.defineTheme('dark-theme', {
-                base: 'vs-dark',
-                inherit: true,
-                rules: [
-                    
-                    { token: 'variable.language.self', foreground: getCssVar('--variable-color').substring(1) }, 
-                    { token: 'variable.parameter.variadic', foreground: getCssVar('--variable-color').substring(1) },
-                    { token: 'variable.parameter.function', foreground: getCssVar('--variable-color').substring(1) },
-                    { token: 'variable.other.constant', foreground: getCssVar('--variable-color').substring(1) },
-                    { token: 'variable.property', foreground: getCssVar('--variable-color').substring(1) },
-                    { token: 'variable.object.property', foreground: getCssVar('--variable-color').substring(1) },
+          const tabsContainer = document.getElementById("tabs-container");
+          const tabs = document.getElementById("tabs");
+        }
 
-                    
-                    { token: 'keyword', foreground: getCssVar('--keyword-color').substring(1) }, 
-                    
-                    { token: 'keyword.local', foreground: getCssVar('--local-keyword-color').substring(1), fontStyle: 'bold' },  
-                    { token: 'keyword.operator', foreground: getCssVar('--operator-color').substring(1) },
-                    { token: 'keyword.operator.type.annotation', foreground: getCssVar('--operator-color').substring(1) },
-                    { token: 'keyword.operator.typedef.annotation', foreground: getCssVar('--operator-color').substring(1) },
-                    { token: 'keyword.control.export', foreground: getCssVar('--keyword-color').substring(1), fontStyle: 'bold' },
+        function createNewFile() {
+          if (Object.keys(tabs).length >= 10) {
+            Notification(
+              "Error",
+              "Maximum number of tabs (9) reached. Please close some tabs first.",
+              "error"
+            );
+            return;
+          }
 
-                    
-                    { token: 'operator', foreground: getCssVar('--operator-color').substring(1) },
-                    { token: 'operator.type', foreground: getCssVar('--operator-color').substring(1) },
-                    { token: 'operator.special', foreground: getCssVar('--operator-color').substring(1) },
+          const fileId = "file_" + Date.now();
+          const fileName = `Tab-${Object.keys(tabs).length}`;
 
-                    
-                    { token: 'entity.name.type.alias', foreground: getCssVar('--function-color').substring(1) },
-                    { token: 'entity.name.function', foreground: getCssVar('--function-color').substring(1) },
+          tabs[fileId] = {
+            content: "",
+            language: "lua",
+          };
 
-                    
-                    { token: 'global', foreground: getCssVar('--variable-color').substring(1), fontStyle: 'bold' },
-
-                    
-                    { token: 'storage.type', foreground: getCssVar('--keyword-color').substring(1) },
-
-                    
-                    { token: 'comment', foreground: getCssVar('--comment-color').substring(1), fontStyle: 'italic' },
-                    { token: 'comment.highlight.title', foreground: getCssVar('--comment-color').substring(1), fontStyle: 'italic' },
-                    { token: 'comment.highlight.name', foreground: getCssVar('--comment-color').substring(1), fontStyle: 'italic' },
-                    { token: 'comment.delimiter.modifier', foreground: getCssVar('--comment-color').substring(1), fontStyle: 'italic' },
-                    { token: 'comment.highlight.modifier', foreground: getCssVar('--comment-color').substring(1), fontStyle: 'italic' },
-                    { token: 'comment.highlight.descriptor', foreground: getCssVar('--comment-color').substring(1), fontStyle: 'italic' },
-
-                    
-                    { token: 'string', foreground: getCssVar('--string-color').substring(1) },
-                    { token: 'longstring', foreground: getCssVar('--string-color').substring(1) },
-                    { token: 'string.delimeter', foreground: getCssVar('--string-color').substring(1) },
-                    { token: 'string.escape', foreground: getCssVar('--string-color').substring(1) },
-
-                    
-                    { token: 'number', foreground: getCssVar('--number-color').substring(1) },
-                    { token: 'constants', foreground: getCssVar('--number-color').substring(1) },
-                    { token: 'constant.language', foreground: getCssVar('--number-color').substring(1) },
-                ],
-                colors: {
-                    'editor.background': getCssVar('--editor-bg'),
-                    'editor.foreground': '#ffffff',
-                    'editorCursor.foreground': getCssVar('--editor-cursor'),
-                    'editor.lineHighlightBackground': getCssVar('--line-highlight'),
-                    'editorLineNumber.foreground': getCssVar('--editor-line-numbers'),
-                    'editorLineNumber.activeForeground': getCssVar('--active-line-number'),
-                    'editor.selectionBackground': getCssVar('--editor-selection'),
-                    'editorIndentGuide.background': getCssVar('--indent-guide'),
-                    'editorIndentGuide.activeBackground': getCssVar('--active-indent-guide'),
-                    'editorSuggestWidget.selectedBackground': getCssVar('--autocomplete-selected'),
-                }
-            });
-
-            function getDependencyProposals() {
-                let newProposals = [];
-                for (let index = 0; index < Proposals.length; index++) {
-                    const element = Proposals[index];
-                    let newElement = {}
-                    for (const key in element) {
-                        if (key == "__children__") {
-                            continue;
-                        };
-                        newElement[key] = element[key];
-                    }
-                    newProposals.push(newElement)
-                }
-                return newProposals;
-            }
-            
-            require(['vs/basic-languages/monaco.contribution'], function () {
-                monaco.languages.registerCompletionItemProvider('lua', {
-                    provideCompletionItems: function (model, position) {
-                        return {
-                            suggestions: getDependencyProposals(),
-                        };
-                    },
-                    triggerCharacters: ['.', ':', '"'],
-                });
-
-                createEditor();
-                setupEventListeners();
-               
-                addLuaStandardLibrary();
-                addRobloxFunctions();
-                addKrnlFunctions();
-            });
-
-            function createEditor() {
-                editor = monaco.editor.create(document.getElementById('container'), {
-                    value: tabs[currentTab].content,
-                    language: tabs[currentTab].language,
-                    theme: "dark-theme",
-                    folding: true,
-                    dragAndDrop: true,
-                    links: true,
-                    minimap: {
-                        enabled: minimapEnabled,
-                    },
-                    lineNumbers: 'on',
-                    lineDecorationsWidth: 10,
-                    lineNumbersMinChars: 3,
-                    showFoldingControls: "always",
-                    smoothScrolling: true,
-                    stopRenderingLineAfter: 10000,
-                    fontSize: 12,
-                    cursorBlinking: "smooth",
-                    cursorSmoothCaretAnimation: true,
-                    foldingHighlight: true,
-                    fontLigatures: true,
-                    formatOnPaste: true,
-                    showDeprecated: true,
-                    renderWhitespace: "none",
-                    bracketPairColorization: {
-                        enabled: true
-                    },
-                    autoIndent: "full",
-                    tabSize: 4,
-                    fontFamily: "'JetBrains Mono', 'Fira Code', Consolas, monospace",
-                    suggest: {
-                        snippetsPreventQuickSuggestions: false,
-                        showIcons: true,
-                        showMethods: true,
-                        showFunctions: true,
-                        showConstructors: true,
-                        showFields: true,
-                        showVariables: true,
-                        showClasses: true,
-                        showStructs: true,
-                        showInterfaces: true,
-                        showModules: true,
-                        showProperties: true,
-                        showEvents: true,
-                        showOperators: true,
-                        showUnits: true,
-                        showValues: true,
-                        showConstants: true,
-                        showEnums: true,
-                        showEnumMembers: true,
-                        showKeywords: true,
-                        showWords: true,
-                        showColors: true,
-                        showFiles: true,
-                        showReferences: true,
-                        showFolders: true,
-                        showTypeParameters: true,
-                        showIssues: true,
-                        showUsers: true,
-                    },
-                    wordWrap: "off"
-                });
-
-                editor.onDidChangeCursorPosition(function(e) {
-                });
-
-                editor.onDidChangeCursorSelection(function(e) {
-                });
-
-                editor.onDidChangeModelContent(function() {
-                    tabs[currentTab].content = editor.getValue();
-                });
-
-                window.onresize = function () {
-                    editor.layout();
-                };
-            }
-
-            function setupEventListeners() {
-                document.getElementById('add-tab').addEventListener('click', createNewFile);
-                document.getElementById('remove-tab').addEventListener('click', removeCurrentTab);
-                
-                document.addEventListener('click', function(e) {
-                    if (e.target.classList.contains('tab-close')) {
-                        const tab = e.target.parentElement;
-                        const tabId = tab.dataset.id;
-                        closeTab(tabId);
-                    } else if (e.target.closest('.tab')) {
-                        const tab = e.target.closest('.tab');
-                        const tabId = tab.dataset.id;
-                        switchToTab(tabId);
-                    }
-                });
-                        
-                    const tabsContainer = document.getElementById('tabs-container');
-                    const tabs = document.getElementById('tabs');
-            }
-
-            function createNewFile() {
-                if (Object.keys(tabs).length >= 10) {
-                    Notification("Error", "Maximum number of tabs (9) reached. Please close some tabs first.", "error");
-                    return;
-                }
-                
-                const fileId = 'file_' + Date.now();
-                const fileName = `Tab-${Object.keys(tabs).length}`;
-                
-                tabs[fileId] = {
-                    content: '',
-                    language: 'lua'
-                };
-                
-                const tabElement = document.createElement('div');
-                tabElement.className = 'tab';
-                tabElement.dataset.id = fileId;
-                tabElement.innerHTML = `
+          const tabElement = document.createElement("div");
+          tabElement.className = "tab";
+          tabElement.dataset.id = fileId;
+          tabElement.innerHTML = `
                     <span>${fileName}</span>
                     <div class="tab-close">×</div>
                 `;
-                
-                const tabsContainer = document.getElementById('tabs');
-                tabsContainer.appendChild(tabElement);
-                
-                
-                const tabActions = document.querySelector('.tab-actions');
-                
-                tabElement.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
-                
-                switchToTab(fileId);
+
+          const tabsContainer = document.getElementById("tabs");
+          tabsContainer.appendChild(tabElement);
+
+          const tabActions = document.querySelector(".tab-actions");
+
+          tabElement.scrollIntoView({
+            behavior: "smooth",
+            block: "nearest",
+            inline: "nearest",
+          });
+
+          switchToTab(fileId);
+        }
+
+        function removeCurrentTab() {
+          if (Object.keys(tabs).length <= 1) {
+            return;
+          }
+          closeTab(currentTab);
+        }
+
+        function switchToTab(tabId) {
+          if (!tabs[tabId]) return;
+
+          const container = document.getElementById("container");
+          container.classList.add("fade-out");
+
+          setTimeout(() => {
+            currentTab = tabId;
+
+            document.querySelectorAll(".tab").forEach((tab) => {
+              tab.classList.toggle("active", tab.dataset.id === tabId);
+            });
+
+            editor.setValue(tabs[tabId].content);
+            monaco.editor.setModelLanguage(
+              editor.getModel(),
+              tabs[tabId].language
+            );
+
+            container.classList.remove("fade-out");
+          }, 150);
+        }
+
+        function closeTab(tabId) {
+          if (Object.keys(tabs).length <= 1) {
+            return;
+          }
+
+          const tabElement = document.querySelector(`.tab[data-id="${tabId}"]`);
+          tabElement.classList.add("exit");
+
+          setTimeout(() => {
+            tabElement.remove();
+            delete tabs[tabId];
+
+            if (currentTab === tabId) {
+              const newTabId = Object.keys(tabs)[0];
+              switchToTab(newTabId);
             }
+          }, 200);
+        }
 
-            function removeCurrentTab() {
-                if (Object.keys(tabs).length <= 1) {
-                    return; 
-                }
-                closeTab(currentTab);
+        GetText = function () {
+          return editor.getValue();
+        };
+
+        SetText = function (x) {
+          editor.setValue(x);
+        };
+
+        SetTheme = function (themeName) {
+          monaco.editor.setTheme(themeName);
+        };
+
+        SetScroll = function (line) {
+          editor.revealLineInCenter({ lineNumber: line });
+        };
+
+        SwitchMinimap = function (flag) {
+          minimapEnabled = flag;
+          editor.updateOptions({
+            minimap: {
+              enabled: flag,
+            },
+          });
+        };
+
+        ShowError = function (line, column, endline, endcolumn, errMessage) {
+          editor.revealPositionInCenter({ lineNumber: line, column: column });
+          editor.deltaDecorations(
+            [],
+            [
+              {
+                range: new monaco.Range(line, column, endline, endcolumn),
+                options: {
+                  inlineClassName: "squiggly-error",
+                  hoverMessage: {
+                    value: errMessage,
+                  },
+                },
+              },
+            ]
+          );
+        };
+
+        AddSnippet = function (kindName, snippetName, data) {
+          let snippet = {
+            insertTextRules:
+              monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+            kind: monaco.languages.CompletionItemKind[kindName],
+          };
+          for (const key in data) {
+            let value = data[key];
+            if (key == "insertText" && typeof value == "object") {
+              value = value.join("\n");
             }
+            snippet[key] = value;
+          }
+          if (!snippet.label) {
+            snippet.label = snippetName;
+          }
+          if (!snippet.insertText) {
+            snippet.insertText = snippetName;
+          }
+          Proposals.push(snippet);
+        };
 
-            function switchToTab(tabId) {
-                if (!tabs[tabId]) return;
+        AddRawSnippet = function (data) {
+          Proposals.push(data);
+        };
 
-                const container = document.getElementById('container');
-                container.classList.add('fade-out');
+        AddIntellisense = function (l, k, d, i) {
+          var t;
+          switch (k) {
+            case "Class":
+              t = monaco.languages.CompletionItemKind.Class;
+              break;
+            case "Color":
+              t = monaco.languages.CompletionItemKind.Color;
+              break;
+            case "Constructor":
+              t = monaco.languages.CompletionItemKind.Constructor;
+              break;
+            case "Enum":
+              t = monaco.languages.CompletionItemKind.Enum;
+              break;
+            case "Field":
+              t = monaco.languages.CompletionItemKind.Field;
+              break;
+            case "File":
+              t = monaco.languages.CompletionItemKind.File;
+              break;
+            case "Folder":
+              t = monaco.languages.CompletionItemKind.Folder;
+              break;
+            case "Function":
+              t = monaco.languages.CompletionItemKind.Function;
+              break;
+            case "Interface":
+              t = monaco.languages.CompletionItemKind.Interface;
+              break;
+            case "Keyword":
+              t = monaco.languages.CompletionItemKind.Keyword;
+              break;
+            case "Method":
+              t = monaco.languages.CompletionItemKind.Method;
+              break;
+            case "Module":
+              t = monaco.languages.CompletionItemKind.Module;
+              break;
+            case "Property":
+              t = monaco.languages.CompletionItemKind.Property;
+              break;
+            case "Reference":
+              t = monaco.languages.CompletionItemKind.Reference;
+              break;
+            case "Snippet":
+              t = monaco.languages.CompletionItemKind.Snippet;
+              break;
+            case "Text":
+              t = monaco.languages.CompletionItemKind.Text;
+              break;
+            case "Unit":
+              t = monaco.languages.CompletionItemKind.Unit;
+              break;
+            case "Value":
+              t = monaco.languages.CompletionItemKind.Value;
+              break;
+            case "Variable":
+              t = monaco.languages.CompletionItemKind.Variable;
+              break;
+          }
 
-                setTimeout(() => {
-                    currentTab = tabId;
-                    
-                    document.querySelectorAll('.tab').forEach(tab => {
-                        tab.classList.toggle('active', tab.dataset.id === tabId);
+          Proposals.push({
+            label: l,
+            kind: t,
+            detail: d,
+            insertText: i,
+            insertTextRules:
+              monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+          });
+        };
+
+        function addDefaultSnippets() {}
+
+        function addKrnlFunctions() {
+          AddIntellisense(
+            "hookfunction",
+            "Function",
+            "Redirects calls to f with hook and returns the original function.",
+            "hookfunction(${1:f}, ${2:hook})"
+          );
+          AddIntellisense(
+            "iskrnlclosure",
+            "Function",
+            "Returns whether the closure was created by Krnl.",
+            "iskrnlclosure(${1:f})"
+          );
+          AddIntellisense(
+            "iscclosure",
+            "Function",
+            "Returns whether the closure is a CClosure.",
+            "iscclosure(${1:f})"
+          );
+          AddIntellisense(
+            "islclosure",
+            "Function",
+            "Returns whether the closure is a LuaClosure.",
+            "islclosure(${1:f})"
+          );
+          AddIntellisense(
+            "newcclosure",
+            "Function",
+            "Transforms a LuaClosure into a CClosure with error handling.",
+            "newcclosure(${1:f})"
+          );
+
+          AddIntellisense(
+            "keypress",
+            "Function",
+            "Virtually presses a key.",
+            "keypress(${1:keyCode})"
+          );
+          AddIntellisense(
+            "keyrelease",
+            "Function",
+            "Virtually releases a key.",
+            "keyrelease(${1:keyCode})"
+          );
+          AddIntellisense(
+            "mouse1click",
+            "Function",
+            "Simulates a left-mouse button click.",
+            "mouse1click()"
+          );
+          AddIntellisense(
+            "mouse1down",
+            "Function",
+            "Virtually presses the left-mouse button.",
+            "mouse1down()"
+          );
+          AddIntellisense(
+            "mouse1up",
+            "Function",
+            "Virtually releases the left-mouse button.",
+            "mouse1up()"
+          );
+          AddIntellisense(
+            "mouse2click",
+            "Function",
+            "Simulates a right-mouse button click.",
+            "mouse2click()"
+          );
+          AddIntellisense(
+            "mouse2down",
+            "Function",
+            "Virtually presses the right-mouse button.",
+            "mouse2down()"
+          );
+          AddIntellisense(
+            "mouse2up",
+            "Function",
+            "Virtually releases the right-mouse button.",
+            "mouse2up()"
+          );
+          AddIntellisense(
+            "isrbxactive",
+            "Function",
+            "Returns whether the Roblox window is active.",
+            "isrbxactive()"
+          );
+          AddIntellisense(
+            "mousemoverel",
+            "Function",
+            "Moves the cursor relative to it's current position.",
+            "mousemoverel(${1:deltaX}, ${2:deltaY})"
+          );
+          AddIntellisense(
+            "mousemoveabs",
+            "Function",
+            "Moves the cursor to (X, Y).",
+            "mousemoveabs(${1:X}, ${2:Y})"
+          );
+          AddIntellisense(
+            "mousescroll",
+            "Function",
+            "Simulates a scroll of distance pixels.",
+            "mousescroll(${1:distance})"
+          );
+
+          AddIntellisense(
+            "setscriptable",
+            "Function",
+            "Flags a property of instance as scriptable.",
+            "setscriptable(${1:instance}, ${2:property}, ${3:scriptable})"
+          );
+          AddIntellisense(
+            "gethiddenproperty",
+            "Function",
+            "Gets a property of instance regardless of the IsScriptable flag.",
+            "gethiddenproperty(${1:instance}, ${2:property})"
+          );
+          AddIntellisense(
+            "sethiddenproperty",
+            "Function",
+            "Sets a property of instance to value regardless of the IsScriptable flag.",
+            "sethiddenproperty(${1:instance}, ${2:property}, ${3:value})"
+          );
+          AddIntellisense(
+            "getproperties",
+            "Function",
+            "Returns all properties of instance, including hidden properties.",
+            "getproperties(${1:instance})"
+          );
+          AddIntellisense(
+            "setsimulationradius",
+            "Function",
+            "Sets the LocalPlayer's SimulationRadius to radius.",
+            "setsimulationradius(${1:radius})"
+          );
+          AddIntellisense(
+            "getspecialinfo",
+            "Function",
+            "Gets special properties of certain instances.",
+            "getspecialinfo(${1:instance})"
+          );
+          AddIntellisense(
+            "fireclickdetector",
+            "Function",
+            "Sends a click signal for the ClickDetector.",
+            "fireclickdetector(${1:clickDetector})"
+          );
+          AddIntellisense(
+            "firetouchinterest",
+            "Function",
+            "Fires the Touched/TouchEnded event of otherPart and part based on touchType.",
+            "firetouchinterest(${1:part}, ${2:otherPart}, ${3:touchType})"
+          );
+          AddIntellisense(
+            "fireproximityprompt",
+            "Function",
+            "Triggers the ProximityPrompt.",
+            "fireproximityprompt(${1:proximityPrompt})"
+          );
+          AddIntellisense(
+            "getconnections",
+            "Function",
+            "Returns a list of connections for the given signal.",
+            "getconnections(${1:signal})"
+          );
+
+          AddIntellisense(
+            "getscriptclosure",
+            "Function",
+            "Creates a LuaClosure for the given script.",
+            "getscriptclosure(${1:object})"
+          );
+          AddIntellisense(
+            "decompile",
+            "Function",
+            "Decompiles a script and returns a representation of the source.",
+            "decompile(${1:object})"
+          );
+          AddIntellisense(
+            "getcallingscript",
+            "Function",
+            "Gets the script that called the current function.",
+            "getcallingscript()"
+          );
+          AddIntellisense(
+            "getsenv",
+            "Function",
+            "Returns a script's global environment.",
+            "getsenv(${1:object})"
+          );
+          AddIntellisense(
+            "getloadedmodules",
+            "Function",
+            "Returns an array populated with all loaded ModuleScripts.",
+            "getloadedmodules()"
+          );
+          AddIntellisense(
+            "getscripts",
+            "Function",
+            "Returns an array populated with all existing scripts.",
+            "getscripts()"
+          );
+
+          AddIntellisense(
+            "rconsolename",
+            "Function",
+            "Creates a Windows console using the name.",
+            "rconsolename(${1:name})"
+          );
+          AddIntellisense(
+            "rconsoleprint",
+            "Function",
+            "Outputs data to the Windows console.",
+            "rconsoleprint(${1:data})"
+          );
+          AddIntellisense(
+            "rconsoleinfo",
+            "Function",
+            "Outputs data to the console preceded with [INFO].",
+            "rconsoleinfo(${1:data})"
+          );
+          AddIntellisense(
+            "rconsolewarn",
+            "Function",
+            "Outputs data to the console preceded with [WARNING].",
+            "rconsolewarn(${1:data})"
+          );
+          AddIntellisense(
+            "rconsoleerr",
+            "Function",
+            "Outputs data to the console preceded with [ERROR].",
+            "rconsoleerr(${1:data})"
+          );
+          AddIntellisense(
+            "rconsoleclose",
+            "Function",
+            "Closes the Windows console if it is open.",
+            "rconsoleclose()"
+          );
+          AddIntellisense(
+            "rconsoleclear",
+            "Function",
+            "Clears the Windows console.",
+            "rconsoleclear()"
+          );
+          AddIntellisense(
+            "rconsoleinput",
+            "Function",
+            "Reads input from the Windows console.",
+            "rconsoleinput()"
+          );
+          AddIntellisense(
+            "messagebox",
+            "Function",
+            "Prompts a MessageBox with the given text, caption and flags, and returns the result.",
+            "messagebox(${1:text}, ${2:caption}, ${3:flags})"
+          );
+
+          AddIntellisense(
+            "getnetworkmode",
+            "Function",
+            "Returns the current network mode.",
+            "getnetworkmode()"
+          );
+          AddIntellisense(
+            "setnetworkmode",
+            "Function",
+            "Sets the current network mode.",
+            "setnetworkmode(${1:mode})"
+          );
+          AddIntellisense(
+            "request",
+            "Function",
+            "Sends an HTTP request using a dictionary to specify the request data.",
+            "request(${1:data})"
+          );
+
+          AddIntellisense(
+            "run_secure",
+            "Function",
+            "Decrypts a string to execute it.",
+            "run_secure(${1:data})"
+          );
+
+          AddIntellisense(
+            "getrawmetatable",
+            "Function",
+            "Returns the metatable of the given object.",
+            "getrawmetatable(${1:object})"
+          );
+          AddIntellisense(
+            "setrawmetatable",
+            "Function",
+            "Sets the metatable for the given object.",
+            "setrawmetatable(${1:object}, ${2:metatable})"
+          );
+          AddIntellisense(
+            "setreadonly",
+            "Function",
+            "Sets whether a table can be written to.",
+            "setreadonly(${1:table}, ${2:readonly})"
+          );
+          AddIntellisense(
+            "isreadonly",
+            "Function",
+            "Returns whether the table can be written to.",
+            "isreadonly(${1:table})"
+          );
+          AddIntellisense(
+            "getnamecallmethod",
+            "Function",
+            "Returns the current namecall method.",
+            "getnamecallmethod()"
+          );
+          AddIntellisense(
+            "setnamecallmethod",
+            "Function",
+            "Changes the current namecall method.",
+            "setnamecallmethod(${1:method})"
+          );
+          AddIntellisense(
+            "checkcaller",
+            "Function",
+            "Returns whether the calling thread was created by Krnl.",
+            "checkcaller()"
+          );
+          AddIntellisense(
+            "setfflag",
+            "Function",
+            "Sets the value of fflag to value.",
+            "setfflag(${1:fflag}, ${2:value})"
+          );
+          AddIntellisense(
+            "getthreadcontext",
+            "Function",
+            "Returns the current thread identity.",
+            "getthreadcontext()"
+          );
+          AddIntellisense(
+            "setthreadcontext",
+            "Function",
+            "Sets the current thread identity.",
+            "setthreadcontext(${1:identity})"
+          );
+          AddIntellisense(
+            "queue_on_teleport",
+            "Function",
+            "Queues a script to be executed after teleporting.",
+            "queue_on_teleport(${1:source})"
+          );
+          AddIntellisense(
+            "gethui",
+            "Function",
+            "Returns a hidden CoreGui instance.",
+            "gethui()"
+          );
+          AddIntellisense(
+            "getgenv",
+            "Function",
+            "Returns the current global environment.",
+            "getgenv()"
+          );
+          AddIntellisense(
+            "getrenv",
+            "Function",
+            "Returns Roblox's global environment.",
+            "getrenv()"
+          );
+          AddIntellisense(
+            "getreg",
+            "Function",
+            "Returns the Lua registry.",
+            "getreg()"
+          );
+          AddIntellisense(
+            "setclipboard",
+            "Function",
+            "Copies a string to the clipboard.",
+            "setclipboard(${1:data})"
+          );
+          AddIntellisense(
+            "getgc",
+            "Function",
+            "Returns a list of garbage-collected functions and tables if included.",
+            "getgc(${1:includeTables})"
+          );
+          AddIntellisense(
+            "getcustomasset",
+            "Function",
+            "Generates a rbxasset:// content URL for the given asset.",
+            "getcustomasset(${1:assetPath})"
+          );
+          AddIntellisense(
+            "setfpscap",
+            "Function",
+            "Sets the framerate limit. Passing 0 unlocks the framerate.",
+            "setfpscap(${1:fpsCap})"
+          );
+
+          AddIntellisense(
+            "isfolder",
+            "Function",
+            "Returns whether a file at the given path exists and is a folder.",
+            "isfolder(${1:path})"
+          );
+          AddIntellisense(
+            "isfile",
+            "Function",
+            "Returns whether a file at the given path exists and is a file.",
+            "isfile(${1:path})"
+          );
+          AddIntellisense(
+            "makefolder",
+            "Function",
+            "Makes a folder if the given path is empty.",
+            "makefolder(${1:path})"
+          );
+          AddIntellisense(
+            "delfile",
+            "Function",
+            "Deletes a file at the given path.",
+            "delfile(${1:file})"
+          );
+          AddIntellisense(
+            "delfolder",
+            "Function",
+            "Deletes a folder at the given path.",
+            "delfolder(${1:directory})"
+          );
+          AddIntellisense(
+            "listfiles",
+            "Function",
+            "Returns a list of file paths located in the directory.",
+            "listfiles(${1:directory})"
+          );
+          AddIntellisense(
+            "readfile",
+            "Function",
+            "Returns the file's contents.",
+            "readfile(${1:file})"
+          );
+          AddIntellisense(
+            "writefile",
+            "Function",
+            "Overwrites an existing file or creates a new file.",
+            "writefile(${1:file}, ${2:data})"
+          );
+          AddIntellisense(
+            "appendfile",
+            "Function",
+            "Appends data to a file's contents or creates a new file.",
+            "appendfile(${1:file}, ${2:data})"
+          );
+        }
+
+        function addLuaStandardLibrary() {
+          AddIntellisense("and", "Keyword", "Logical and operator", "and");
+          AddIntellisense("break", "Keyword", "Breaks out of a loop", "break");
+          AddIntellisense("do", "Keyword", "Starts a block", "do");
+          AddIntellisense(
+            "else",
+            "Keyword",
+            "Alternative in an if statement",
+            "else"
+          );
+          AddIntellisense(
+            "elseif",
+            "Keyword",
+            "Alternative condition in an if statement",
+            "elseif ${1:condition} then"
+          );
+          AddIntellisense("end", "Keyword", "Ends a block", "end");
+          AddIntellisense("false", "Keyword", "Boolean false value", "false");
+          AddIntellisense(
+            "for",
+            "Keyword",
+            "Loop construct",
+            "for ${1:i} = ${2:1}, ${3:10} do"
+          );
+          AddIntellisense(
+            "function",
+            "Keyword",
+            "Function declaration",
+            "function ${1:name}(${2:params})\n\t${0}\nend"
+          );
+          AddIntellisense(
+            "if",
+            "Keyword",
+            "Conditional statement",
+            "if ${1:condition} then\n\t${0}\nend"
+          );
+          AddIntellisense("in", "Keyword", "Part of for loop", "in");
+          AddIntellisense(
+            "local",
+            "Keyword",
+            "Local variable declaration",
+            "local ${1:name} = ${0}"
+          );
+          AddIntellisense("nil", "Keyword", "Represents no value", "nil");
+          AddIntellisense("not", "Keyword", "Logical not operator", "not");
+          AddIntellisense("or", "Keyword", "Logical or operator", "or");
+          AddIntellisense(
+            "repeat",
+            "Keyword",
+            "Loop construct",
+            "repeat\n\t${0}\nuntil ${1:condition}"
+          );
+          AddIntellisense(
+            "return",
+            "Keyword",
+            "Returns from function",
+            "return ${0}"
+          );
+          AddIntellisense("then", "Keyword", "Part of if statement", "then");
+          AddIntellisense("true", "Keyword", "Boolean true value", "true");
+          AddIntellisense("until", "Keyword", "End of repeat loop", "until");
+          AddIntellisense(
+            "while",
+            "Keyword",
+            "Loop construct",
+            "while ${1:condition} do\n\t${0}\nend"
+          );
+
+          AddIntellisense(
+            "print",
+            "Function",
+            "Prints to the output",
+            "print(${1:...})"
+          );
+          AddIntellisense(
+            "tonumber",
+            "Function",
+            "Converts to number",
+            "tonumber(${1:e}[, ${2:base}])"
+          );
+          AddIntellisense(
+            "tostring",
+            "Function",
+            "Converts to string",
+            "tostring(${1:e})"
+          );
+          AddIntellisense(
+            "type",
+            "Function",
+            "Returns the type of a value",
+            "type(${1:v})"
+          );
+          AddIntellisense(
+            "pairs",
+            "Function",
+            "Iterates over a table",
+            "pairs(${1:t})"
+          );
+          AddIntellisense(
+            "ipairs",
+            "Function",
+            "Iterates over an array part of a table",
+            "ipairs(${1:t})"
+          );
+          AddIntellisense(
+            "next",
+            "Function",
+            "Returns next index and value",
+            "next(${1:table}[, ${2:index}])"
+          );
+          AddIntellisense(
+            "select",
+            "Function",
+            "Selects arguments",
+            "select(${1:index}, ${2:...})"
+          );
+          AddIntellisense(
+            "math.abs",
+            "Function",
+            "Returns the absolute value of x",
+            "math.abs(${1:x})"
+          );
+          AddIntellisense(
+            "math.acos",
+            "Function",
+            "Returns the arc cosine of x",
+            "math.acos(${1:x})"
+          );
+          AddIntellisense(
+            "math.asin",
+            "Function",
+            "Returns the arc sine of x",
+            "math.asin(${1:x})"
+          );
+          AddIntellisense(
+            "math.atan",
+            "Function",
+            "Returns the arc tangent of x",
+            "math.atan(${1:x})"
+          );
+          AddIntellisense(
+            "math.atan2",
+            "Function",
+            "Returns the arc tangent of y/x",
+            "math.atan2(${1:y}, ${2:x})"
+          );
+          AddIntellisense(
+            "math.ceil",
+            "Function",
+            "Returns the smallest integer >= x",
+            "math.ceil(${1:x})"
+          );
+          AddIntellisense(
+            "math.cos",
+            "Function",
+            "Returns the cosine of x",
+            "math.cos(${1:x})"
+          );
+          AddIntellisense(
+            "math.cosh",
+            "Function",
+            "Returns the hyperbolic cosine of x",
+            "math.cosh(${1:x})"
+          );
+          AddIntellisense(
+            "math.deg",
+            "Function",
+            "Converts radians to degrees",
+            "math.deg(${1:x})"
+          );
+          AddIntellisense(
+            "math.exp",
+            "Function",
+            "Returns e^x",
+            "math.exp(${1:x})"
+          );
+          AddIntellisense(
+            "math.floor",
+            "Function",
+            "Returns the largest integer <= x",
+            "math.floor(${1:x})"
+          );
+          AddIntellisense(
+            "math.fmod",
+            "Function",
+            "Returns the remainder of x/y",
+            "math.fmod(${1:x}, ${2:y})"
+          );
+          AddIntellisense(
+            "math.frexp",
+            "Function",
+            "Returns m and e such that x = m2^e",
+            "math.frexp(${1:x})"
+          );
+          AddIntellisense(
+            "math.huge",
+            "Value",
+            "A value larger than any other numeric value",
+            "math.huge"
+          );
+          AddIntellisense(
+            "math.ldexp",
+            "Function",
+            "Returns m * 2^e",
+            "math.ldexp(${1:m}, ${2:e})"
+          );
+          AddIntellisense(
+            "math.log",
+            "Function",
+            "Returns the natural logarithm of x",
+            "math.log(${1:x})"
+          );
+          AddIntellisense(
+            "math.log10",
+            "Function",
+            "Returns the base-10 logarithm of x",
+            "math.log10(${1:x})"
+          );
+          AddIntellisense(
+            "math.max",
+            "Function",
+            "Returns the maximum value",
+            "math.max(${1:...})"
+          );
+          AddIntellisense(
+            "math.min",
+            "Function",
+            "Returns the minimum value",
+            "math.min(${1:...})"
+          );
+          AddIntellisense(
+            "math.modf",
+            "Function",
+            "Returns the integral and fractional parts of x",
+            "math.modf(${1:x})"
+          );
+          AddIntellisense("math.pi", "Value", "The value of π", "math.pi");
+          AddIntellisense(
+            "math.pow",
+            "Function",
+            "Returns x^y",
+            "math.pow(${1:x}, ${2:y})"
+          );
+          AddIntellisense(
+            "math.rad",
+            "Function",
+            "Converts degrees to radians",
+            "math.rad(${1:x})"
+          );
+          AddIntellisense(
+            "math.random",
+            "Function",
+            "Returns a random number",
+            "math.random([${1:m}[, ${2:n}]])"
+          );
+          AddIntellisense(
+            "math.randomseed",
+            "Function",
+            "Sets the random seed",
+            "math.randomseed(${1:x})"
+          );
+          AddIntellisense(
+            "math.sin",
+            "Function",
+            "Returns the sine of x",
+            "math.sin(${1:x})"
+          );
+          AddIntellisense(
+            "math.sinh",
+            "Function",
+            "Returns the hyperbolic sine of x",
+            "math.sinh(${1:x})"
+          );
+          AddIntellisense(
+            "math.sqrt",
+            "Function",
+            "Returns the square root of x",
+            "math.sqrt(${1:x})"
+          );
+          AddIntellisense(
+            "math.tan",
+            "Function",
+            "Returns the tangent of x",
+            "math.tan(${1:x})"
+          );
+          AddIntellisense(
+            "math.tanh",
+            "Function",
+            "Returns the hyperbolic tangent of x",
+            "math.tanh(${1:x})"
+          );
+
+          AddIntellisense(
+            "string.byte",
+            "Function",
+            "Returns the internal numeric codes of characters",
+            "string.byte(${1:s}[, ${2:i}[, ${3:j}]])"
+          );
+          AddIntellisense(
+            "string.char",
+            "Function",
+            "Returns a string from character codes",
+            "string.char(${1:...})"
+          );
+          AddIntellisense(
+            "string.dump",
+            "Function",
+            "Returns a binary representation of a function",
+            "string.dump(${1:function})"
+          );
+          AddIntellisense(
+            "string.find",
+            "Function",
+            "Finds a pattern in a string",
+            "string.find(${1:s}, ${2:pattern}[, ${3:init}[, ${4:plain}]])"
+          );
+          AddIntellisense(
+            "string.format",
+            "Function",
+            "Formats a string",
+            "string.format(${1:formatstring}, ${2:...})"
+          );
+          AddIntellisense(
+            "string.gmatch",
+            "Function",
+            "Iterates over pattern matches",
+            "string.gmatch(${1:s}, ${2:pattern})"
+          );
+          AddIntellisense(
+            "string.gsub",
+            "Function",
+            "Global substitution",
+            "string.gsub(${1:s}, ${2:pattern}, ${3:repl}[, ${4:n}])"
+          );
+          AddIntellisense(
+            "string.len",
+            "Function",
+            "Returns the length of a string",
+            "string.len(${1:s})"
+          );
+          AddIntellisense(
+            "string.lower",
+            "Function",
+            "Converts to lowercase",
+            "string.lower(${1:s})"
+          );
+          AddIntellisense(
+            "string.match",
+            "Function",
+            "Matches a pattern",
+            "string.match(${1:s}, ${2:pattern}[, ${3:init}])"
+          );
+          AddIntellisense(
+            "string.rep",
+            "Function",
+            "Repeats a string",
+            "string.rep(${1:s}, ${2:n}[, ${3:sep}])"
+          );
+          AddIntellisense(
+            "string.reverse",
+            "Function",
+            "Reverses a string",
+            "string.reverse(${1:s})"
+          );
+          AddIntellisense(
+            "string.sub",
+            "Function",
+            "Returns a substring",
+            "string.sub(${1:s}, ${2:i}[, ${3:j}])"
+          );
+          AddIntellisense(
+            "string.upper",
+            "Function",
+            "Converts to uppercase",
+            "string.upper(${1:s})"
+          );
+
+          AddIntellisense(
+            "table.concat",
+            "Function",
+            "Concatenates table elements",
+            "table.concat(${1:table}[, ${2:sep}[, ${3:i}[, ${4:j}]]])"
+          );
+          AddIntellisense(
+            "table.insert",
+            "Function",
+            "Inserts an element into a table",
+            "table.insert(${1:table}, [${2:pos},] ${3:value})"
+          );
+          AddIntellisense(
+            "table.maxn",
+            "Function",
+            "Returns the maximum numerical index",
+            "table.maxn(${1:table})"
+          );
+          AddIntellisense(
+            "table.remove",
+            "Function",
+            "Removes an element from a table",
+            "table.remove(${1:table}[, ${2:pos}])"
+          );
+          AddIntellisense(
+            "table.sort",
+            "Function",
+            "Sorts table elements",
+            "table.sort(${1:table}[, ${2:comp}])"
+          );
+
+          AddIntellisense(
+            "os.clock",
+            "Function",
+            "Returns CPU time used",
+            "os.clock()"
+          );
+          AddIntellisense(
+            "os.date",
+            "Function",
+            "Returns a formatted date/time string",
+            "os.date([${1:format}[, ${2:time}]])"
+          );
+          AddIntellisense(
+            "os.difftime",
+            "Function",
+            "Returns the time difference",
+            "os.difftime(${1:t2}, ${2:t1})"
+          );
+          AddIntellisense(
+            "os.execute",
+            "Function",
+            "Executes a system command",
+            "os.execute([${1:command}])"
+          );
+          AddIntellisense(
+            "os.exit",
+            "Function",
+            "Exits the host program",
+            "os.exit([${1:code}[, ${2:close}]])"
+          );
+          AddIntellisense(
+            "os.getenv",
+            "Function",
+            "Gets an environment variable",
+            "os.getenv(${1:varname})"
+          );
+          AddIntellisense(
+            "os.remove",
+            "Function",
+            "Removes a file",
+            "os.remove(${1:filename})"
+          );
+          AddIntellisense(
+            "os.rename",
+            "Function",
+            "Renames a file",
+            "os.rename(${1:oldname}, ${2:newname})"
+          );
+          AddIntellisense(
+            "os.setlocale",
+            "Function",
+            "Sets the locale",
+            "os.setlocale(${1:locale}[, ${2:category}])"
+          );
+          AddIntellisense(
+            "os.time",
+            "Function",
+            "Returns the current time",
+            "os.time([${1:table}])"
+          );
+          AddIntellisense(
+            "os.tmpname",
+            "Function",
+            "Returns a temporary filename",
+            "os.tmpname()"
+          );
+
+          AddIntellisense(
+            "coroutine.create",
+            "Function",
+            "Creates a new coroutine",
+            "coroutine.create(${1:f})"
+          );
+          AddIntellisense(
+            "coroutine.resume",
+            "Function",
+            "Starts or continues a coroutine",
+            "coroutine.resume(${1:co}[, ${2:val1}, ...])"
+          );
+          AddIntellisense(
+            "coroutine.running",
+            "Function",
+            "Returns the running coroutine",
+            "coroutine.running()"
+          );
+          AddIntellisense(
+            "coroutine.status",
+            "Function",
+            "Returns the status of a coroutine",
+            "coroutine.status(${1:co})"
+          );
+          AddIntellisense(
+            "coroutine.wrap",
+            "Function",
+            "Creates a function that resumes a coroutine",
+            "coroutine.wrap(${1:f})"
+          );
+          AddIntellisense(
+            "coroutine.yield",
+            "Function",
+            "Suspends a coroutine",
+            "coroutine.yield(${1:...})"
+          );
+
+          AddIntellisense(
+            "io.close",
+            "Function",
+            "Closes a file",
+            "io.close([${1:file}])"
+          );
+          AddIntellisense(
+            "io.flush",
+            "Function",
+            "Flushes the default output file",
+            "io.flush()"
+          );
+          AddIntellisense(
+            "io.input",
+            "Function",
+            "Sets the default input file",
+            "io.input([${1:file}])"
+          );
+          AddIntellisense(
+            "io.lines",
+            "Function",
+            "Iterates over lines in a file",
+            "io.lines([${1:filename}])"
+          );
+          AddIntellisense(
+            "io.open",
+            "Function",
+            "Opens a file",
+            "io.open(${1:filename}[, ${2:mode}])"
+          );
+          AddIntellisense(
+            "io.output",
+            "Function",
+            "Sets the default output file",
+            "io.output([${1:file}])"
+          );
+          AddIntellisense(
+            "io.popen",
+            "Function",
+            "Starts a program and returns a file handle",
+            "io.popen(${1:prog}[, ${2:mode}])"
+          );
+          AddIntellisense(
+            "io.read",
+            "Function",
+            "Reads from the default input",
+            "io.read(${1:...})"
+          );
+          AddIntellisense(
+            "io.tmpfile",
+            "Function",
+            "Returns a handle for a temporary file",
+            "io.tmpfile()"
+          );
+          AddIntellisense(
+            "io.type",
+            "Function",
+            "Returns the type of a file handle",
+            "io.type(${1:obj})"
+          );
+          AddIntellisense(
+            "io.write",
+            "Function",
+            "Writes to the default output",
+            "io.write(${1:...})"
+          );
+
+          AddIntellisense(
+            "debug.debug",
+            "Function",
+            "Enters interactive debug mode",
+            "debug.debug()"
+          );
+          AddIntellisense(
+            "debug.getfenv",
+            "Function",
+            "Gets the environment of an object",
+            "debug.getfenv(${1:o})"
+          );
+          AddIntellisense(
+            "debug.gethook",
+            "Function",
+            "Gets the current hook settings",
+            "debug.gethook([${1:thread}])"
+          );
+          AddIntellisense(
+            "debug.getinfo",
+            "Function",
+            "Gets information about a function",
+            "debug.getinfo([${1:thread},] ${2:function}[, ${3:what}])"
+          );
+          AddIntellisense(
+            "debug.getlocal",
+            "Function",
+            "Gets a local variable",
+            "debug.getlocal([${1:thread},] ${2:level}, ${3:local})"
+          );
+          AddIntellisense(
+            "debug.getmetatable",
+            "Function",
+            "Gets the metatable of a value",
+            "debug.getmetatable(${1:value})"
+          );
+          AddIntellisense(
+            "debug.getregistry",
+            "Function",
+            "Returns the registry table",
+            "debug.getregistry()"
+          );
+          AddIntellisense(
+            "debug.getupvalue",
+            "Function",
+            "Gets an upvalue",
+            "debug.getupvalue(${1:func}, ${2:up})"
+          );
+          AddIntellisense(
+            "debug.setfenv",
+            "Function",
+            "Sets the environment of an object",
+            "debug.setfenv(${1:object}, ${2:table})"
+          );
+          AddIntellisense(
+            "debug.sethook",
+            "Function",
+            "Sets a hook function",
+            "debug.sethook([${1:thread},] ${2:hook}, ${3:mask}[, ${4:count}])"
+          );
+          AddIntellisense(
+            "debug.setlocal",
+            "Function",
+            "Sets a local variable",
+            "debug.setlocal([${1:thread},] ${2:level}, ${3:local}, ${4:value})"
+          );
+          AddIntellisense(
+            "debug.setmetatable",
+            "Function",
+            "Sets the metatable of a value",
+            "debug.setmetatable(${1:value}, ${2:table})"
+          );
+          AddIntellisense(
+            "debug.setupvalue",
+            "Function",
+            "Sets an upvalue",
+            "debug.setupvalue(${1:func}, ${2:up}, ${3:value})"
+          );
+          AddIntellisense(
+            "debug.traceback",
+            "Function",
+            "Returns a stack traceback",
+            "debug.traceback([${1:thread},] [${2:message}[, ${3:level}]])"
+          );
+        }
+
+        function addRobloxFunctions() {
+          AddIntellisense(
+            "Instance.new",
+            "Function",
+            "Creates a new instance of className",
+            "Instance.new(${1:className}[, ${2:parent}])"
+          );
+          AddIntellisense("game", "Variable", "The game instance", "game");
+          AddIntellisense(
+            "workspace",
+            "Variable",
+            "The workspace instance",
+            "workspace"
+          );
+          AddIntellisense(
+            "script",
+            "Variable",
+            "The current script instance",
+            "script"
+          );
+
+          AddIntellisense(
+            "Vector3.new",
+            "Function",
+            "Creates a new Vector3",
+            "Vector3.new(${1:x}, ${2:y}, ${3:z})"
+          );
+          AddIntellisense(
+            "Vector3.FromNormalId",
+            "Function",
+            "Creates a Vector3 from a NormalId",
+            "Vector3.FromNormalId(${1:normalId})"
+          );
+          AddIntellisense(
+            "Vector3.FromAxis",
+            "Function",
+            "Creates a Vector3 from an Axis",
+            "Vector3.FromAxis(${1:axis})"
+          );
+
+          AddIntellisense(
+            "CFrame.new",
+            "Function",
+            "Creates a new CFrame",
+            "CFrame.new(${1:x}, ${2:y}, ${3:z}[, ${4:qX}, ${5:qY}, ${6:qZ}, ${7:qW}])"
+          );
+          AddIntellisense(
+            "CFrame.Angles",
+            "Function",
+            "Creates a CFrame from angles",
+            "CFrame.Angles(${1:rx}, ${2:ry}, ${3:rz})"
+          );
+          AddIntellisense(
+            "CFrame.fromEulerAnglesXYZ",
+            "Function",
+            "Creates a CFrame from Euler angles",
+            "CFrame.fromEulerAnglesXYZ(${1:rx}, ${2:ry}, ${3:rz})"
+          );
+          AddIntellisense(
+            "CFrame.fromAxisAngle",
+            "Function",
+            "Creates a CFrame from an axis and angle",
+            "CFrame.fromAxisAngle(${1:axis}, ${2:angle})"
+          );
+          AddIntellisense(
+            "CFrame.lookAt",
+            "Function",
+            "Creates a CFrame looking at a position",
+            "CFrame.lookAt(${1:position}, ${2:lookAt}[, ${3:upVector}])"
+          );
+
+          AddIntellisense(
+            "Color3.new",
+            "Function",
+            "Creates a new Color3",
+            "Color3.new(${1:r}, ${2:g}, ${3:b})"
+          );
+          AddIntellisense(
+            "Color3.fromRGB",
+            "Function",
+            "Creates a Color3 from RGB values",
+            "Color3.fromRGB(${1:r}, ${2:g}, ${3:b})"
+          );
+          AddIntellisense(
+            "Color3.fromHSV",
+            "Function",
+            "Creates a Color3 from HSV values",
+            "Color3.fromHSV(${1:h}, ${2:s}, ${3:v})"
+          );
+
+          AddIntellisense(
+            "UDim2.new",
+            "Function",
+            "Creates a new UDim2",
+            "UDim2.new(${1:xScale}, ${2:xOffset}, ${3:yScale}, ${4:yOffset})"
+          );
+          AddIntellisense(
+            "UDim2.fromScale",
+            "Function",
+            "Creates a UDim2 from scale values",
+            "UDim2.fromScale(${1:xScale}, ${2:yScale})"
+          );
+          AddIntellisense(
+            "UDim2.fromOffset",
+            "Function",
+            "Creates a UDim2 from offset values",
+            "UDim2.fromOffset(${1:xOffset}, ${2:yOffset})"
+          );
+
+          AddIntellisense(
+            "Ray.new",
+            "Function",
+            "Creates a new Ray",
+            "Ray.new(${1:origin}, ${2:direction})"
+          );
+
+          AddIntellisense(
+            "BrickColor.new",
+            "Function",
+            "Creates a new BrickColor",
+            "BrickColor.new(${1:val})"
+          );
+          AddIntellisense(
+            "BrickColor.random",
+            "Function",
+            "Creates a random BrickColor",
+            "BrickColor.random()"
+          );
+          AddIntellisense(
+            "BrickColor.palette",
+            "Function",
+            "Creates a BrickColor from the palette",
+            "BrickColor.palette(${1:paletteValue})"
+          );
+
+          AddIntellisense(
+            "Region3.new",
+            "Function",
+            "Creates a new Region3",
+            "Region3.new(${1:min}, ${2:max})"
+          );
+
+          AddIntellisense(
+            "TweenInfo.new",
+            "Function",
+            "Creates a new TweenInfo",
+            "TweenInfo.new(${1:time}[, ${2:easingStyle}[, ${3:easingDirection}[, ${4:repeatCount}[, ${5:reverses}[, ${6:delayTime}]]]]])"
+          );
+
+          AddIntellisense("Enum", "Variable", "Access to Roblox enums", "Enum");
+
+          AddIntellisense(
+            "game:GetService",
+            "Function",
+            "Gets a service by name",
+            "game:GetService(${1:serviceName})"
+          );
+          AddIntellisense(
+            "game.Players",
+            "Variable",
+            "The Players service",
+            "game.Players"
+          );
+          AddIntellisense(
+            "game.Workspace",
+            "Variable",
+            "The Workspace service",
+            "game.Workspace"
+          );
+          AddIntellisense(
+            "game.Lighting",
+            "Variable",
+            "The Lighting service",
+            "game.Lighting"
+          );
+          AddIntellisense(
+            "game.ReplicatedStorage",
+            "Variable",
+            "The ReplicatedStorage service",
+            "game.ReplicatedStorage"
+          );
+          AddIntellisense(
+            "game.ServerStorage",
+            "Variable",
+            "The ServerStorage service",
+            "game.ServerStorage"
+          );
+          AddIntellisense(
+            "game.ServerScriptService",
+            "Variable",
+            "The ServerScriptService service",
+            "game.ServerScriptService"
+          );
+          AddIntellisense(
+            "game.StarterGui",
+            "Variable",
+            "The StarterGui service",
+            "game.StarterGui"
+          );
+          AddIntellisense(
+            "game.StarterPack",
+            "Variable",
+            "The StarterPack service",
+            "game.StarterPack"
+          );
+          AddIntellisense(
+            "game.StarterPlayer",
+            "Variable",
+            "The StarterPlayer service",
+            "game.StarterPlayer"
+          );
+
+          AddIntellisense(
+            "FindFirstChild",
+            "Method",
+            "Finds a child by name",
+            "${1:instance}:FindFirstChild(${2:name}[, ${3:recursive}])"
+          );
+          AddIntellisense(
+            "FindFirstAncestor",
+            "Method",
+            "Finds an ancestor by name",
+            "${1:instance}:FindFirstAncestor(${2:name})"
+          );
+          AddIntellisense(
+            "GetChildren",
+            "Method",
+            "Gets all children",
+            "${1:instance}:GetChildren()"
+          );
+          AddIntellisense(
+            "GetDescendants",
+            "Method",
+            "Gets all descendants",
+            "${1:instance}:GetDescendants()"
+          );
+          AddIntellisense(
+            "IsA",
+            "Method",
+            "Checks if an instance is of a certain class",
+            "${1:instance}:IsA(${2:className})"
+          );
+          AddIntellisense(
+            "Destroy",
+            "Method",
+            "Destroys an instance",
+            "${1:instance}:Destroy()"
+          );
+          AddIntellisense(
+            "Clone",
+            "Method",
+            "Clones an instance",
+            "${1:instance}:Clone()"
+          );
+          AddIntellisense(
+            "Connect",
+            "Method",
+            "Connects a function to an event",
+            "${1:event}:Connect(${2:function})"
+          );
+          AddIntellisense(
+            "Wait",
+            "Method",
+            "Waits for an event to fire",
+            "${1:event}:Wait()"
+          );
+          AddIntellisense(
+            "WaitForChild",
+            "Method",
+            "Waits for a child to exist",
+            "${1:instance}:WaitForChild(${2:name}[, ${3:timeout}])"
+          );
+        }
+
+        function addCustomCommands() {
+          editor.addAction({
+            id: "toggle-comment",
+            label: "Toggle Comment",
+            keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.US_SLASH],
+            contextMenuGroupId: "modification",
+            contextMenuOrder: 1,
+            run: function (ed) {
+              const selection = ed.getSelection();
+              const model = ed.getModel();
+              const startLineNumber = selection.startLineNumber;
+              const endLineNumber = selection.endLineNumber;
+
+              let operations = [];
+
+              const firstLine = model.getLineContent(startLineNumber);
+              const isComment = firstLine.trimStart().startsWith("--");
+
+              for (let i = startLineNumber; i <= endLineNumber; i++) {
+                const lineContent = model.getLineContent(i);
+
+                if (isComment) {
+                  const commentIndex = lineContent.indexOf("--");
+                  if (commentIndex !== -1) {
+                    operations.push({
+                      range: new monaco.Range(
+                        i,
+                        commentIndex + 1,
+                        i,
+                        commentIndex + 3
+                      ),
+                      text: "",
                     });
-                    
-                    editor.setValue(tabs[tabId].content);
-                    monaco.editor.setModelLanguage(editor.getModel(), tabs[tabId].language);
-
-                    container.classList.remove('fade-out');
-                }, 150);
-            }
-
-            function closeTab(tabId) {
-                if (Object.keys(tabs).length <= 1) {
-                    return;
+                  }
+                } else {
+                  operations.push({
+                    range: new monaco.Range(i, 1, i, 1),
+                    text: "-- ",
+                  });
                 }
-                
-                const tabElement = document.querySelector(`.tab[data-id="${tabId}"]`);
-                tabElement.classList.add('exit');
-                
-                setTimeout(() => {
-                    tabElement.remove();
-                    delete tabs[tabId];
-                    
-                    if (currentTab === tabId) {
-                        const newTabId = Object.keys(tabs)[0];
-                        switchToTab(newTabId);
-                    }
-                }, 200);
-            }
+              }
 
-            GetText = function() {
-                return editor.getValue();
-            }
+              ed.executeEdits("toggle-comment", operations);
+            },
+          });
 
-            SetText = function(x) {
-                editor.setValue(x);
-            }
+          editor.addAction({
+            id: "duplicate-line",
+            label: "Duplicate Line",
+            keybindings: [
+              monaco.KeyMod.Alt | monaco.KeyMod.Shift | monaco.KeyCode.KEY_D,
+            ],
+            contextMenuGroupId: "modification",
+            contextMenuOrder: 2,
+            run: function (ed) {
+              const selection = ed.getSelection();
+              const model = ed.getModel();
 
-            SetTheme = function (themeName) {
-                monaco.editor.setTheme(themeName);
-            }
-
-            SetScroll = function (line) {
-                editor.revealLineInCenter({ lineNumber: line });
-            }
-
-            SwitchMinimap = function (flag) {
-                minimapEnabled = flag;
-                editor.updateOptions({
-                    minimap: {
-                        enabled: flag,
-                    }
-                });
-            }
-
-            ShowError = function (line, column, endline, endcolumn, errMessage) {
-                editor.revealPositionInCenter({ lineNumber: line, column: column });
-                editor.deltaDecorations([], [
-                    {
-                        range: new monaco.Range(line, column, endline, endcolumn),
-                        options: {
-                            inlineClassName: 'squiggly-error',
-                            hoverMessage: {
-                                value: errMessage,
-                            }
-                        },
-                    },
+              if (selection.isEmpty()) {
+                const lineNumber = selection.startLineNumber;
+                const lineContent = model.getLineContent(lineNumber);
+                ed.executeEdits("duplicate-line", [
+                  {
+                    range: new monaco.Range(
+                      lineNumber,
+                      model.getLineMaxColumn(lineNumber),
+                      lineNumber,
+                      model.getLineMaxColumn(lineNumber)
+                    ),
+                    text: "\n" + lineContent,
+                  },
                 ]);
-            }
+              } else {
+                const text = model.getValueInRange(selection);
+                ed.executeEdits("duplicate-selection", [
+                  {
+                    range: new monaco.Range(
+                      selection.endLineNumber,
+                      selection.endColumn,
+                      selection.endLineNumber,
+                      selection.endColumn
+                    ),
+                    text: text,
+                  },
+                ]);
+              }
+            },
+          });
 
-            AddSnippet = function (kindName, snippetName, data) {
-                let snippet = {
-                    insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-                    kind: monaco.languages.CompletionItemKind[kindName],
-                };
-                for (const key in data) {
-                    let value = data[key];
-                    if (key == "insertText" && typeof value == "object") {
-                        value = value.join("\n");
-                    };
-                    snippet[key] = value;
-                }
-                if (!snippet.label) {
-                    snippet.label = snippetName
-                }
-                if (!snippet.insertText) {
-                    snippet.insertText = snippetName
-                }
-                Proposals.push(snippet);
-            }
+          editor.addAction({
+            id: "move-line-up",
+            label: "Move Line Up",
+            keybindings: [monaco.KeyMod.Alt | monaco.KeyCode.UpArrow],
+            run: function (ed) {
+              const selection = ed.getSelection();
+              const model = ed.getModel();
+              const startLineNumber = selection.startLineNumber;
 
-            AddRawSnippet = function (data) {
-                Proposals.push(data);
-            }
-
-            AddIntellisense = function(l, k, d, i) {
-                var t;
-                switch(k) {
-                    case "Class":
-                        t = monaco.languages.CompletionItemKind.Class;
-                        break;
-                    case "Color":
-                        t = monaco.languages.CompletionItemKind.Color;
-                        break;
-                    case "Constructor":
-                        t = monaco.languages.CompletionItemKind.Constructor;
-                        break;
-                    case "Enum":
-                        t = monaco.languages.CompletionItemKind.Enum;
-                        break;
-                    case "Field":
-                        t = monaco.languages.CompletionItemKind.Field;
-                        break;
-                    case "File":
-                        t = monaco.languages.CompletionItemKind.File;
-                        break;
-                    case "Folder":
-                        t = monaco.languages.CompletionItemKind.Folder;
-                        break;
-                    case "Function":
-                        t = monaco.languages.CompletionItemKind.Function;
-                        break;
-                    case "Interface":
-                        t = monaco.languages.CompletionItemKind.Interface;
-                        break;
-                    case "Keyword":
-                        t = monaco.languages.CompletionItemKind.Keyword;
-                        break;
-                    case "Method":
-                        t = monaco.languages.CompletionItemKind.Method;
-                        break;
-                    case "Module":
-                        t = monaco.languages.CompletionItemKind.Module;
-                        break;
-                    case "Property":
-                        t = monaco.languages.CompletionItemKind.Property;
-                        break;
-                    case "Reference":
-                        t = monaco.languages.CompletionItemKind.Reference;
-                        break;
-                    case "Snippet":
-                        t = monaco.languages.CompletionItemKind.Snippet;
-                        break;
-                    case "Text":
-                        t = monaco.languages.CompletionItemKind.Text;
-                        break;
-                    case "Unit":
-                        t = monaco.languages.CompletionItemKind.Unit;
-                        break;
-                    case "Value":
-                        t = monaco.languages.CompletionItemKind.Value;
-                        break;
-                    case "Variable":
-                        t = monaco.languages.CompletionItemKind.Variable;
-                        break;
-                }
-                
-                Proposals.push({
-                    label: l,
-                    kind: t,
-                    detail: d,
-                    insertText: i,
-                    insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
-                });
-            }
-
-            function addDefaultSnippets() {
-                
-            }
-            
-            function addKrnlFunctions() {
-                
-                AddIntellisense("hookfunction", "Function", "Redirects calls to f with hook and returns the original function.", "hookfunction(${1:f}, ${2:hook})");
-                AddIntellisense("iskrnlclosure", "Function", "Returns whether the closure was created by Krnl.", "iskrnlclosure(${1:f})");
-                AddIntellisense("iscclosure", "Function", "Returns whether the closure is a CClosure.", "iscclosure(${1:f})");
-                AddIntellisense("islclosure", "Function", "Returns whether the closure is a LuaClosure.", "islclosure(${1:f})");
-                AddIntellisense("newcclosure", "Function", "Transforms a LuaClosure into a CClosure with error handling.", "newcclosure(${1:f})");
-                
-                
-                AddIntellisense("keypress", "Function", "Virtually presses a key.", "keypress(${1:keyCode})");
-                AddIntellisense("keyrelease", "Function", "Virtually releases a key.", "keyrelease(${1:keyCode})");
-                AddIntellisense("mouse1click", "Function", "Simulates a left-mouse button click.", "mouse1click()");
-                AddIntellisense("mouse1down", "Function", "Virtually presses the left-mouse button.", "mouse1down()");
-                AddIntellisense("mouse1up", "Function", "Virtually releases the left-mouse button.", "mouse1up()");
-                AddIntellisense("mouse2click", "Function", "Simulates a right-mouse button click.", "mouse2click()");
-                AddIntellisense("mouse2down", "Function", "Virtually presses the right-mouse button.", "mouse2down()");
-                AddIntellisense("mouse2up", "Function", "Virtually releases the right-mouse button.", "mouse2up()");
-                AddIntellisense("isrbxactive", "Function", "Returns whether the Roblox window is active.", "isrbxactive()");
-                AddIntellisense("mousemoverel", "Function", "Moves the cursor relative to it's current position.", "mousemoverel(${1:deltaX}, ${2:deltaY})");
-                AddIntellisense("mousemoveabs", "Function", "Moves the cursor to (X, Y).", "mousemoveabs(${1:X}, ${2:Y})");
-                AddIntellisense("mousescroll", "Function", "Simulates a scroll of distance pixels.", "mousescroll(${1:distance})");
-                
-                
-                AddIntellisense("setscriptable", "Function", "Flags a property of instance as scriptable.", "setscriptable(${1:instance}, ${2:property}, ${3:scriptable})");
-                AddIntellisense("gethiddenproperty", "Function", "Gets a property of instance regardless of the IsScriptable flag.", "gethiddenproperty(${1:instance}, ${2:property})");
-                AddIntellisense("sethiddenproperty", "Function", "Sets a property of instance to value regardless of the IsScriptable flag.", "sethiddenproperty(${1:instance}, ${2:property}, ${3:value})");
-                AddIntellisense("getproperties", "Function", "Returns all properties of instance, including hidden properties.", "getproperties(${1:instance})");
-                AddIntellisense("setsimulationradius", "Function", "Sets the LocalPlayer's SimulationRadius to radius.", "setsimulationradius(${1:radius})");
-                AddIntellisense("getspecialinfo", "Function", "Gets special properties of certain instances.", "getspecialinfo(${1:instance})");
-                AddIntellisense("fireclickdetector", "Function", "Sends a click signal for the ClickDetector.", "fireclickdetector(${1:clickDetector})");
-                AddIntellisense("firetouchinterest", "Function", "Fires the Touched/TouchEnded event of otherPart and part based on touchType.", "firetouchinterest(${1:part}, ${2:otherPart}, ${3:touchType})");
-                AddIntellisense("fireproximityprompt", "Function", "Triggers the ProximityPrompt.", "fireproximityprompt(${1:proximityPrompt})");
-                AddIntellisense("getconnections", "Function", "Returns a list of connections for the given signal.", "getconnections(${1:signal})");
-                
-                
-                AddIntellisense("getscriptclosure", "Function", "Creates a LuaClosure for the given script.", "getscriptclosure(${1:object})");
-                AddIntellisense("decompile", "Function", "Decompiles a script and returns a representation of the source.", "decompile(${1:object})");
-                AddIntellisense("getcallingscript", "Function", "Gets the script that called the current function.", "getcallingscript()");
-                AddIntellisense("getsenv", "Function", "Returns a script's global environment.", "getsenv(${1:object})");
-                AddIntellisense("getloadedmodules", "Function", "Returns an array populated with all loaded ModuleScripts.", "getloadedmodules()");
-                AddIntellisense("getscripts", "Function", "Returns an array populated with all existing scripts.", "getscripts()");
-                
-                
-                AddIntellisense("rconsolename", "Function", "Creates a Windows console using the name.", "rconsolename(${1:name})");
-                AddIntellisense("rconsoleprint", "Function", "Outputs data to the Windows console.", "rconsoleprint(${1:data})");
-                AddIntellisense("rconsoleinfo", "Function", "Outputs data to the console preceded with [INFO].", "rconsoleinfo(${1:data})");
-                AddIntellisense("rconsolewarn", "Function", "Outputs data to the console preceded with [WARNING].", "rconsolewarn(${1:data})");
-                AddIntellisense("rconsoleerr", "Function", "Outputs data to the console preceded with [ERROR].", "rconsoleerr(${1:data})");
-                AddIntellisense("rconsoleclose", "Function", "Closes the Windows console if it is open.", "rconsoleclose()");
-                AddIntellisense("rconsoleclear", "Function", "Clears the Windows console.", "rconsoleclear()");
-                AddIntellisense("rconsoleinput", "Function", "Reads input from the Windows console.", "rconsoleinput()");
-                AddIntellisense("messagebox", "Function", "Prompts a MessageBox with the given text, caption and flags, and returns the result.", "messagebox(${1:text}, ${2:caption}, ${3:flags})");
-                
-                
-                AddIntellisense("getnetworkmode", "Function", "Returns the current network mode.", "getnetworkmode()");
-                AddIntellisense("setnetworkmode", "Function", "Sets the current network mode.", "setnetworkmode(${1:mode})");
-                AddIntellisense("request", "Function", "Sends an HTTP request using a dictionary to specify the request data.", "request(${1:data})");
-                
-                
-                AddIntellisense("run_secure", "Function", "Decrypts a string to execute it.", "run_secure(${1:data})");
-                
-                
-                AddIntellisense("getrawmetatable", "Function", "Returns the metatable of the given object.", "getrawmetatable(${1:object})");
-                AddIntellisense("setrawmetatable", "Function", "Sets the metatable for the given object.", "setrawmetatable(${1:object}, ${2:metatable})");
-                AddIntellisense("setreadonly", "Function", "Sets whether a table can be written to.", "setreadonly(${1:table}, ${2:readonly})");
-                AddIntellisense("isreadonly", "Function", "Returns whether the table can be written to.", "isreadonly(${1:table})");
-                AddIntellisense("getnamecallmethod", "Function", "Returns the current namecall method.", "getnamecallmethod()");
-                AddIntellisense("setnamecallmethod", "Function", "Changes the current namecall method.", "setnamecallmethod(${1:method})");
-                AddIntellisense("checkcaller", "Function", "Returns whether the calling thread was created by Krnl.", "checkcaller()");
-                AddIntellisense("setfflag", "Function", "Sets the value of fflag to value.", "setfflag(${1:fflag}, ${2:value})");
-                AddIntellisense("getthreadcontext", "Function", "Returns the current thread identity.", "getthreadcontext()");
-                AddIntellisense("setthreadcontext", "Function", "Sets the current thread identity.", "setthreadcontext(${1:identity})");
-                AddIntellisense("queue_on_teleport", "Function", "Queues a script to be executed after teleporting.", "queue_on_teleport(${1:source})");
-                AddIntellisense("gethui", "Function", "Returns a hidden CoreGui instance.", "gethui()");
-                AddIntellisense("getgenv", "Function", "Returns the current global environment.", "getgenv()");
-                AddIntellisense("getrenv", "Function", "Returns Roblox's global environment.", "getrenv()");
-                AddIntellisense("getreg", "Function", "Returns the Lua registry.", "getreg()");
-                AddIntellisense("setclipboard", "Function", "Copies a string to the clipboard.", "setclipboard(${1:data})");
-                AddIntellisense("getgc", "Function", "Returns a list of garbage-collected functions and tables if included.", "getgc(${1:includeTables})");
-                AddIntellisense("getcustomasset", "Function", "Generates a rbxasset:// content URL for the given asset.", "getcustomasset(${1:assetPath})");
-                AddIntellisense("setfpscap", "Function", "Sets the framerate limit. Passing 0 unlocks the framerate.", "setfpscap(${1:fpsCap})");
-                
-                 
-                AddIntellisense("isfolder", "Function", "Returns whether a file at the given path exists and is a folder.", "isfolder(${1:path})");
-                AddIntellisense("isfile", "Function", "Returns whether a file at the given path exists and is a file.", "isfile(${1:path})");
-                AddIntellisense("makefolder", "Function", "Makes a folder if the given path is empty.", "makefolder(${1:path})");
-                AddIntellisense("delfile", "Function", "Deletes a file at the given path.", "delfile(${1:file})");
-                AddIntellisense("delfolder", "Function", "Deletes a folder at the given path.", "delfolder(${1:directory})");
-                AddIntellisense("listfiles", "Function", "Returns a list of file paths located in the directory.", "listfiles(${1:directory})");
-                AddIntellisense("readfile", "Function", "Returns the file's contents.", "readfile(${1:file})");
-                AddIntellisense("writefile", "Function", "Overwrites an existing file or creates a new file.", "writefile(${1:file}, ${2:data})");
-                AddIntellisense("appendfile", "Function", "Appends data to a file's contents or creates a new file.", "appendfile(${1:file}, ${2:data})");
-            }
-
-             
-            function addLuaStandardLibrary() {
-                 
-                AddIntellisense("and", "Keyword", "Logical and operator", "and");
-                AddIntellisense("break", "Keyword", "Breaks out of a loop", "break");
-                AddIntellisense("do", "Keyword", "Starts a block", "do");
-                AddIntellisense("else", "Keyword", "Alternative in an if statement", "else");
-                AddIntellisense("elseif", "Keyword", "Alternative condition in an if statement", "elseif ${1:condition} then");
-                AddIntellisense("end", "Keyword", "Ends a block", "end");
-                AddIntellisense("false", "Keyword", "Boolean false value", "false");
-                AddIntellisense("for", "Keyword", "Loop construct", "for ${1:i} = ${2:1}, ${3:10} do");
-                AddIntellisense("function", "Keyword", "Function declaration", "function ${1:name}(${2:params})\n\t${0}\nend");
-                AddIntellisense("if", "Keyword", "Conditional statement", "if ${1:condition} then\n\t${0}\nend");
-                AddIntellisense("in", "Keyword", "Part of for loop", "in");
-                AddIntellisense("local", "Keyword", "Local variable declaration", "local ${1:name} = ${0}");
-                AddIntellisense("nil", "Keyword", "Represents no value", "nil");
-                AddIntellisense("not", "Keyword", "Logical not operator", "not");
-                AddIntellisense("or", "Keyword", "Logical or operator", "or");
-                AddIntellisense("repeat", "Keyword", "Loop construct", "repeat\n\t${0}\nuntil ${1:condition}");
-                AddIntellisense("return", "Keyword", "Returns from function", "return ${0}");
-                AddIntellisense("then", "Keyword", "Part of if statement", "then");
-                AddIntellisense("true", "Keyword", "Boolean true value", "true");
-                AddIntellisense("until", "Keyword", "End of repeat loop", "until");
-                AddIntellisense("while", "Keyword", "Loop construct", "while ${1:condition} do\n\t${0}\nend");
-                
-                 
-                AddIntellisense("print", "Function", "Prints to the output", "print(${1:...})");
-                AddIntellisense("tonumber", "Function", "Converts to number", "tonumber(${1:e}[, ${2:base}])");
-                AddIntellisense("tostring", "Function", "Converts to string", "tostring(${1:e})");
-                AddIntellisense("type", "Function", "Returns the type of a value", "type(${1:v})");
-                AddIntellisense("pairs", "Function", "Iterates over a table", "pairs(${1:t})");
-                AddIntellisense("ipairs", "Function", "Iterates over an array part of a table", "ipairs(${1:t})");
-                AddIntellisense("next", "Function", "Returns next index and value", "next(${1:table}[, ${2:index}])");
-                AddIntellisense("select", "Function", "Selects arguments", "select(${1:index}, ${2:...})");
-                AddIntellisense("math.abs", "Function", "Returns the absolute value of x", "math.abs(${1:x})");
-                AddIntellisense("math.acos", "Function", "Returns the arc cosine of x", "math.acos(${1:x})");
-                AddIntellisense("math.asin", "Function", "Returns the arc sine of x", "math.asin(${1:x})");
-                AddIntellisense("math.atan", "Function", "Returns the arc tangent of x", "math.atan(${1:x})");
-                AddIntellisense("math.atan2", "Function", "Returns the arc tangent of y/x", "math.atan2(${1:y}, ${2:x})");
-                AddIntellisense("math.ceil", "Function", "Returns the smallest integer >= x", "math.ceil(${1:x})");
-                AddIntellisense("math.cos", "Function", "Returns the cosine of x", "math.cos(${1:x})");
-                AddIntellisense("math.cosh", "Function", "Returns the hyperbolic cosine of x", "math.cosh(${1:x})");
-                AddIntellisense("math.deg", "Function", "Converts radians to degrees", "math.deg(${1:x})");
-                AddIntellisense("math.exp", "Function", "Returns e^x", "math.exp(${1:x})");
-                AddIntellisense("math.floor", "Function", "Returns the largest integer <= x", "math.floor(${1:x})");
-                AddIntellisense("math.fmod", "Function", "Returns the remainder of x/y", "math.fmod(${1:x}, ${2:y})");
-                AddIntellisense("math.frexp", "Function", "Returns m and e such that x = m2^e", "math.frexp(${1:x})");
-                AddIntellisense("math.huge", "Value", "A value larger than any other numeric value", "math.huge");
-                AddIntellisense("math.ldexp", "Function", "Returns m * 2^e", "math.ldexp(${1:m}, ${2:e})");
-                AddIntellisense("math.log", "Function", "Returns the natural logarithm of x", "math.log(${1:x})");
-                AddIntellisense("math.log10", "Function", "Returns the base-10 logarithm of x", "math.log10(${1:x})");
-                AddIntellisense("math.max", "Function", "Returns the maximum value", "math.max(${1:...})");
-                AddIntellisense("math.min", "Function", "Returns the minimum value", "math.min(${1:...})");
-                AddIntellisense("math.modf", "Function", "Returns the integral and fractional parts of x", "math.modf(${1:x})");
-                AddIntellisense("math.pi", "Value", "The value of π", "math.pi");
-                AddIntellisense("math.pow", "Function", "Returns x^y", "math.pow(${1:x}, ${2:y})");
-                AddIntellisense("math.rad", "Function", "Converts degrees to radians", "math.rad(${1:x})");
-                AddIntellisense("math.random", "Function", "Returns a random number", "math.random([${1:m}[, ${2:n}]])");
-                AddIntellisense("math.randomseed", "Function", "Sets the random seed", "math.randomseed(${1:x})");
-                AddIntellisense("math.sin", "Function", "Returns the sine of x", "math.sin(${1:x})");
-                AddIntellisense("math.sinh", "Function", "Returns the hyperbolic sine of x", "math.sinh(${1:x})");
-                AddIntellisense("math.sqrt", "Function", "Returns the square root of x", "math.sqrt(${1:x})");
-                AddIntellisense("math.tan", "Function", "Returns the tangent of x", "math.tan(${1:x})");
-                AddIntellisense("math.tanh", "Function", "Returns the hyperbolic tangent of x", "math.tanh(${1:x})");
-                
-                 
-                AddIntellisense("string.byte", "Function", "Returns the internal numeric codes of characters", "string.byte(${1:s}[, ${2:i}[, ${3:j}]])");
-                AddIntellisense("string.char", "Function", "Returns a string from character codes", "string.char(${1:...})");
-                AddIntellisense("string.dump", "Function", "Returns a binary representation of a function", "string.dump(${1:function})");
-                AddIntellisense("string.find", "Function", "Finds a pattern in a string", "string.find(${1:s}, ${2:pattern}[, ${3:init}[, ${4:plain}]])");
-                AddIntellisense("string.format", "Function", "Formats a string", "string.format(${1:formatstring}, ${2:...})");
-                AddIntellisense("string.gmatch", "Function", "Iterates over pattern matches", "string.gmatch(${1:s}, ${2:pattern})");
-                AddIntellisense("string.gsub", "Function", "Global substitution", "string.gsub(${1:s}, ${2:pattern}, ${3:repl}[, ${4:n}])");
-                AddIntellisense("string.len", "Function", "Returns the length of a string", "string.len(${1:s})");
-                AddIntellisense("string.lower", "Function", "Converts to lowercase", "string.lower(${1:s})");
-                AddIntellisense("string.match", "Function", "Matches a pattern", "string.match(${1:s}, ${2:pattern}[, ${3:init}])");
-                AddIntellisense("string.rep", "Function", "Repeats a string", "string.rep(${1:s}, ${2:n}[, ${3:sep}])");
-                AddIntellisense("string.reverse", "Function", "Reverses a string", "string.reverse(${1:s})");
-                AddIntellisense("string.sub", "Function", "Returns a substring", "string.sub(${1:s}, ${2:i}[, ${3:j}])");
-                AddIntellisense("string.upper", "Function", "Converts to uppercase", "string.upper(${1:s})");
-                
-                 
-                AddIntellisense("table.concat", "Function", "Concatenates table elements", "table.concat(${1:table}[, ${2:sep}[, ${3:i}[, ${4:j}]]])");
-                AddIntellisense("table.insert", "Function", "Inserts an element into a table", "table.insert(${1:table}, [${2:pos},] ${3:value})");
-                AddIntellisense("table.maxn", "Function", "Returns the maximum numerical index", "table.maxn(${1:table})");
-                AddIntellisense("table.remove", "Function", "Removes an element from a table", "table.remove(${1:table}[, ${2:pos}])");
-                AddIntellisense("table.sort", "Function", "Sorts table elements", "table.sort(${1:table}[, ${2:comp}])");
-                
-                 
-                AddIntellisense("os.clock", "Function", "Returns CPU time used", "os.clock()");
-                AddIntellisense("os.date", "Function", "Returns a formatted date/time string", "os.date([${1:format}[, ${2:time}]])");
-                AddIntellisense("os.difftime", "Function", "Returns the time difference", "os.difftime(${1:t2}, ${2:t1})");
-                AddIntellisense("os.execute", "Function", "Executes a system command", "os.execute([${1:command}])");
-                AddIntellisense("os.exit", "Function", "Exits the host program", "os.exit([${1:code}[, ${2:close}]])");
-                AddIntellisense("os.getenv", "Function", "Gets an environment variable", "os.getenv(${1:varname})");
-                AddIntellisense("os.remove", "Function", "Removes a file", "os.remove(${1:filename})");
-                AddIntellisense("os.rename", "Function", "Renames a file", "os.rename(${1:oldname}, ${2:newname})");
-                AddIntellisense("os.setlocale", "Function", "Sets the locale", "os.setlocale(${1:locale}[, ${2:category}])");
-                AddIntellisense("os.time", "Function", "Returns the current time", "os.time([${1:table}])");
-                AddIntellisense("os.tmpname", "Function", "Returns a temporary filename", "os.tmpname()");
-                
-                 
-                AddIntellisense("coroutine.create", "Function", "Creates a new coroutine", "coroutine.create(${1:f})");
-                AddIntellisense("coroutine.resume", "Function", "Starts or continues a coroutine", "coroutine.resume(${1:co}[, ${2:val1}, ...])");
-                AddIntellisense("coroutine.running", "Function", "Returns the running coroutine", "coroutine.running()");
-                AddIntellisense("coroutine.status", "Function", "Returns the status of a coroutine", "coroutine.status(${1:co})");
-                AddIntellisense("coroutine.wrap", "Function", "Creates a function that resumes a coroutine", "coroutine.wrap(${1:f})");
-                AddIntellisense("coroutine.yield", "Function", "Suspends a coroutine", "coroutine.yield(${1:...})");
-                
-                 
-                AddIntellisense("io.close", "Function", "Closes a file", "io.close([${1:file}])");
-                AddIntellisense("io.flush", "Function", "Flushes the default output file", "io.flush()");
-                AddIntellisense("io.input", "Function", "Sets the default input file", "io.input([${1:file}])");
-                AddIntellisense("io.lines", "Function", "Iterates over lines in a file", "io.lines([${1:filename}])");
-                AddIntellisense("io.open", "Function", "Opens a file", "io.open(${1:filename}[, ${2:mode}])");
-                AddIntellisense("io.output", "Function", "Sets the default output file", "io.output([${1:file}])");
-                AddIntellisense("io.popen", "Function", "Starts a program and returns a file handle", "io.popen(${1:prog}[, ${2:mode}])");
-                AddIntellisense("io.read", "Function", "Reads from the default input", "io.read(${1:...})");
-                AddIntellisense("io.tmpfile", "Function", "Returns a handle for a temporary file", "io.tmpfile()");
-                AddIntellisense("io.type", "Function", "Returns the type of a file handle", "io.type(${1:obj})");
-                AddIntellisense("io.write", "Function", "Writes to the default output", "io.write(${1:...})");
-                
-                 
-                AddIntellisense("debug.debug", "Function", "Enters interactive debug mode", "debug.debug()");
-                AddIntellisense("debug.getfenv", "Function", "Gets the environment of an object", "debug.getfenv(${1:o})");
-                AddIntellisense("debug.gethook", "Function", "Gets the current hook settings", "debug.gethook([${1:thread}])");
-                AddIntellisense("debug.getinfo", "Function", "Gets information about a function", "debug.getinfo([${1:thread},] ${2:function}[, ${3:what}])");
-                AddIntellisense("debug.getlocal", "Function", "Gets a local variable", "debug.getlocal([${1:thread},] ${2:level}, ${3:local})");
-                AddIntellisense("debug.getmetatable", "Function", "Gets the metatable of a value", "debug.getmetatable(${1:value})");
-                AddIntellisense("debug.getregistry", "Function", "Returns the registry table", "debug.getregistry()");
-                AddIntellisense("debug.getupvalue", "Function", "Gets an upvalue", "debug.getupvalue(${1:func}, ${2:up})");
-                AddIntellisense("debug.setfenv", "Function", "Sets the environment of an object", "debug.setfenv(${1:object}, ${2:table})");
-                AddIntellisense("debug.sethook", "Function", "Sets a hook function", "debug.sethook([${1:thread},] ${2:hook}, ${3:mask}[, ${4:count}])");
-                AddIntellisense("debug.setlocal", "Function", "Sets a local variable", "debug.setlocal([${1:thread},] ${2:level}, ${3:local}, ${4:value})");
-                AddIntellisense("debug.setmetatable", "Function", "Sets the metatable of a value", "debug.setmetatable(${1:value}, ${2:table})");
-                AddIntellisense("debug.setupvalue", "Function", "Sets an upvalue", "debug.setupvalue(${1:func}, ${2:up}, ${3:value})");
-                AddIntellisense("debug.traceback", "Function", "Returns a stack traceback", "debug.traceback([${1:thread},] [${2:message}[, ${3:level}]])");
-            }
-
-            function addRobloxFunctions() {
-                 
-                AddIntellisense("Instance.new", "Function", "Creates a new instance of className", "Instance.new(${1:className}[, ${2:parent}])");
-                AddIntellisense("game", "Variable", "The game instance", "game");
-                AddIntellisense("workspace", "Variable", "The workspace instance", "workspace");
-                AddIntellisense("script", "Variable", "The current script instance", "script");
-                
-                 
-                AddIntellisense("Vector3.new", "Function", "Creates a new Vector3", "Vector3.new(${1:x}, ${2:y}, ${3:z})");
-                AddIntellisense("Vector3.FromNormalId", "Function", "Creates a Vector3 from a NormalId", "Vector3.FromNormalId(${1:normalId})");
-                AddIntellisense("Vector3.FromAxis", "Function", "Creates a Vector3 from an Axis", "Vector3.FromAxis(${1:axis})");
-                
-                 
-                AddIntellisense("CFrame.new", "Function", "Creates a new CFrame", "CFrame.new(${1:x}, ${2:y}, ${3:z}[, ${4:qX}, ${5:qY}, ${6:qZ}, ${7:qW}])");
-                AddIntellisense("CFrame.Angles", "Function", "Creates a CFrame from angles", "CFrame.Angles(${1:rx}, ${2:ry}, ${3:rz})");
-                AddIntellisense("CFrame.fromEulerAnglesXYZ", "Function", "Creates a CFrame from Euler angles", "CFrame.fromEulerAnglesXYZ(${1:rx}, ${2:ry}, ${3:rz})");
-                AddIntellisense("CFrame.fromAxisAngle", "Function", "Creates a CFrame from an axis and angle", "CFrame.fromAxisAngle(${1:axis}, ${2:angle})");
-                AddIntellisense("CFrame.lookAt", "Function", "Creates a CFrame looking at a position", "CFrame.lookAt(${1:position}, ${2:lookAt}[, ${3:upVector}])");
-
-                 
-                AddIntellisense("Color3.new", "Function", "Creates a new Color3", "Color3.new(${1:r}, ${2:g}, ${3:b})");
-                AddIntellisense("Color3.fromRGB", "Function", "Creates a Color3 from RGB values", "Color3.fromRGB(${1:r}, ${2:g}, ${3:b})");
-                AddIntellisense("Color3.fromHSV", "Function", "Creates a Color3 from HSV values", "Color3.fromHSV(${1:h}, ${2:s}, ${3:v})");
-                
-                 
-                AddIntellisense("UDim2.new", "Function", "Creates a new UDim2", "UDim2.new(${1:xScale}, ${2:xOffset}, ${3:yScale}, ${4:yOffset})");
-                AddIntellisense("UDim2.fromScale", "Function", "Creates a UDim2 from scale values", "UDim2.fromScale(${1:xScale}, ${2:yScale})");
-                AddIntellisense("UDim2.fromOffset", "Function", "Creates a UDim2 from offset values", "UDim2.fromOffset(${1:xOffset}, ${2:yOffset})");
-                
-                 
-                AddIntellisense("Ray.new", "Function", "Creates a new Ray", "Ray.new(${1:origin}, ${2:direction})");
-                
-                 
-                AddIntellisense("BrickColor.new", "Function", "Creates a new BrickColor", "BrickColor.new(${1:val})");
-                AddIntellisense("BrickColor.random", "Function", "Creates a random BrickColor", "BrickColor.random()");
-                AddIntellisense("BrickColor.palette", "Function", "Creates a BrickColor from the palette", "BrickColor.palette(${1:paletteValue})");
-                
-                 
-                AddIntellisense("Region3.new", "Function", "Creates a new Region3", "Region3.new(${1:min}, ${2:max})");
-                
-                 
-                AddIntellisense("TweenInfo.new", "Function", "Creates a new TweenInfo", "TweenInfo.new(${1:time}[, ${2:easingStyle}[, ${3:easingDirection}[, ${4:repeatCount}[, ${5:reverses}[, ${6:delayTime}]]]]])");
-                
-                 
-                AddIntellisense("Enum", "Variable", "Access to Roblox enums", "Enum");
-                
-                 
-                AddIntellisense("game:GetService", "Function", "Gets a service by name", "game:GetService(${1:serviceName})");
-                AddIntellisense("game.Players", "Variable", "The Players service", "game.Players");
-                AddIntellisense("game.Workspace", "Variable", "The Workspace service", "game.Workspace");
-                AddIntellisense("game.Lighting", "Variable", "The Lighting service", "game.Lighting");
-                AddIntellisense("game.ReplicatedStorage", "Variable", "The ReplicatedStorage service", "game.ReplicatedStorage");
-                AddIntellisense("game.ServerStorage", "Variable", "The ServerStorage service", "game.ServerStorage");
-                AddIntellisense("game.ServerScriptService", "Variable", "The ServerScriptService service", "game.ServerScriptService");
-                AddIntellisense("game.StarterGui", "Variable", "The StarterGui service", "game.StarterGui");
-                AddIntellisense("game.StarterPack", "Variable", "The StarterPack service", "game.StarterPack");
-                AddIntellisense("game.StarterPlayer", "Variable", "The StarterPlayer service", "game.StarterPlayer");
-                
-                 
-                AddIntellisense("FindFirstChild", "Method", "Finds a child by name", "${1:instance}:FindFirstChild(${2:name}[, ${3:recursive}])");
-                AddIntellisense("FindFirstAncestor", "Method", "Finds an ancestor by name", "${1:instance}:FindFirstAncestor(${2:name})");
-                AddIntellisense("GetChildren", "Method", "Gets all children", "${1:instance}:GetChildren()");
-                AddIntellisense("GetDescendants", "Method", "Gets all descendants", "${1:instance}:GetDescendants()");
-                AddIntellisense("IsA", "Method", "Checks if an instance is of a certain class", "${1:instance}:IsA(${2:className})");
-                AddIntellisense("Destroy", "Method", "Destroys an instance", "${1:instance}:Destroy()");
-                AddIntellisense("Clone", "Method", "Clones an instance", "${1:instance}:Clone()");
-                AddIntellisense("Connect", "Method", "Connects a function to an event", "${1:event}:Connect(${2:function})");
-                AddIntellisense("Wait", "Method", "Waits for an event to fire", "${1:event}:Wait()");
-                AddIntellisense("WaitForChild", "Method", "Waits for a child to exist", "${1:instance}:WaitForChild(${2:name}[, ${3:timeout}])");
-            }
-
-            function addCustomCommands() {
-                editor.addAction({
-                    id: 'toggle-comment',
-                    label: 'Toggle Comment',
-                    keybindings: [
-                        monaco.KeyMod.CtrlCmd | monaco.KeyCode.US_SLASH
-                    ],
-                    contextMenuGroupId: 'modification',
-                    contextMenuOrder: 1,
-                    run: function(ed) {
-                        const selection = ed.getSelection();
-                        const model = ed.getModel();
-                        const startLineNumber = selection.startLineNumber;
-                        const endLineNumber = selection.endLineNumber;
-                        
-                        let operations = [];
-                        
-                        const firstLine = model.getLineContent(startLineNumber);
-                        const isComment = firstLine.trimStart().startsWith('--');
-                        
-                        for (let i = startLineNumber; i <= endLineNumber; i++) {
-                            const lineContent = model.getLineContent(i);
-                            
-                            if (isComment) {
-                                const commentIndex = lineContent.indexOf('--');
-                                if (commentIndex !== -1) {
-                                    operations.push({
-                                        range: new monaco.Range(i, commentIndex + 1, i, commentIndex + 3),
-                                        text: ''
-                                    });
-                                }
-                            } else {
-                                operations.push({
-                                    range: new monaco.Range(i, 1, i, 1),
-                                    text: '-- '
-                                });
-                            }
-                        }
-                        
-                        ed.executeEdits('toggle-comment', operations);
-                    }
-                });
-
-                editor.addAction({
-                    id: 'duplicate-line',
-                    label: 'Duplicate Line',
-                    keybindings: [
-                        monaco.KeyMod.Alt | monaco.KeyMod.Shift | monaco.KeyCode.KEY_D
-                    ],
-                    contextMenuGroupId: 'modification',
-                    contextMenuOrder: 2,
-                    run: function(ed) {
-                        const selection = ed.getSelection();
-                        const model = ed.getModel();
-                        
-                        if (selection.isEmpty()) {
-                            const lineNumber = selection.startLineNumber;
-                            const lineContent = model.getLineContent(lineNumber);
-                            ed.executeEdits('duplicate-line', [{
-                                range: new monaco.Range(lineNumber, model.getLineMaxColumn(lineNumber), lineNumber, model.getLineMaxColumn(lineNumber)),
-                                text: '\n' + lineContent
-                            }]);
-                        } else {
-                            const text = model.getValueInRange(selection);
-                            ed.executeEdits('duplicate-selection', [{
-                                range: new monaco.Range(selection.endLineNumber, selection.endColumn, selection.endLineNumber, selection.endColumn),
-                                text: text
-                            }]);
-                        }
-                    }
-                });
-                
-                editor.addAction({
-                    id: 'move-line-up',
-                    label: 'Move Line Up',
-                    keybindings: [
-                        monaco.KeyMod.Alt | monaco.KeyCode.UpArrow
-                    ],
-                    run: function(ed) {
-                        const selection = ed.getSelection();
-                        const model = ed.getModel();
-                        const startLineNumber = selection.startLineNumber;
-                        
-                        if (startLineNumber > 1) {
-                            const endLineNumber = selection.endLineNumber;
-                            const startColumn = 1;
-                            const endColumn = model.getLineMaxColumn(endLineNumber);
-                            const rangeToBeMoved = new monaco.Range(startLineNumber, startColumn, endLineNumber, endColumn);
-                            const textToBeMoved = model.getValueInRange(rangeToBeMoved);
-                            
-                            const targetLineNumber = startLineNumber - 1;
-                            const targetColumn = 1;
-                            const targetEndColumn = model.getLineMaxColumn(targetLineNumber);
-                            const targetRange = new monaco.Range(targetLineNumber, targetColumn, targetLineNumber, targetEndColumn);
-                            const targetText = model.getValueInRange(targetRange);
-                            
-                            ed.executeEdits('move-line-up', [
-                                { range: rangeToBeMoved, text: null },
-                                { range: new monaco.Range(targetLineNumber, targetColumn, targetLineNumber, targetColumn), text: textToBeMoved + '\n' }
-                            ]);
-                            
-                            const newStartLine = startLineNumber - 1;
-                            const newEndLine = endLineNumber - 1;
-                            ed.setSelection(new monaco.Range(
-                                newStartLine, selection.startColumn,
-                                newEndLine, selection.endColumn
-                            ));
-                        }
-                    }
-                });
-                
-                editor.addAction({
-                    id: 'move-line-down',
-                    label: 'Move Line Down',
-                    keybindings: [
-                        monaco.KeyMod.Alt | monaco.KeyCode.DownArrow
-                    ],
-                    run: function(ed) {
-                        const selection = ed.getSelection();
-                        const model = ed.getModel();
-                        const startLineNumber = selection.startLineNumber;
-                        const endLineNumber = selection.endLineNumber;
-                        
-                        if (endLineNumber < model.getLineCount()) {
-                            const startColumn = 1;
-                            const endColumn = model.getLineMaxColumn(endLineNumber);
-                            const rangeToBeMoved = new monaco.Range(startLineNumber, startColumn, endLineNumber, endColumn);
-                            const textToBeMoved = model.getValueInRange(rangeToBeMoved);
-                            
-                            const targetLineNumber = endLineNumber + 1;
-                            const targetColumn = 1;
-                            const targetEndColumn = model.getLineMaxColumn(targetLineNumber);
-                            const targetRange = new monaco.Range(targetLineNumber, targetColumn, targetLineNumber, targetEndColumn);
-                            const targetText = model.getValueInRange(targetRange);
-                            
-                            ed.executeEdits('move-line-down', [
-                                { range: rangeToBeMoved, text: null },
-                                { range: new monaco.Range(startLineNumber, startColumn, startLineNumber, startColumn), text: targetText + '\n' }
-                            ]);
-                            
-                            const newStartLine = startLineNumber + 1;
-                            const newEndLine = endLineNumber + 1;
-                            ed.setSelection(new monaco.Range(
-                                newStartLine, selection.startColumn,
-                                newEndLine, selection.endColumn
-                            ));
-                        }
-                    }
-                });
-            }
-
-            addDefaultSnippets();
-            addCustomCommands();
-        });
-
-        function setText(text) {
-            if (window.editor) {
-                window.editor.setValue(String(text));
-            } else {
-                console.error("Editor is not initialized");
-            }
-        }
-
-        function getEditorContent() {
-            if (window.editor) {
-                return window.editor.getValue();
-            } else {
-                console.error("Editor is not initialized");
-                return "";
-            }
-        }
-
-        window.addEventListener("message", (event) => {
-            if (event.data.action === "getEditorContent") {
-                const editorContent = editor.getValue();
-                window.parent.postMessage(
-                    { action: "editorContent", content: editorContent },
-                    "*"
+              if (startLineNumber > 1) {
+                const endLineNumber = selection.endLineNumber;
+                const startColumn = 1;
+                const endColumn = model.getLineMaxColumn(endLineNumber);
+                const rangeToBeMoved = new monaco.Range(
+                  startLineNumber,
+                  startColumn,
+                  endLineNumber,
+                  endColumn
                 );
-            }
-        });
+                const textToBeMoved = model.getValueInRange(rangeToBeMoved);
 
-        window.addEventListener("message", (event) => {
-            if (event.data.action === "setText") {
-                SetText(event.data.text);
-            }
-        });
+                const targetLineNumber = startLineNumber - 1;
+                const targetColumn = 1;
+                const targetEndColumn =
+                  model.getLineMaxColumn(targetLineNumber);
+                const targetRange = new monaco.Range(
+                  targetLineNumber,
+                  targetColumn,
+                  targetLineNumber,
+                  targetEndColumn
+                );
+                const targetText = model.getValueInRange(targetRange);
+
+                ed.executeEdits("move-line-up", [
+                  { range: rangeToBeMoved, text: null },
+                  {
+                    range: new monaco.Range(
+                      targetLineNumber,
+                      targetColumn,
+                      targetLineNumber,
+                      targetColumn
+                    ),
+                    text: textToBeMoved + "\n",
+                  },
+                ]);
+
+                const newStartLine = startLineNumber - 1;
+                const newEndLine = endLineNumber - 1;
+                ed.setSelection(
+                  new monaco.Range(
+                    newStartLine,
+                    selection.startColumn,
+                    newEndLine,
+                    selection.endColumn
+                  )
+                );
+              }
+            },
+          });
+
+          editor.addAction({
+            id: "move-line-down",
+            label: "Move Line Down",
+            keybindings: [monaco.KeyMod.Alt | monaco.KeyCode.DownArrow],
+            run: function (ed) {
+              const selection = ed.getSelection();
+              const model = ed.getModel();
+              const startLineNumber = selection.startLineNumber;
+              const endLineNumber = selection.endLineNumber;
+
+              if (endLineNumber < model.getLineCount()) {
+                const startColumn = 1;
+                const endColumn = model.getLineMaxColumn(endLineNumber);
+                const rangeToBeMoved = new monaco.Range(
+                  startLineNumber,
+                  startColumn,
+                  endLineNumber,
+                  endColumn
+                );
+                const textToBeMoved = model.getValueInRange(rangeToBeMoved);
+
+                const targetLineNumber = endLineNumber + 1;
+                const targetColumn = 1;
+                const targetEndColumn =
+                  model.getLineMaxColumn(targetLineNumber);
+                const targetRange = new monaco.Range(
+                  targetLineNumber,
+                  targetColumn,
+                  targetLineNumber,
+                  targetEndColumn
+                );
+                const targetText = model.getValueInRange(targetRange);
+
+                ed.executeEdits("move-line-down", [
+                  { range: rangeToBeMoved, text: null },
+                  {
+                    range: new monaco.Range(
+                      startLineNumber,
+                      startColumn,
+                      startLineNumber,
+                      startColumn
+                    ),
+                    text: targetText + "\n",
+                  },
+                ]);
+
+                const newStartLine = startLineNumber + 1;
+                const newEndLine = endLineNumber + 1;
+                ed.setSelection(
+                  new monaco.Range(
+                    newStartLine,
+                    selection.startColumn,
+                    newEndLine,
+                    selection.endColumn
+                  )
+                );
+              }
+            },
+          });
+        }
+
+        addDefaultSnippets();
+        addCustomCommands();
+      });
+
+      function setText(text) {
+        if (window.editor) {
+          window.editor.setValue(String(text));
+        } else {
+          console.error("Editor is not initialized");
+        }
+      }
+
+      function getEditorContent() {
+        if (window.editor) {
+          return window.editor.getValue();
+        } else {
+          console.error("Editor is not initialized");
+          return "";
+        }
+      }
+
+      function SetText(text) {
+        editor.setValue(text);
+      }
+
+      function setThemeFromMainscreen(theme) {
+        if (theme) {
+          const root = document.documentElement;
+          root.className = "";
+          if (theme !== "default") {
+            root.classList.add(`theme-${theme}`);
+          }
+        } else {
+          console.error("Theme is not defined");
+        }
+      }
+
+      window.addEventListener("message", (event) => {
+        if (event.data.action === "getEditorContent") {
+          const editorContent = editor.getValue();
+          window.parent.postMessage(
+            { action: "editorContent", content: editorContent },
+            "*"
+          );
+        }
+      });
+
+      window.addEventListener("message", (event) => {
+        if (event.data.action === "setText") {
+          SetText(event.data.text);
+        }
+      });
+
+      window.addEventListener("message", (event) => {
+        if (event.data.action === "setThemeFormMainscreen") {
+          setThemeFromMainscreen(event.data.theme);
+
+          window.parent.postMessage(
+            { action: "themeSetAck", theme: event.data.theme },
+            "*"
+          );
+        }
+      });
     </script>
-</body>
+  </body>
 </html>

@@ -21,6 +21,7 @@ class Settings {
           skipWhitelistAsk: false,
           whitelistFolder: false,
           DiscordRPC: true,
+          Theme: "default",
         };
         this.saveSettings(defaultSettings);
         return defaultSettings;

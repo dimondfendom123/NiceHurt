@@ -65,4 +65,8 @@ Contributions are welcome! Please fork the repository and submit a pull request.
 - [x] Check for Updates: Check for updates of the application.
 - [x] Ask for Windows Defender Exclusion: Ask for Windows Defender exclusion for the application.
 - [x] Discord Rich Presence: Add Discord Rich Presence for the application.
-- [ ] Scripthub: SirHurt Scripthub and other apis (RScript.net, etc.)
+- [ ] Scripthub: Scripthub and other apis (RScript.net, etc.)
+
+## To-Do (2.1)
+
+- [ ] Custom Themes: Add custom themes for the application.

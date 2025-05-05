@@ -8,13 +8,113 @@
       :root {
         --primary: #6d28d9;
         --primary-dark: #5b21b6;
+        --primary-darker: #4c1d95;
+        --primary-rgb: 109, 40, 217;
         --bg: #0f0f13;
         --bg-light: #1a1a23;
+        --bg-lighter: #252533;
         --text: #e0e0e8;
         --text-dim: #a1a1aa;
+        --success: #0f8f64;
+        --warning: #f59e0b;
+        --error: #ef4444;
         --border: #3a3a45;
-        --progress-bg: #252533;
-        --progress-fill: #6d28d9;
+        --border-light: #4a4a55;
+        --shadow: 0 5px 10px -3px rgba(0, 0, 0, 0.3),
+          0 2px 4px -2px rgba(0, 0, 0, 0.2);
+        --glass: rgba(15, 15, 19, 0.7);
+        --progress-bg: var(--bg-light);
+      }
+
+      .theme-blue {
+        --primary: #3b82f6;
+        --primary-dark: #2563eb;
+        --primary-darker: #1d4ed8;
+        --primary-rgb: 59, 130, 246;
+      }
+
+      .theme-red {
+        --primary: #ef4444;
+        --primary-dark: #dc2626;
+        --primary-darker: #b91c1c;
+        --primary-rgb: 239, 68, 68;
+      }
+
+      .theme-green {
+        --primary: #10b981;
+        --primary-dark: #059669;
+        --primary-darker: #047857;
+        --primary-rgb: 16, 185, 129;
+      }
+
+      .theme-pink {
+        --primary: #ec4899;
+        --primary-dark: #db2777;
+        --primary-darker: #be185d;
+        --primary-rgb: 236, 72, 153;
+      }
+
+      .theme-cyber {
+        --primary: #00f0ff;
+        --primary-dark: #00a2ff;
+        --primary-darker: #0062ff;
+        --primary-rgb: 0, 240, 255;
+        --bg: #0a0a12;
+        --bg-light: #141420;
+        --bg-lighter: #1e1e2e;
+        --text: #e0e0ff;
+        --text-dim: #a1a1cc;
+        --border: #3a3a66;
+        --border-light: #4a4a77;
+      }
+
+      .theme-orange {
+        --primary: #f97316;
+        --primary-dark: #ea580c;
+        --primary-darker: #c2410c;
+        --primary-rgb: 249, 115, 22;
+      }
+
+      .theme-teal {
+        --primary: #14b8a6;
+        --primary-dark: #0d9488;
+        --primary-darker: #0f766e;
+        --primary-rgb: 20, 184, 166;
+      }
+
+      .theme-gold {
+        --primary: #facc15;
+        --primary-dark: #eab308;
+        --primary-darker: #ca8a04;
+        --primary-rgb: 250, 204, 21;
+      }
+
+      .theme-midnight {
+        --primary: #6366f1;
+        --primary-dark: #4f46e5;
+        --primary-darker: #4338ca;
+        --primary-rgb: 99, 102, 241;
+        --bg: #080818;
+        --bg-light: #12122a;
+        --bg-lighter: #1c1c3d;
+        --text: #dcdcff;
+        --text-dim: #a5a5d6;
+        --border: #34345c;
+        --border-light: #454576;
+      }
+
+      .theme-neon {
+        --primary: #39ff14;
+        --primary-dark: #32cc12;
+        --primary-darker: #29aa0f;
+        --primary-rgb: 57, 255, 20;
+        --bg: #000000;
+        --bg-light: #0a0a0a;
+        --bg-lighter: #141414;
+        --text: #e0ffe0;
+        --text-dim: #aaffaa;
+        --border: #2a2a2a;
+        --border-light: #3a3a3a;
       }
 
       * {
@@ -35,19 +135,51 @@
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        background-image: radial-gradient(
-            circle at 10% 20%,
-            rgba(109, 40, 217, 0.15) 0%,
-            transparent 20%
-          ),
-          radial-gradient(
-            circle at 90% 80%,
-            rgba(109, 40, 217, 0.15) 0%,
-            transparent 20%
-          );
         padding: 20px;
         text-align: center;
         animation: fadeIn 1s ease-out;
+      }
+
+      body::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: radial-gradient(
+            circle at 20% 30%,
+            rgba(var(--primary-rgb), 0.15) 0%,
+            transparent 20%
+          ),
+          radial-gradient(
+            circle at 80% 70%,
+            rgba(var(--primary-rgb), 0.15) 0%,
+            transparent 20%
+          );
+        z-index: -1;
+        animation: floatParticles 15s ease-in-out infinite alternate;
+      }
+
+      @keyframes floatParticles {
+        0% {
+          transform: translate(0, 0);
+          opacity: 0.7;
+        }
+        25% {
+          transform: translate(-5%, 5%);
+        }
+        50% {
+          transform: translate(5%, -5%);
+          opacity: 1;
+        }
+        75% {
+          transform: translate(-5%, -5%);
+        }
+        100% {
+          transform: translate(5%, 5%);
+          opacity: 0.7;
+        }
       }
 
       @keyframes fadeIn {
@@ -85,25 +217,25 @@
 
       @keyframes glow {
         0% {
-          text-shadow: 0 0 5px rgba(109, 40, 217, 0);
+          text-shadow: 0 0 5px rgba(var(--primary-rgb), 0);
         }
         50% {
-          text-shadow: 0 0 15px rgba(109, 40, 217, 0.5);
+          text-shadow: 0 0 15px rgba(var(--primary-rgb), 0.5);
         }
         100% {
-          text-shadow: 0 0 5px rgba(109, 40, 217, 0);
+          text-shadow: 0 0 5px rgba(var(--primary-rgb), 0);
         }
       }
 
       @keyframes progressPulse {
         0% {
-          box-shadow: 0 0 5px rgba(109, 40, 217, 0.3);
+          box-shadow: 0 0 5px rgba(var(--primary-rgb), 0.3);
         }
         50% {
-          box-shadow: 0 0 15px rgba(109, 40, 217, 0.6);
+          box-shadow: 0 0 15px rgba(var(--primary-rgb), 0.6);
         }
         100% {
-          box-shadow: 0 0 5px rgba(109, 40, 217, 0.3);
+          box-shadow: 0 0 5px rgba(var(--primary-rgb), 0.3);
         }
       }
 
@@ -135,7 +267,7 @@
         -webkit-background-clip: text;
         background-clip: text;
         color: transparent;
-        text-shadow: 0 0 10px rgba(109, 40, 217, 0.3);
+        text-shadow: 0 0 10px rgba(var(--primary-rgb), 0.3);
         animation: float 3s ease-in-out infinite, glow 2s ease-in-out infinite;
         transition: all 0.3s ease;
       }
@@ -148,24 +280,26 @@
         width: 100%;
         max-width: 400px;
         height: 8px;
-        background-color: var(--progress-bg);
+        background-color: var(--bg);
         border-radius: 4px;
         overflow: hidden;
         margin-bottom: 20px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        box-shadow: var(--shadow);
         animation: scaleIn 0.5s ease-out 0.2s both;
+        position: relative;
+        border: 1px solid var(--border);
       }
-
       .progress-bar {
         height: 100%;
         width: 0;
         background: linear-gradient(90deg, var(--primary), var(--primary-dark));
         border-radius: 4px;
         transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        box-shadow: 0 0 10px rgba(109, 40, 217, 0.5);
+        box-shadow: 0 0 10px rgba(var(--primary-rgb), 0.5);
         animation: progressPulse 2s infinite;
+        position: relative;
+        z-index: 1;
       }
-
       .status {
         color: var(--text-dim);
         font-size: 0.9rem;
@@ -175,7 +309,6 @@
         line-height: 1.5;
         animation: fadeIn 0.5s ease-out 0.4s both;
       }
-
       .loading-dots::after {
         content: "...";
         animation: pulse 1.5s infinite;
@@ -183,19 +316,17 @@
         width: 20px;
         text-align: left;
       }
-
       .spinner {
         display: inline-block;
         width: 16px;
         height: 16px;
-        border: 2px solid rgba(255, 255, 255, 0.3);
+        border: 2px solid rgba(var(--primary-rgb), 0.3);
         border-radius: 50%;
         border-top-color: var(--primary);
         animation: rotate 1s linear infinite;
         margin-left: 8px;
         vertical-align: middle;
       }
-
       .completed-check {
         display: inline-block;
         color: var(--primary);
@@ -219,6 +350,27 @@
         const progressBar = document.getElementById("progress-bar");
         const statusText = document.getElementById("status-text");
 
+        function applyTheme(themeName) {
+          document.body.className = "";
+
+          if (themeName && themeName !== "default") {
+            document.body.classList.add(`theme-${themeName}`);
+          }
+        }
+
+        async function loadTheme() {
+          try {
+            const settings = await window.electron.getSettings();
+            if (settings && settings.theme) {
+              applyTheme(settings.theme);
+            }
+          } catch (error) {
+            console.error("Error loading theme:", error);
+          }
+        }
+
+        loadTheme();
+
         progressBar.addEventListener("transitionend", () => {
           progressBar.style.animation = "none";
           void progressBar.offsetWidth;
@@ -231,7 +383,7 @@
           if (data.progress >= 100) {
             statusText.innerHTML = data.message;
             progressBar.style.animation = "none";
-            progressBar.style.boxShadow = "0 0 15px rgba(109, 40, 217, 0.8)";
+            progressBar.style.boxShadow = `0 0 15px rgba(${primaryRgb}, 0.8)`;
 
             setTimeout(() => {
               document.body.style.animation =
@@ -241,10 +393,6 @@
             statusText.innerHTML =
               data.message + '<span class="loading-dots"></span>';
           }
-
-          progressBar.style.animation = "none";
-          void progressBar.offsetWidth;
-          progressBar.style.animation = "progressPulse 2s infinite";
         });
 
         setTimeout(() => {
