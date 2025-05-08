@@ -293,5 +293,15 @@ class Updater {
       };
     }
   }
+
+  static async getSirhurtVersion() {
+    const sirHurtPath = path.join(app.getPath("appData"), "NiceHurt");
+    const verFile = path.join(sirHurtPath, "version");
+    if (fs.existsSync(verFile)) {
+      const version = fs.readFileSync(verFile, "utf-8").trim();
+      return version;
+    }
+    return null;
+  }
 }
 module.exports = Updater;

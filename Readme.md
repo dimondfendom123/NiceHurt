@@ -58,6 +58,7 @@ Contributions are welcome! Please fork the repository and submit a pull request.
 - [x] Autoexecute: Add an auto-execute feature for scripts.
 - [x] Auto-Check: Check for the game is loaded before executing the scripts.
 - [ ] Injector: Fixing the error reading for the injector.
+- [ ] SirHurt Cleaner: Add a cleaner for SirHurt to remove files to fix some Problems.
 - [x] Settings-Theme: Add a theme system for the application.
 - [x] Better UI: Change the UI to a more modern look and better user experience.
 - [x] Recode: Recode the application to a better and more optimized version.
@@ -65,8 +66,9 @@ Contributions are welcome! Please fork the repository and submit a pull request.
 - [x] Check for Updates: Check for updates of the application.
 - [x] Ask for Windows Defender Exclusion: Ask for Windows Defender exclusion for the application.
 - [x] Discord Rich Presence: Add Discord Rich Presence for the application.
-- [ ] Scripthub: Scripthub and other apis (RScript.net, etc.)
+- [x] Scripthub: Scripthub (RScript.net)
 
 ## To-Do (2.1)
 
 - [ ] Custom Themes: Add custom themes for the application.
+- [ ] Script Hub: Add other apis (scriptblox, etc.) for the application.

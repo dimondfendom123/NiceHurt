@@ -1,14 +1,6 @@
 const path = require("path");
 const fs = require("fs");
 
-function updateAppVersion(newVersion) {
-  mainWindow.webContents.send("appVersionUpdate", newVersion);
-}
-
-function updateSirhurtVersion(newVersion) {
-  mainWindow.webContents.send("sirhurtVersionUpdate", newVersion);
-}
-
 module.exports = function registerWindowControls(app, ipcMain, mainWindow) {
   ipcMain.on("window-minimize", () => {
     if (mainWindow) mainWindow.minimize();

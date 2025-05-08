@@ -1,0 +1,272 @@
+:root {
+  /* Theme Variables */
+  --primary: #6d28d9;
+  --primary-dark: #5b21b6;
+  --primary-darker: #4c1d95;
+  --primary-rgb: 109, 40, 217;
+  --bg: #0f0f13;
+  --bg-light: #1a1a23;
+  --bg-lighter: #252533;
+  --text: #e0e0e8;
+  --text-dim: #a1a1aa;
+  --success: #0f8f64;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --border: #3a3a45;
+  --border-light: #4a4a55;
+  --shadow: 0 5px 10px -3px rgba(0, 0, 0, 0.3),
+    0 2px 4px -2px rgba(0, 0, 0, 0.2);
+  --glass: rgba(15, 15, 19, 0.7);
+
+  /* Editor Colors */
+  --editor-bg: var(--bg-light);
+  --editor-fg: var(--text);
+  --editor-line-numbers: var(--text-dim);
+  --editor-cursor: #ffffff;
+  --editor-selection: rgba(var(--primary-rgb), 0.5);
+  --editor-selection-inactive: rgba(var(--primary-rgb), 0.2);
+  --editor-line-highlight: var(--bg-lighter);
+  --editor-active-line-number: #d0d0d0;
+  --editor-font: "JetBrains Mono", "Fira Code", Consolas, monospace;
+
+  /* Editor Script text colors */
+  --keyword-color: #ff5555;
+  --local-keyword-color: #4dabf7;
+  --comment-color: #6a9955;
+  --string-color: #50fa7b;
+  --number-color: #bd93f9;
+  --function-color: #ff79c6;
+  --variable-color: #8be9fd;
+  --operator-color: #f1fa8c;
+  --type-color: #66d9ef;
+
+  /* Editor Secondary Colors */
+  --indent-guide: #333333;
+  --active-indent-guide: #444444;
+  --widget-bg: var(--bg-lighter);
+  --widget-border: var(--border);
+  --autocomplete-selected: #2a2a35;
+
+  /* Tab Colors */
+  --tab-bg: var(--bg-light);
+  --tab-active-bg: var(--bg-lighter);
+  --tab-border: var(--border);
+  --tab-text: var(--text-dim);
+  --tab-text-active: var(--text);
+}
+
+.theme-blue {
+  --primary: #3b82f6;
+  --primary-dark: #2563eb;
+  --primary-darker: #1d4ed8;
+  --primary-rgb: 59, 130, 246;
+
+  --keyword-color: #ff6b6b;
+  --local-keyword-color: #74c0fc;
+  --string-color: #69db7c;
+  --function-color: #ff8787;
+  --variable-color: #91a7ff;
+  --operator-color: #ffd43b;
+  --type-color: #4dabf7;
+}
+
+.theme-red {
+  --primary: #ef4444;
+  --primary-dark: #dc2626;
+  --primary-darker: #b91c1c;
+  --primary-rgb: 239, 68, 68;
+
+  --keyword-color: #ff8787;
+  --local-keyword-color: #faa2c1;
+  --string-color: #d8f5a2;
+  --function-color: #ffa8a8;
+  --variable-color: #ffc9c9;
+  --operator-color: #ffd8a8;
+  --type-color: #ffa94d;
+}
+
+.theme-green {
+  --primary: #10b981;
+  --primary-dark: #059669;
+  --primary-darker: #047857;
+  --primary-rgb: 16, 185, 129;
+
+  --keyword-color: #ff6b6b;
+  --local-keyword-color: #51cf66;
+  --string-color: #a9e34b;
+  --function-color: #ff8787;
+  --variable-color: #8ce99a;
+  --operator-color: #ffd43b;
+  --type-color: #20c997;
+}
+
+.theme-pink {
+  --primary: #ec4899;
+  --primary-dark: #db2777;
+  --primary-darker: #be185d;
+  --primary-rgb: 236, 72, 153;
+
+  --keyword-color: #ff6b6b;
+  --local-keyword-color: #f783ac;
+  --string-color: #d8b5ff;
+  --function-color: #ff8787;
+  --variable-color: #e599f7;
+  --operator-color: #fcc419;
+  --type-color: #f06595;
+}
+
+.theme-cyber {
+  --primary: #00f0ff;
+  --primary-dark: #00a2ff;
+  --primary-darker: #0062ff;
+  --primary-rgb: 0, 240, 255;
+
+  --keyword-color: #ff5555;
+  --local-keyword-color: #00f0ff;
+  --string-color: #50fa7b;
+  --function-color: #ff79c6;
+  --variable-color: #8be9fd;
+  --operator-color: #f1fa8c;
+  --type-color: #66d9ef;
+
+  --editor-selection: rgba(0, 240, 255, 0.3);
+  --editor-selection-inactive: rgba(0, 240, 255, 0.1);
+
+  --editor-line-highlight: rgba(255, 255, 255, 0.03);
+
+  --editor-cursor: #00f0ff;
+
+  --tab-border: rgba(255, 255, 255, 0.1);
+}
+
+.theme-orange {
+  --primary: #f97316;
+  --primary-dark: #ea580c;
+  --primary-darker: #c2410c;
+  --primary-rgb: 249, 115, 22;
+
+  --keyword-color: #ff6b6b;
+  --local-keyword-color: #ff922b;
+  --string-color: #94d82d;
+  --function-color: #ff8787;
+  --variable-color: #ffc078;
+  --operator-color: #ffd43b;
+  --type-color: #f76707;
+}
+
+.theme-teal {
+  --primary: #14b8a6;
+  --primary-dark: #0d9488;
+  --primary-darker: #0f766e;
+  --primary-rgb: 20, 184, 166;
+
+  --keyword-color: #ff6b6b;
+  --local-keyword-color: #3bc9db;
+  --string-color: #a9e34b;
+  --function-color: #ff8787;
+  --variable-color: #66d9e0;
+  --operator-color: #ffd43b;
+  --type-color: #12b886;
+}
+
+.theme-gold {
+  --primary: #facc15;
+  --primary-dark: #eab308;
+  --primary-darker: #ca8a04;
+  --primary-rgb: 250, 204, 21;
+
+  --keyword-color: #ff8787;
+  --local-keyword-color: #ffd43b;
+  --string-color: #b2f2bb;
+  --function-color: #ffa8a8;
+  --variable-color: #ffec99;
+  --operator-color: #ffe066;
+  --type-color: #fcc419;
+
+  --editor-cursor: #facc15;
+}
+
+.theme-midnight {
+  --primary: #6366f1;
+  --primary-dark: #4f46e5;
+  --primary-darker: #4338ca;
+  --primary-rgb: 99, 102, 241;
+
+  --keyword-color: #ff7575;
+  --local-keyword-color: #748ffc;
+  --string-color: #91a7ff;
+  --function-color: #ff8787;
+  --variable-color: #bac8ff;
+  --operator-color: #d0ebff;
+  --type-color: #5c7cfa;
+}
+
+.theme-neon {
+  --primary: #39ff14;
+  --primary-dark: #32cc12;
+  --primary-darker: #29aa0f;
+  --primary-rgb: 57, 255, 20;
+
+  --keyword-color: #ff5555;
+  --local-keyword-color: #39ff14;
+  --string-color: #50fa7b;
+  --function-color: #ff79c6;
+  --variable-color: #8be9fd;
+  --operator-color: #f1fa8c;
+  --type-color: #66d9ef;
+
+  --editor-selection: rgba(57, 255, 20, 0.3);
+  --editor-selection-inactive: rgba(57, 255, 20, 0.1);
+  --editor-cursor: #39ff14;
+
+  --tab-active-bg: var(--bg);
+  --tab-border: rgba(255, 255, 255, 0.1);
+}
+
+.theme-option.purple {
+  background: linear-gradient(135deg, #6d28d9 0%, #4c1d95 100%);
+}
+
+.theme-option.blue {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+}
+
+.theme-option.red {
+  background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+}
+
+.theme-option.green {
+  background: linear-gradient(135deg, #10b981 0%, #047857 100%);
+}
+
+.theme-option.pink {
+  background: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
+}
+
+.theme-option.cyber {
+  background: linear-gradient(135deg, #00f0ff 0%, #0062ff 100%);
+}
+
+.theme-option.gold {
+  background: linear-gradient(135deg, #f59e0b 0%, #b45309 100%);
+}
+
+.theme-option.orange {
+  background: linear-gradient(135deg, #f97316 0%, #c2410c 100%);
+}
+
+.theme-option.teal {
+  background: linear-gradient(135deg, #14b8a6 0%, #0f766e 100%);
+}
+
+.theme-option.gold {
+  background: linear-gradient(135deg, #facc15 0%, #ca8a04 100%);
+}
+
+.theme-option.midnight {
+  background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%);
+}
+
+.theme-option.neon {
+  background: linear-gradient(135deg, #39ff14 0%, #29aa0f 100%);
+}

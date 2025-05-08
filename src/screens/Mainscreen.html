@@ -4,118 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>NiceHurt</title>
+    <link rel="stylesheet" href="Themes.css" />
     <style>
-      :root {
-        --primary: #6d28d9;
-        --primary-dark: #5b21b6;
-        --primary-darker: #4c1d95;
-        --primary-rgb: 109, 40, 217;
-        --bg: #0f0f13;
-        --bg-light: #1a1a23;
-        --bg-lighter: #252533;
-        --text: #e0e0e8;
-        --text-dim: #a1a1aa;
-        --success: #0f8f64;
-        --warning: #f59e0b;
-        --error: #ef4444;
-        --border: #3a3a45;
-        --border-light: #4a4a55;
-        --shadow: 0 5px 10px -3px rgba(0, 0, 0, 0.3),
-          0 2px 4px -2px rgba(0, 0, 0, 0.2);
-        --glass: rgba(15, 15, 19, 0.7);
-      }
-
-      .theme-blue {
-        --primary: #3b82f6;
-        --primary-dark: #2563eb;
-        --primary-darker: #1d4ed8;
-        --primary-rgb: 59, 130, 246;
-      }
-
-      .theme-red {
-        --primary: #ef4444;
-        --primary-dark: #dc2626;
-        --primary-darker: #b91c1c;
-        --primary-rgb: 239, 68, 68;
-      }
-
-      .theme-green {
-        --primary: #10b981;
-        --primary-dark: #059669;
-        --primary-darker: #047857;
-        --primary-rgb: 16, 185, 129;
-      }
-
-      .theme-pink {
-        --primary: #ec4899;
-        --primary-dark: #db2777;
-        --primary-darker: #be185d;
-        --primary-rgb: 236, 72, 153;
-      }
-
-      .theme-cyber {
-        --primary: #00f0ff;
-        --primary-dark: #00a2ff;
-        --primary-darker: #0062ff;
-        --primary-rgb: 0, 240, 255;
-        --bg: #0a0a12;
-        --bg-light: #141420;
-        --bg-lighter: #1e1e2e;
-        --text: #e0e0ff;
-        --text-dim: #a1a1cc;
-        --border: #3a3a66;
-        --border-light: #4a4a77;
-      }
-
-      .theme-orange {
-        --primary: #f97316;
-        --primary-dark: #ea580c;
-        --primary-darker: #c2410c;
-        --primary-rgb: 249, 115, 22;
-      }
-
-      .theme-teal {
-        --primary: #14b8a6;
-        --primary-dark: #0d9488;
-        --primary-darker: #0f766e;
-        --primary-rgb: 20, 184, 166;
-      }
-
-      .theme-gold {
-        --primary: #facc15;
-        --primary-dark: #eab308;
-        --primary-darker: #ca8a04;
-        --primary-rgb: 250, 204, 21;
-      }
-
-      .theme-midnight {
-        --primary: #6366f1;
-        --primary-dark: #4f46e5;
-        --primary-darker: #4338ca;
-        --primary-rgb: 99, 102, 241;
-        --bg: #080818;
-        --bg-light: #12122a;
-        --bg-lighter: #1c1c3d;
-        --text: #dcdcff;
-        --text-dim: #a5a5d6;
-        --border: #34345c;
-        --border-light: #454576;
-      }
-
-      .theme-neon {
-        --primary: #39ff14;
-        --primary-dark: #32cc12;
-        --primary-darker: #29aa0f;
-        --primary-rgb: 57, 255, 20;
-        --bg: #000000;
-        --bg-light: #0a0a0a;
-        --bg-lighter: #141414;
-        --text: #e0ffe0;
-        --text-dim: #aaffaa;
-        --border: #2a2a2a;
-        --border-light: #3a3a3a;
-      }
-
       * {
         margin: 0;
         padding: 0;
@@ -712,7 +602,7 @@
         transform: translateY(0) scale(0.98);
       }
 
-      #btnOpenAutoEXE {
+      #btnScriptHub {
         width: 100%;
         padding: 8px;
         border-radius: 5px;
@@ -727,14 +617,14 @@
         border: 1px solid var(--primary);
       }
 
-      #btnOpenAutoEXE:hover {
+      #btnScriptHub:hover {
         background: var(--primary);
         color: white;
         transform: translateY(-1px);
         box-shadow: 0 4px 8px rgba(var(--primary-rgb), 0.2);
       }
 
-      #btnOpenAutoEXE:active {
+      #btnScriptHub:active {
         transform: translateY(0) scale(0.98);
         box-shadow: 0 2px 4px rgba(var(--primary-rgb), 0.1);
       }
@@ -751,11 +641,14 @@
         align-items: center;
         justify-content: center;
         gap: 8px;
+        background: var(--primary);
+        color: white;
       }
 
       .action-button:hover {
         transform: translateY(-2px);
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        animation: pulse 1s infinite;
       }
 
       .action-button:active {
@@ -955,54 +848,6 @@
         opacity: 1;
       }
 
-      .theme-option.purple {
-        background: linear-gradient(135deg, #6d28d9 0%, #4c1d95 100%);
-      }
-
-      .theme-option.blue {
-        background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-      }
-
-      .theme-option.red {
-        background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
-      }
-
-      .theme-option.green {
-        background: linear-gradient(135deg, #10b981 0%, #047857 100%);
-      }
-
-      .theme-option.pink {
-        background: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
-      }
-
-      .theme-option.cyber {
-        background: linear-gradient(135deg, #00f0ff 0%, #0062ff 100%);
-      }
-
-      .theme-option.gold {
-        background: linear-gradient(135deg, #f59e0b 0%, #b45309 100%);
-      }
-
-      .theme-option.orange {
-        background: linear-gradient(135deg, #f97316 0%, #c2410c 100%);
-      }
-
-      .theme-option.teal {
-        background: linear-gradient(135deg, #14b8a6 0%, #0f766e 100%);
-      }
-
-      .theme-option.gold {
-        background: linear-gradient(135deg, #facc15 0%, #ca8a04 100%);
-      }
-
-      .theme-option.midnight {
-        background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%);
-      }
-
-      .theme-option.neon {
-        background: linear-gradient(135deg, #39ff14 0%, #29aa0f 100%);
-      }
-
       .settings-toggle {
         display: flex;
         justify-content: space-between;
@@ -1075,6 +920,437 @@
       .notification.show {
         opacity: 1;
         transform: translateX(-50%) translateY(0);
+      }
+
+      .script-hub-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 750px;
+        height: 600px;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(5px);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 100;
+        opacity: 0;
+        transition: all 0.3s ease;
+      }
+
+      .script-hub-container.show {
+        opacity: 1;
+        display: flex;
+      }
+
+      .script-hub {
+        width: 700px;
+        max-height: 500px;
+        background: var(--bg-light);
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border);
+        position: relative;
+        transform: scale(0.9);
+        opacity: 0;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+
+      .script-hub-container.show .script-hub {
+        transform: scale(1);
+        opacity: 1;
+      }
+
+      .script-hub h2 {
+        padding: 15px;
+        font-size: 1.1rem;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      #btnCloseScriptHub {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        border: none;
+        background: var(--bg);
+        color: var(--text);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-size: 0.9rem;
+      }
+
+      #btnCloseScriptHub:hover {
+        background: var(--error);
+        color: white;
+      }
+
+      .script-hub-content {
+        display: flex;
+        height: calc(500px - 50px);
+      }
+
+      .script-hub-sidebar {
+        width: 180px;
+        background: var(--bg-lighter);
+        border-right: 1px solid var(--border);
+        padding: 10px;
+        overflow-y: auto;
+      }
+
+      .script-hub-main {
+        flex: 1;
+        padding: 15px;
+        overflow-y: auto;
+      }
+
+      .script-category {
+        padding: 8px 10px;
+        margin-bottom: 5px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-size: 0.85rem;
+      }
+
+      .script-category:hover {
+        background: var(--primary);
+        color: white;
+      }
+
+      .script-category.active {
+        background: var(--primary);
+        color: white;
+      }
+
+      .script-search {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+        background: var(--bg-lighter);
+        border-radius: 4px;
+        border: 1px solid var(--border);
+        overflow: hidden;
+      }
+
+      #scriptSearch {
+        flex: 1;
+        background: transparent;
+        border: none;
+        padding: 8px 10px;
+        color: var(--text);
+        font-size: 0.85rem;
+        outline: none;
+      }
+
+      #scriptSearch::placeholder {
+        color: var(--text-dim);
+      }
+
+      .script-filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 15px;
+      }
+
+      .filter-btn {
+        padding: 5px 10px;
+        border-radius: 4px;
+        border: 1px solid var(--border);
+        background: var(--bg-lighter);
+        color: var(--text);
+        font-size: 0.75rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .filter-btn:hover {
+        background: var(--primary);
+        color: white;
+      }
+
+      .filter-btn.active {
+        background: var(--primary);
+        color: white;
+        border-color: var(--primary);
+      }
+
+      .script-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 15px;
+      }
+
+      .script-card {
+        background: var(--bg-lighter);
+        border-radius: 8px;
+        overflow: hidden;
+        border: 1px solid var(--border);
+        transition: all 0.3s ease;
+      }
+
+      .script-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      }
+
+      .script-image {
+        width: 100%;
+        height: 120px;
+        object-fit: cover;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .script-content {
+        padding: 12px;
+      }
+
+      .script-title {
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 8px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+
+      .script-meta {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.75rem;
+        color: var(--text-dim);
+        margin-bottom: 10px;
+      }
+
+      .script-author {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+
+      .author-avatar {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+      }
+
+      .script-stats {
+        display: flex;
+        gap: 10px;
+      }
+
+      .stat {
+        display: flex;
+        align-items: center;
+        gap: 3px;
+      }
+
+      .stat img {
+        width: 14px;
+        height: 14px;
+        filter: brightness(0.7);
+      }
+
+      .script-description {
+        font-size: 0.8rem;
+        color: var(--text-dim);
+        margin-bottom: 12px;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+
+      .script-actions {
+        display: flex;
+        gap: 8px;
+      }
+
+      .script-btn {
+        flex: 1;
+        padding: 6px;
+        border-radius: 4px;
+        border: none;
+        font-size: 0.75rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+      }
+
+      .script-btn.execute {
+        background: var(--primary);
+        color: white;
+      }
+
+      .script-btn.execute:hover {
+        background: var(--primary-dark);
+      }
+
+      .script-btn.copy {
+        background: var(--bg);
+        color: var(--text);
+        border: 1px solid var(--border);
+      }
+
+      .script-btn.copy:hover {
+        background: var(--bg-lighter);
+      }
+
+      .script-btn img {
+        width: 14px;
+        height: 14px;
+        filter: invert(1);
+      }
+
+      .pagination {
+        display: flex;
+        justify-content: center;
+        gap: 5px;
+        margin-top: 20px;
+      }
+
+      .page-btn {
+        padding: 5px 10px;
+        border-radius: 4px;
+        border: 1px solid var(--border);
+        background: var(--bg-lighter);
+        color: var(--text);
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .page-btn:hover {
+        background: var(--primary);
+        color: white;
+        border-color: var(--primary);
+      }
+
+      .page-btn.active {
+        background: var(--primary);
+        color: white;
+        border-color: var(--primary);
+      }
+
+      .page-btn.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .loading-spinner {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100px;
+      }
+
+      .spinner {
+        width: 30px;
+        height: 30px;
+        border: 3px solid rgba(var(--primary-rgb), 0.3);
+        border-radius: 50%;
+        border-top-color: var(--primary);
+        animation: rotate 1s ease-in-out infinite;
+      }
+
+      .script-hub-btn {
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: var(--primary);
+        color: white;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease;
+        z-index: 50;
+      }
+
+      .script-hub-btn:hover {
+        transform: scale(1.1) rotate(10deg);
+        background: var(--primary-dark);
+      }
+
+      .script-hub-btn img {
+        width: 24px;
+        height: 24px;
+        filter: invert(1);
+      }
+
+      .tab-buttons {
+        display: flex;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .tab-btn {
+        padding: 8px 15px;
+        background: transparent;
+        border: none;
+        color: var(--text-dim);
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border-bottom: 2px solid transparent;
+      }
+
+      .tab-btn:hover {
+        color: var(--text);
+      }
+
+      .tab-btn.active {
+        color: var(--primary);
+        border-bottom-color: var(--primary);
+      }
+
+      .tab-content {
+        display: none;
+      }
+
+      .tab-content.active {
+        display: block;
+      }
+
+      .script-executors {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 10px;
+      }
+
+      .executor-badge {
+        padding: 3px 8px;
+        background: var(--bg);
+        border-radius: 4px;
+        font-size: 0.7rem;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        border: 1px solid var(--border);
+      }
+
+      .executor-badge img {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
       }
 
       ::-webkit-scrollbar {
@@ -1221,9 +1497,7 @@
           </div>
         </div>
         <button id="btnOpenFolder">Open Folder</button>
-        <button id="btnOpenAutoEXE" style="margin-top: 8px">
-          Open Autoexec Folder
-        </button>
+        <button id="btnScriptHub" style="margin-top: 8px">Script Hub</button>
       </div>
     </div>
 
@@ -1310,6 +1584,9 @@
                 margin-top: 10px;
               "
             >
+              <button class="action-button" id="btnOpenAutoEXE">
+                Open Autoexec Folder
+              </button>
               <button
                 id="btnForceReinstall"
                 class="action-button danger"
@@ -1375,6 +1652,86 @@
               >
                 Loading version...
               </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="script-hub-container" id="scriptHubContainer">
+      <div class="script-hub">
+        <h2>Script Hub</h2>
+        <button id="btnCloseScriptHub">X</button>
+
+        <div class="script-hub-content">
+          <div class="script-hub-sidebar">
+            <div class="tab-buttons">
+              <button class="tab-btn active" data-tab="scripts">Scripts</button>
+              <button class="tab-btn" data-tab="favorites">Favorites</button>
+            </div>
+
+            <div class="script-categories" style="margin-top: 15px">
+              <div class="script-category active" data-category="all">
+                All Scripts
+              </div>
+              <div class="script-category" data-category="popular">
+                Trending
+              </div>
+            </div>
+          </div>
+
+          <div class="script-hub-main">
+            <div class="script-search">
+              <input
+                type="text"
+                id="scriptSearch"
+                placeholder="Search scripts on Rscripts.net"
+              />
+            </div>
+
+            <div class="script-filters">
+              <button class="filter-btn active" data-filter="all">All</button>
+              <button class="filter-btn" data-filter="noKeySystem">
+                No Key
+              </button>
+              <button class="filter-btn" data-filter="mobileOnly">
+                Mobile
+              </button>
+              <button class="filter-btn" data-filter="notPaid">Free</button>
+              <button class="filter-btn" data-filter="verifiedOnly">
+                Verified
+              </button>
+            </div>
+
+            <div class="tab-content active" id="scriptsTab">
+              <div class="script-list" id="scriptList">
+                <div class="loading-spinner">
+                  <div class="spinner"></div>
+                </div>
+              </div>
+
+              <div class="pagination" id="pagination">
+                <button class="page-btn" id="prevPage" disabled>
+                  Previous
+                </button>
+                <span id="pageInfo">Page 1 of 1</span>
+                <button class="page-btn" id="nextPage" disabled>Next</button>
+              </div>
+            </div>
+
+            <div class="tab-content" id="favoritesTab">
+              <div class="script-list" id="favoritesList">
+                <div
+                  style="
+                    text-align: center;
+                    padding: 40px;
+                    color: var(--text-dim);
+                  "
+                >
+                  No favorites yet. Click the star icon on scripts to add them
+                  to favorites.
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -1783,6 +2140,430 @@
           fileManager.style.transform = "translateX(0)";
         });
 
+        const btnScriptHub = document.getElementById("btnScriptHub");
+        const scriptHubContainer =
+          document.getElementById("scriptHubContainer");
+        const btnCloseScriptHub = document.getElementById("btnCloseScriptHub");
+
+        btnScriptHub.addEventListener("click", () => {
+          scriptHubContainer.classList.add("show");
+          loadScripts();
+        });
+
+        btnCloseScriptHub.addEventListener("click", () => {
+          scriptHubContainer.classList.remove("show");
+        });
+
+        scriptHubContainer.addEventListener("click", (e) => {
+          if (e.target === scriptHubContainer) {
+            scriptHubContainer.classList.remove("show");
+          }
+        });
+
+        const tabButtons = document.querySelectorAll(".tab-btn");
+        const tabContents = document.querySelectorAll(".tab-content");
+
+        tabButtons.forEach((button) => {
+          button.addEventListener("click", () => {
+            const tabId = button.dataset.tab;
+
+            tabButtons.forEach((btn) => btn.classList.remove("active"));
+            button.classList.add("active");
+
+            tabContents.forEach((content) =>
+              content.classList.remove("active")
+            );
+            document.getElementById(`${tabId}Tab`).classList.add("active");
+
+            if (tabId === "favorites") {
+              loadFavorites();
+            } else {
+              renderScripts(scriptsData);
+            }
+          });
+        });
+
+        const categories = document.querySelectorAll(".script-category");
+        categories.forEach((category) => {
+          category.addEventListener("click", () => {
+            categories.forEach((c) => c.classList.remove("active"));
+            category.classList.add("active");
+            currentCategory = category.dataset.category;
+            currentPage = 1;
+            loadScripts();
+          });
+        });
+
+        const filterButtons = document.querySelectorAll(".filter-btn");
+        filterButtons.forEach((button) => {
+          button.addEventListener("click", () => {
+            filterButtons.forEach((btn) => btn.classList.remove("active"));
+            button.classList.add("active");
+            currentFilter = button.dataset.filter;
+            currentPage = 1;
+            loadScripts();
+          });
+        });
+
+        const scriptSearch = document.getElementById("scriptSearch");
+        let searchTimeout;
+        scriptSearch.addEventListener("input", () => {
+          clearTimeout(searchTimeout);
+          searchTimeout = setTimeout(() => {
+            currentPage = 1;
+            currentSearch = scriptSearch.value.trim();
+            loadScripts();
+          }, 500);
+        });
+
+        const prevPageBtn = document.getElementById("prevPage");
+        const nextPageBtn = document.getElementById("nextPage");
+        const pageInfo = document.getElementById("pageInfo");
+
+        prevPageBtn.addEventListener("click", () => {
+          if (currentPage > 1) {
+            currentPage--;
+            loadScripts();
+          }
+        });
+
+        nextPageBtn.addEventListener("click", () => {
+          if (currentPage < maxPages) {
+            currentPage++;
+            loadScripts();
+          }
+        });
+
+        let currentPage = 1;
+        let maxPages = 1;
+        let currentCategory = "all";
+        let currentFilter = "all";
+        let currentSearch = "";
+        let scriptsData = [];
+        let favorites =
+          JSON.parse(localStorage.getItem("scriptHubFavorites")) || [];
+
+        async function loadScripts() {
+          const scriptList = document.getElementById("scriptList");
+          scriptList.innerHTML =
+            '<div class="loading-spinner"><div class="spinner"></div></div>';
+
+          try {
+            if (currentCategory === "popular") {
+              const response = await fetch(
+                "https://rscripts.net/api/v2/trending"
+              );
+              const data = await response.json();
+
+              if (data.success) {
+                scriptsData = data.success.map((item) => ({
+                  ...item.script,
+                  _id: item._id,
+                  views: item.views,
+                  user: item.user,
+                }));
+                maxPages = 1;
+              } else {
+                throw new Error(
+                  data.error || "Failed to load trending scripts"
+                );
+              }
+            } else {
+              let apiUrl = `https://rscripts.net/api/v2/scripts?page=${currentPage}`;
+
+              if (currentCategory === "new") {
+                apiUrl += "&orderBy=date&sort=desc";
+              }
+
+              if (currentFilter === "noKeySystem") {
+                apiUrl += "&noKeySystem=true";
+              } else if (currentFilter === "mobileOnly") {
+                apiUrl += "&mobileReady=true";
+              } else if (currentFilter === "notPaid") {
+                apiUrl += "&paid=false";
+              } else if (currentFilter === "verifiedOnly") {
+                apiUrl += "&verifiedOnly=true";
+              } else if (currentFilter === "unpatched") {
+                apiUrl += "&unpatched=true";
+              }
+
+              if (currentSearch) {
+                apiUrl += `&q=${encodeURIComponent(currentSearch)}`;
+              }
+
+              const response = await fetch(apiUrl);
+              const data = await response.json();
+
+              scriptsData = data.scripts;
+              maxPages = data.info.maxPages;
+            }
+
+            updatePagination();
+            renderScripts(scriptsData);
+          } catch (error) {
+            console.error("Error loading scripts:", error);
+            scriptList.innerHTML = `
+          <div style="text-align: center; padding: 40px; color: var(--text-dim)">
+            Failed to load scripts. Please try again later.
+          </div>
+        `;
+          }
+        }
+
+        function updatePagination() {
+          pageInfo.textContent = `Page ${currentPage} of ${maxPages}`;
+          prevPageBtn.disabled = currentPage <= 1;
+          nextPageBtn.disabled = currentPage >= maxPages;
+        }
+
+        function renderScripts(scripts) {
+          const scriptList = document.getElementById("scriptList");
+          favorites =
+            JSON.parse(localStorage.getItem("scriptHubFavorites")) || [];
+
+          if (scripts.length === 0) {
+            scriptList.innerHTML = `
+          <div style="text-align: center; padding: 40px; color: var(--text-dim)">
+            No scripts found. Try different filters or search terms.
+          </div>
+        `;
+            return;
+          }
+
+          scriptList.innerHTML = "";
+
+          scripts.forEach((script) => {
+            const isFavorite = favorites.some((fav) => fav._id === script._id);
+
+            const scriptCard = document.createElement("div");
+            scriptCard.className = "script-card";
+            scriptCard.innerHTML = `
+          <img src="${
+            script.image ||
+            "https://rscripts.net/assets/default-script-image.png"
+          }" class="script-image" />
+          <div class="script-content">
+            <div class="script-title">${script.title}</div>
+            <div class="script-meta">
+              <div class="script-author">
+                <img src="${
+                  script.user.image ||
+                  "https://rscripts.net/assets/default-avatar.png"
+                }" class="author-avatar" />
+                ${script.user.username}
+              </div>
+              <div class="script-stats">
+                <div class="stat">
+                  <img src="assets/Views.png" />
+                  ${script.views}
+                </div>
+                <div class="stat">
+                  <img src="assets/Like.png" />
+                  ${script.likes}
+                </div>
+              </div>
+            </div>
+            <div class="script-description">${
+              script.description || "No description provided."
+            }</div>
+            <div class="script-actions">
+              <button class="script-btn execute" data-id="${script._id}">
+                Load to Execute
+              </button>
+              <button class="script-btn copy" data-id="${script._id}">
+                <img src="assets/Copy.png" />
+                Copy script
+              </button>
+              <button class="script-btn favorite" data-id="${
+                script._id
+              }" style="background: transparent; border: none; padding: 0; flex: 0;">
+                <img src="assets/${
+                  isFavorite ? "FavoriteFilled" : "Favorite"
+                }.png" />
+              </button>
+            </div>
+          </div>
+        `;
+
+            scriptList.appendChild(scriptCard);
+          });
+
+          addEventListenersToScripts();
+        }
+
+        function addEventListenersToScripts() {
+          document.querySelectorAll(".script-btn.execute").forEach((btn) => {
+            btn.addEventListener("click", () => executeScript(btn.dataset.id));
+          });
+
+          document.querySelectorAll(".script-btn.copy").forEach((btn) => {
+            btn.addEventListener("click", () => copyScript(btn.dataset.id));
+          });
+
+          document.querySelectorAll(".script-btn.favorite").forEach((btn) => {
+            btn.addEventListener("click", (e) => {
+              e.stopPropagation();
+              toggleFavorite(btn.dataset.id);
+            });
+          });
+        }
+
+        function loadFavorites() {
+          const favoritesList = document.getElementById("favoritesList");
+          const currentFavorites =
+            JSON.parse(localStorage.getItem("scriptHubFavorites")) || [];
+
+          if (favorites.length === 0) {
+            favoritesList.innerHTML = `
+          <div style="text-align: center; padding: 40px; color: var(--text-dim)">
+            No favorites yet. Click the star icon on scripts to add them to favorites.
+          </div>
+        `;
+            return;
+          }
+
+          favoritesList.innerHTML = "";
+
+          currentFavorites.forEach((script) => {
+            const scriptCard = document.createElement("div");
+            scriptCard.className = "script-card";
+            scriptCard.innerHTML = `
+          <img src="${
+            script.image ||
+            "https://rscripts.net/assets/default-script-image.png"
+          }" class="script-image" />
+          <div class="script-content">
+            <div class="script-title">${script.title}</div>
+            <div class="script-meta">
+              <div class="script-author">
+                <img src="${
+                  script.user.image ||
+                  "https://rscripts.net/assets/default-avatar.png"
+                }" class="author-avatar" />
+                ${script.user.username}
+              </div>
+            </div>
+            <div class="script-description">${
+              script.description || "No description provided."
+            }</div>
+            <div class="script-actions">
+              <button class="script-btn execute" data-id="${script._id}">
+                Load to Execute
+              </button>
+              <button class="script-btn copy" data-id="${script._id}">
+                <img src="assets/Copy.png" />
+                Copy script
+              </button>
+              <button class="script-btn favorite" data-id="${
+                script._id
+              }" style="background: transparent; border: none; padding: 0; flex: 0;">
+                <img src="assets/FavoriteFilled.png" />
+              </button>
+            </div>
+          </div>
+        `;
+
+            favoritesList.appendChild(scriptCard);
+          });
+
+          addEventListenersToScripts();
+        }
+
+        function toggleFavorite(scriptId) {
+          let favorites =
+            JSON.parse(localStorage.getItem("scriptHubFavorites")) || [];
+
+          const index = favorites.findIndex((fav) => fav._id === scriptId);
+
+          const isFavoritesTab = document
+            .getElementById("favoritesTab")
+            .classList.contains("active");
+
+          if (isFavoritesTab) {
+            if (index !== -1) {
+              favorites.splice(index, 1);
+              showNotification("Removed from favorites", "success");
+            }
+          } else {
+            if (index === -1) {
+              const script = scriptsData.find((s) => s._id === scriptId);
+              if (script) {
+                favorites.push({
+                  _id: script._id,
+                  title: script.title,
+                  image: script.image,
+                  user: script.user,
+                  description: script.description,
+                  rawScript: script.rawScript,
+                });
+                showNotification("Added to favorites", "success");
+              }
+            } else {
+              favorites.splice(index, 1);
+              showNotification("Removed from favorites", "success");
+            }
+          }
+
+          localStorage.setItem("scriptHubFavorites", JSON.stringify(favorites));
+
+          if (isFavoritesTab) {
+            loadFavorites();
+          }
+          renderScripts(scriptsData);
+        }
+
+        async function executeScript(scriptId) {
+          const script =
+            scriptsData.find((s) => s._id === scriptId) ||
+            favorites.find((f) => f._id === scriptId);
+
+          if (!script) return;
+
+          try {
+            showNotification(`Loading script: ${script.title}`, "info");
+
+            const response = await fetch(script.rawScript);
+            const scriptContent = await response.text();
+
+            const iframe = document.getElementById("monacoIframe");
+            if (iframe && iframe.contentWindow) {
+              iframe.contentWindow.postMessage(
+                { action: "setText", text: scriptContent },
+                "*"
+              );
+
+              scriptHubContainer.classList.remove("show");
+
+              showNotification(
+                `Script "${script.title}" loaded successfully`,
+                "success"
+              );
+            }
+          } catch (error) {
+            console.error("Error executing script:", error);
+            showNotification("Failed to load script", "error");
+          }
+        }
+
+        async function copyScript(scriptId) {
+          const script =
+            scriptsData.find((s) => s._id === scriptId) ||
+            favorites.find((f) => f._id === scriptId);
+
+          if (!script) return;
+
+          try {
+            const response = await fetch(script.rawScript);
+            const scriptContent = await response.text();
+
+            await navigator.clipboard.writeText(scriptContent);
+            showNotification("Script copied to clipboard", "success");
+          } catch (error) {
+            console.error("Error copying script:", error);
+            showNotification("Failed to copy script", "error");
+          }
+        }
+
         document
           .getElementById("btnOpenFolder")
           .addEventListener("click", () => {
@@ -1796,6 +2577,12 @@
             window.electron.openAutoEXEFolder();
             showNotification("Opening Autoexe folder...", "info");
           });
+
+        setInterval(async () => {
+          const sirhurtVersion = await window.electron.getSirhurtVersion();
+          const el = document.getElementById("sirhurtVersion");
+          if (el) el.textContent = `SirHurt ${sirhurtVersion}`;
+        }, 5000);
       });
     </script>
   </body>
